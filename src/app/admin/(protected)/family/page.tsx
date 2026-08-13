@@ -1,9 +1,10 @@
-import { supabase } from "@/lib/supabase";
+import { createAdminSupabase } from "@/lib/supabase-admin";
 import { Field, TextAreaField, FormActions } from "@/components/admin/Field";
 import { createFamilyMember, updateFamilyMember, deleteFamilyMember } from "./actions";
 
 export default async function AdminFamilyPage() {
-  const { data: members } = await supabase
+  const admin = createAdminSupabase();
+  const { data: members } = await admin
     .from("family_members")
     .select("id, side, role, name, bio, sort_order")
     .order("side", { ascending: true })

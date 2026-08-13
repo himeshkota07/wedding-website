@@ -1,9 +1,10 @@
-import { supabase } from "@/lib/supabase";
+import { createAdminSupabase } from "@/lib/supabase-admin";
 import { Field, FormActions } from "@/components/admin/Field";
 import { createVenue, updateVenue, deleteVenue } from "./actions";
 
 export default async function AdminVenuesPage() {
-  const { data: venues } = await supabase
+  const admin = createAdminSupabase();
+  const { data: venues } = await admin
     .from("venues")
     .select("id, name, address, parking_info, accessibility_info, nearby_landmarks")
     .order("created_at", { ascending: true });

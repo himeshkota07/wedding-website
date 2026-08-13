@@ -1,9 +1,10 @@
-import { supabase } from "@/lib/supabase";
+import { createAdminSupabase } from "@/lib/supabase-admin";
 import { Field, FormActions } from "@/components/admin/Field";
 import { createContact, updateContact, deleteContact } from "./actions";
 
 export default async function AdminContactsPage() {
-  const { data: contacts } = await supabase
+  const admin = createAdminSupabase();
+  const { data: contacts } = await admin
     .from("contacts")
     .select("id, name, role, phone, whatsapp_link, sort_order")
     .order("sort_order", { ascending: true });

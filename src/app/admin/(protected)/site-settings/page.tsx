@@ -1,9 +1,11 @@
 import { getHomeHero, getOurStory } from "@/lib/site-settings";
+import { createAdminSupabase } from "@/lib/supabase-admin";
 import { Field, TextAreaField } from "@/components/admin/Field";
 import { updateHomeHero, updateOurStory } from "./actions";
 
 export default async function AdminSiteSettingsPage() {
-  const [hero, story] = await Promise.all([getHomeHero(), getOurStory()]);
+  const admin = createAdminSupabase();
+  const [hero, story] = await Promise.all([getHomeHero(admin), getOurStory(admin)]);
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">

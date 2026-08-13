@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 
 export type HomeHero = {
@@ -22,12 +23,12 @@ const defaultHomeHero: HomeHero = {
 
 const defaultOurStory: OurStory = { content: "" };
 
-export async function getHomeHero(): Promise<HomeHero> {
-  const { data } = await supabase.from("site_settings").select("value").eq("key", "home_hero").maybeSingle();
+export async function getHomeHero(client: SupabaseClient = supabase): Promise<HomeHero> {
+  const { data } = await client.from("site_settings").select("value").eq("key", "home_hero").maybeSingle();
   return { ...defaultHomeHero, ...(data?.value as Partial<HomeHero> | undefined) };
 }
 
-export async function getOurStory(): Promise<OurStory> {
-  const { data } = await supabase.from("site_settings").select("value").eq("key", "our_story").maybeSingle();
+export async function getOurStory(client: SupabaseClient = supabase): Promise<OurStory> {
+  const { data } = await client.from("site_settings").select("value").eq("key", "our_story").maybeSingle();
   return { ...defaultOurStory, ...(data?.value as Partial<OurStory> | undefined) };
 }

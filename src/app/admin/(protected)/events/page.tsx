@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { createAdminSupabase } from "@/lib/supabase-admin";
 import { createEvent, updateEvent, deleteEvent } from "./actions";
 
 function toIstDatetimeLocal(iso: string) {
@@ -17,12 +17,13 @@ function toIstDatetimeLocal(iso: string) {
 }
 
 export default async function AdminEventsPage() {
+  const admin = createAdminSupabase();
   const [{ data: events }, { data: venues }] = await Promise.all([
-    supabase
+    admin
       .from("events")
       .select("id, name, description, event_date, venue_id, dress_code, theme_color, special_instructions, sort_order")
       .order("sort_order", { ascending: true }),
-    supabase.from("venues").select("id, name").order("name", { ascending: true }),
+    admin.from("venues").select("id, name").order("name", { ascending: true }),
   ]);
 
   const venueOptions = venues ?? [];

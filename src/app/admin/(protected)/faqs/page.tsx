@@ -1,9 +1,10 @@
-import { supabase } from "@/lib/supabase";
+import { createAdminSupabase } from "@/lib/supabase-admin";
 import { Field, TextAreaField, FormActions } from "@/components/admin/Field";
 import { createFaq, updateFaq, deleteFaq } from "./actions";
 
 export default async function AdminFaqsPage() {
-  const { data: faqs } = await supabase
+  const admin = createAdminSupabase();
+  const { data: faqs } = await admin
     .from("faqs")
     .select("id, question, answer, sort_order")
     .order("sort_order", { ascending: true });
