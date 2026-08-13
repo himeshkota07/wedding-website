@@ -5,6 +5,8 @@ export type HomeHero = {
   bride_name: string;
   groom_name: string;
   wedding_date_label: string;
+  /** ISO timestamp (IST) the overall countdown on Home counts down to. Separate from wedding_date_label, which is just display text. */
+  wedding_datetime: string;
   location: string;
   welcome_note: string;
 };
@@ -17,6 +19,7 @@ const defaultHomeHero: HomeHero = {
   bride_name: "[Bride]",
   groom_name: "[Groom]",
   wedding_date_label: "[Wedding date]",
+  wedding_datetime: "",
   location: "[City]",
   welcome_note: "",
 };

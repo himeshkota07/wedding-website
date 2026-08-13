@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getHomeHero } from "@/lib/site-settings";
+import Countdown from "@/components/Countdown";
 
 export const revalidate = 60;
 
@@ -28,6 +29,12 @@ export default async function Home() {
         {hero.wedding_date_label} &middot; {hero.location}
       </p>
       {hero.welcome_note && <p className="mt-6 max-w-xl text-zinc-600">{hero.welcome_note}</p>}
+
+      {hero.wedding_datetime && (
+        <div className="mt-8">
+          <Countdown targetIso={hero.wedding_datetime} />
+        </div>
+      )}
 
       <div className="mt-12 grid w-full max-w-3xl grid-cols-2 gap-4 sm:grid-cols-3">
         {sections.map((s) => (

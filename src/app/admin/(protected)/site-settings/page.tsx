@@ -1,5 +1,6 @@
 import { getHomeHero, getOurStory } from "@/lib/site-settings";
 import { createAdminSupabase } from "@/lib/supabase-admin";
+import { toIstDatetimeLocal } from "@/lib/ist-datetime";
 import { Field, TextAreaField } from "@/components/admin/Field";
 import { updateHomeHero, updateOurStory } from "./actions";
 
@@ -18,6 +19,15 @@ export default async function AdminSiteSettingsPage() {
           <Field label="Bride's name" name="bride_name" defaultValue={hero.bride_name} required />
           <Field label="Groom's name" name="groom_name" defaultValue={hero.groom_name} required />
           <Field label="Wedding date (display text)" name="wedding_date_label" defaultValue={hero.wedding_date_label} required />
+          <label className="text-sm">
+            Wedding date &amp; time (IST, used for the countdown)
+            <input
+              type="datetime-local"
+              name="wedding_datetime"
+              defaultValue={hero.wedding_datetime ? toIstDatetimeLocal(hero.wedding_datetime) : ""}
+              className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+            />
+          </label>
           <Field label="Location" name="location" defaultValue={hero.location} required />
           <TextAreaField label="Welcome note" name="welcome_note" defaultValue={hero.welcome_note} span2 />
         </div>

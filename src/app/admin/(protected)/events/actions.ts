@@ -3,11 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
-
-// datetime-local inputs are entered and stored as India Standard Time.
-function toIstTimestamp(datetimeLocalValue: string) {
-  return `${datetimeLocalValue}:00+05:30`;
-}
+import { toIstTimestamp } from "@/lib/ist-datetime";
 
 function eventFields(formData: FormData) {
   return {

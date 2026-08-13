@@ -1,20 +1,6 @@
 import { createAdminSupabase } from "@/lib/supabase-admin";
+import { toIstDatetimeLocal } from "@/lib/ist-datetime";
 import { createEvent, updateEvent, deleteEvent } from "./actions";
-
-function toIstDatetimeLocal(iso: string) {
-  const date = new Date(iso);
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "Asia/Kolkata",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(date);
-  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "00";
-  return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}`;
-}
 
 export default async function AdminEventsPage() {
   const admin = createAdminSupabase();
