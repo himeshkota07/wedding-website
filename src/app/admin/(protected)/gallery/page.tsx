@@ -1,9 +1,13 @@
-import { supabase } from "@/lib/supabase";
+import { createAdminSupabase } from "@/lib/supabase-admin";
 import { showSelected, hideSelected, deleteSelected } from "./actions";
 import { SelectAllCheckbox } from "./SelectAllCheckbox";
 
 export default async function AdminGalleryPage() {
-  const { data: images } = await supabase
+  // Uses the service-role client, not the public one: gallery_images' RLS
+  // policy only allows reading approved=true rows, which would otherwise
+  // make hidden photos disappear from this page too, not just the guest one.
+  const admin = createAdminSupabase();
+  const { data: images } = await admin
     .from("gallery_images")
     .select("id, cloudinary_public_id, cloudinary_url, caption, uploaded_by, approved, created_at")
     .order("created_at", { ascending: false });
