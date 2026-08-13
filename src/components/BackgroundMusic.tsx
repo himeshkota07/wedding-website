@@ -26,7 +26,7 @@ export default function BackgroundMusic() {
         type="button"
         onClick={toggle}
         aria-label={playing ? "Pause background music" : "Play background music"}
-        className="fixed bottom-4 right-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-lg shadow-md hover:border-accent"
+        className="fixed bottom-4 left-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-lg shadow-md hover:border-accent"
       >
         {playing ? "🔊" : "🔇"}
       </button>

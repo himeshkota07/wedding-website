@@ -50,16 +50,16 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
   }
 
   return (
-    <div className="flex gap-4 text-center sm:gap-6">
+    <div className="flex justify-center gap-3 text-center sm:gap-6">
       {[
         ["Days", parts.days],
         ["Hours", parts.hours],
         ["Min", parts.minutes],
         ["Sec", parts.seconds],
       ].map(([label, value]) => (
-        <div key={label as string}>
-          <div className="text-3xl font-semibold text-accent sm:text-4xl">{value}</div>
-          <div className="text-xs uppercase tracking-wide text-zinc-500">{label}</div>
+        <div key={label as string} className="w-12 sm:w-16">
+          <div className="text-2xl font-semibold text-accent sm:text-4xl">{value}</div>
+          <div className="text-[10px] uppercase tracking-wide text-zinc-500 sm:text-xs">{label}</div>
         </div>
       ))}
     </div>

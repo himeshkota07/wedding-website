@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
 const links = [
@@ -12,22 +15,48 @@ const links = [
 ];
 
 export default function Nav() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <header className="border-b border-black/10 bg-white/80 backdrop-blur">
-      <nav className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-6 py-4">
-        <Link href="/" className="mr-auto text-lg font-semibold text-accent">
+    <header className="sticky top-0 z-20 border-b border-black/10 bg-white/80 backdrop-blur">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+        <Link href="/" className="text-lg font-semibold text-accent" onClick={() => setOpen(false)}>
           Our Wedding
         </Link>
-        {links.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="text-sm font-medium text-zinc-600 hover:text-accent"
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+
+        <nav className="hidden items-center gap-6 sm:flex">
+          {links.map((link) => (
+            <Link key={link.href} href={link.href} className="text-sm font-medium text-zinc-600 hover:text-accent">
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          className="flex h-9 w-9 items-center justify-center rounded-md text-zinc-600 sm:hidden"
+        >
+          {open ? "✕" : "☰"}
+        </button>
+      </div>
+
+      {open && (
+        <nav className="flex flex-col gap-1 border-t border-black/10 px-6 py-3 sm:hidden">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              className="rounded-md px-2 py-2 text-sm font-medium text-zinc-600 hover:bg-accent-soft/40 hover:text-accent"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }
