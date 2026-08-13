@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { getHomeHero } from "@/lib/site-settings";
+
+export const revalidate = 60;
 
 const sections = [
   { href: "/our-story", label: "Our Story", blurb: "How we met" },
@@ -10,20 +13,21 @@ const sections = [
   { href: "/contact", label: "Contact", blurb: "Reach the coordinators" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const hero = await getHomeHero();
+
   return (
     <div className="flex flex-col items-center bg-accent-soft/40 px-6 py-20 text-center">
       <p className="text-sm font-medium uppercase tracking-widest text-accent">
         We&apos;re getting married
       </p>
       <h1 className="mt-3 text-4xl font-semibold tracking-tight text-zinc-900 sm:text-5xl">
-        [Bride] &amp; [Groom]
+        {hero.bride_name} &amp; {hero.groom_name}
       </h1>
-      <p className="mt-4 text-lg text-zinc-600">[Wedding date] &middot; [City]</p>
-      <p className="mt-6 max-w-xl text-zinc-600">
-        Welcome! This site has everything you need for the celebration &mdash;
-        schedules, venues, our story, and a chatbot if you have questions.
+      <p className="mt-4 text-lg text-zinc-600">
+        {hero.wedding_date_label} &middot; {hero.location}
       </p>
+      {hero.welcome_note && <p className="mt-6 max-w-xl text-zinc-600">{hero.welcome_note}</p>}
 
       <div className="mt-12 grid w-full max-w-3xl grid-cols-2 gap-4 sm:grid-cols-3">
         {sections.map((s) => (

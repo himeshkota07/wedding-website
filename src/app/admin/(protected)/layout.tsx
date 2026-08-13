@@ -4,6 +4,7 @@ import { signOut } from "../actions";
 
 const sections = [
   { href: "/admin", label: "Dashboard" },
+  { href: "/admin/site-settings", label: "Site Content" },
   { href: "/admin/events", label: "Events" },
   { href: "/admin/venues", label: "Venues" },
   { href: "/admin/family", label: "Family" },
