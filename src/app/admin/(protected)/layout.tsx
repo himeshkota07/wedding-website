@@ -8,6 +8,7 @@ const sections = [
   { href: "/admin/events", label: "Events" },
   { href: "/admin/venues", label: "Venues" },
   { href: "/admin/family", label: "Family" },
+  { href: "/admin/gallery", label: "Gallery" },
   { href: "/admin/faqs", label: "FAQs" },
   { href: "/admin/contacts", label: "Contacts" },
 ];

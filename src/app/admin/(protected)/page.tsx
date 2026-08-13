@@ -5,6 +5,7 @@ const sections = [
   { href: "/admin/events", label: "Events", blurb: "Names, dates, venues, dress codes" },
   { href: "/admin/venues", label: "Venues", blurb: "Addresses, parking, accessibility" },
   { href: "/admin/family", label: "Family", blurb: "Bride & groom bios" },
+  { href: "/admin/gallery", label: "Gallery", blurb: "Approve guest uploads" },
   { href: "/admin/faqs", label: "FAQs", blurb: "Static FAQ entries" },
   { href: "/admin/contacts", label: "Contacts", blurb: "Coordinators & WhatsApp link" },
 ];
