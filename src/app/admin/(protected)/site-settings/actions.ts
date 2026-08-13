@@ -16,12 +16,15 @@ export async function updateHomeHero(formData: FormData) {
     wedding_datetime: weddingDatetimeLocal ? toIstTimestamp(weddingDatetimeLocal) : "",
     location: String(formData.get("location") ?? "").trim(),
     welcome_note: String(formData.get("welcome_note") ?? "").trim(),
+    weather_lat: Number(formData.get("weather_lat") ?? 17.385),
+    weather_lon: Number(formData.get("weather_lon") ?? 78.4867),
   };
 
   const admin = createAdminSupabase();
   await admin.from("site_settings").upsert({ key: "home_hero", value });
 
   revalidatePath("/");
+  revalidatePath("/venue");
   revalidatePath("/admin/site-settings");
 }
 

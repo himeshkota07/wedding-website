@@ -9,6 +9,9 @@ export type HomeHero = {
   wedding_datetime: string;
   location: string;
   welcome_note: string;
+  /** Coordinates for the weather widget on the Venue page. */
+  weather_lat: number;
+  weather_lon: number;
 };
 
 export type OurStory = {
@@ -22,6 +25,8 @@ const defaultHomeHero: HomeHero = {
   wedding_datetime: "",
   location: "[City]",
   welcome_note: "",
+  weather_lat: 17.385,
+  weather_lon: 78.4867,
 };
 
 const defaultOurStory: OurStory = { content: "" };

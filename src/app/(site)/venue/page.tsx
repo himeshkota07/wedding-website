@@ -1,16 +1,25 @@
 import PageSection from "@/components/PageSection";
 import { supabase } from "@/lib/supabase";
+import { getHomeHero } from "@/lib/site-settings";
+import WeatherWidget from "@/components/WeatherWidget";
 
 export const revalidate = 60;
 
 export default async function VenuePage() {
-  const { data: venues } = await supabase
-    .from("venues")
-    .select("id, name, address, parking_info, accessibility_info, nearby_landmarks")
-    .order("created_at", { ascending: true });
+  const [{ data: venues }, hero] = await Promise.all([
+    supabase
+      .from("venues")
+      .select("id, name, address, parking_info, accessibility_info, nearby_landmarks")
+      .order("created_at", { ascending: true }),
+    getHomeHero(),
+  ]);
 
   return (
     <PageSection title="Venue & Location" subtitle="Getting guests to the right place">
+      {hero.wedding_datetime && (
+        <WeatherWidget lat={hero.weather_lat} lon={hero.weather_lon} targetIso={hero.wedding_datetime} />
+      )}
+
       {!venues?.length && <p>Venue details will be added soon.</p>}
       <div className="space-y-8">
         {venues?.map((venue) => (

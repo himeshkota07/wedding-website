@@ -29,6 +29,26 @@ export default async function AdminSiteSettingsPage() {
             />
           </label>
           <Field label="Location" name="location" defaultValue={hero.location} required />
+          <label className="text-sm">
+            Weather latitude
+            <input
+              type="number"
+              step="any"
+              name="weather_lat"
+              defaultValue={hero.weather_lat}
+              className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+            />
+          </label>
+          <label className="text-sm">
+            Weather longitude
+            <input
+              type="number"
+              step="any"
+              name="weather_lon"
+              defaultValue={hero.weather_lon}
+              className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+            />
+          </label>
           <TextAreaField label="Welcome note" name="welcome_note" defaultValue={hero.welcome_note} span2 />
         </div>
         <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Save Home</button>

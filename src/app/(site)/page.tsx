@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getHomeHero } from "@/lib/site-settings";
 import Countdown from "@/components/Countdown";
+import SiteQrCode from "@/components/SiteQrCode";
 
 export const revalidate = 60;
 
@@ -47,6 +48,10 @@ export default async function Home() {
             <div className="text-sm text-zinc-500">{s.blurb}</div>
           </Link>
         ))}
+      </div>
+
+      <div className="mt-12">
+        <SiteQrCode />
       </div>
     </div>
   );
