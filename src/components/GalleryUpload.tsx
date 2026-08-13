@@ -49,7 +49,7 @@ export default function GalleryUpload() {
       }
       setStatus(
         uploaded > 0
-          ? `Uploaded ${uploaded} photo${uploaded > 1 ? "s" : ""} — pending approval before they show up here.`
+          ? `Uploaded ${uploaded} photo${uploaded > 1 ? "s" : ""} — now live in the gallery.`
           : "Nothing uploaded — please try again.",
       );
     });
@@ -74,7 +74,7 @@ export default function GalleryUpload() {
         className="mt-2 block w-full text-sm"
       />
       <p className="mt-1 text-xs text-zinc-500">
-        Up to {MAX_FILES} photos at a time. Photos are reviewed before appearing here.
+        Up to {MAX_FILES} photos at a time. Photos appear here right away.
       </p>
       {pending && <p className="mt-2 text-sm text-zinc-600">Uploading…</p>}
       {status && !pending && <p className="mt-2 text-sm text-zinc-600">{status}</p>}

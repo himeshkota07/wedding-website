@@ -10,7 +10,7 @@ function revalidateGallery() {
   revalidatePath("/admin/gallery");
 }
 
-export async function approveImage(formData: FormData) {
+export async function showImage(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();
@@ -18,7 +18,7 @@ export async function approveImage(formData: FormData) {
   revalidateGallery();
 }
 
-export async function unapproveImage(formData: FormData) {
+export async function hideImage(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();

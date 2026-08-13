@@ -11,7 +11,8 @@ const expectedUrlPrefix = `https://res.cloudinary.com/${cloudName}/`;
  * (unsigned preset). No admin auth here by design -- any guest can call this
  * -- so it only accepts URLs that actually came from our Cloudinary account
  * (the preset itself pins the destination to the wedding-gallery asset
- * folder), and new rows land unapproved until a moderator reviews them.
+ * folder). Photos go live immediately; admins can hide one afterwards from
+ * /admin/gallery if needed, but there's no pre-publish approval gate.
  */
 export async function recordGalleryUpload(formData: FormData) {
   const publicId = String(formData.get("public_id") ?? "");
@@ -29,10 +30,10 @@ export async function recordGalleryUpload(formData: FormData) {
     cloudinary_url: url,
     caption,
     uploaded_by: uploadedBy,
-    approved: false,
+    approved: true,
   });
 
   revalidatePath("/gallery");
   revalidatePath("/admin/gallery");
-  return { ok: true, message: "Thanks! Your photo is in for review and will appear once approved." };
+  return { ok: true, message: "Thanks! Your photo is now live in the gallery." };
 }
