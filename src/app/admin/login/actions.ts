@@ -30,7 +30,7 @@ export async function sendMagicLink(
 
   const supabase = await createServerSupabase();
   const originHeader = (await headers()).get("origin");
-  const origin = originHeader ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const origin = originHeader || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   await supabase.auth.signInWithOtp({
     email,
