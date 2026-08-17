@@ -11,7 +11,6 @@ function eventFields(formData: FormData) {
     description: String(formData.get("description") ?? "").trim() || null,
     event_date: toIstTimestamp(String(formData.get("event_date") ?? "")),
     venue_id: String(formData.get("venue_id") ?? "") || null,
-    dress_code: String(formData.get("dress_code") ?? "").trim() || null,
     theme_color: String(formData.get("theme_color") ?? "").trim() || null,
     special_instructions: String(formData.get("special_instructions") ?? "").trim() || null,
     sort_order: Number(formData.get("sort_order") ?? 0),

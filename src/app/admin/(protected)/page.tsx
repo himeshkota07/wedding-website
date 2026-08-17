@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const sections = [
   { href: "/admin/site-settings", label: "Site Content", blurb: "Home hero & Our Story" },
-  { href: "/admin/events", label: "Events", blurb: "Names, dates, venues, dress codes" },
+  { href: "/admin/events", label: "Events", blurb: "Names, dates, venues" },
   { href: "/admin/venues", label: "Venues", blurb: "Addresses, parking, accessibility" },
   { href: "/admin/family", label: "Family", blurb: "Bride & groom bios" },
   { href: "/admin/gallery", label: "Gallery", blurb: "Hide or delete photos" },

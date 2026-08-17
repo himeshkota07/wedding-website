@@ -3,14 +3,27 @@
 import { useEffect, useState } from "react";
 
 function getParts(targetMs: number) {
-  const diff = Math.max(0, targetMs - Date.now());
-  return {
-    diff,
-    days: Math.floor(diff / 86_400_000),
-    hours: Math.floor((diff % 86_400_000) / 3_600_000),
-    minutes: Math.floor((diff % 3_600_000) / 60_000),
-    seconds: Math.floor((diff % 60_000) / 1_000),
-  };
+  const now = new Date();
+  const diff = Math.max(0, targetMs - now.getTime());
+
+  if (diff <= 0) {
+    return { diff, months: 0, days: 0, hours: 0 };
+  }
+
+  // Calendar-aware month count (not a flat /30 average), so "4 months" means
+  // an actual 4 full calendar months from today, with days/hours as the remainder.
+  let months = (new Date(targetMs).getFullYear() - now.getFullYear()) * 12 + (new Date(targetMs).getMonth() - now.getMonth());
+  let anchor = new Date(now.getFullYear(), now.getMonth() + months, now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
+  if (anchor.getTime() > targetMs) {
+    months -= 1;
+    anchor = new Date(now.getFullYear(), now.getMonth() + months, now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
+  }
+
+  const remainderMs = targetMs - anchor.getTime();
+  const days = Math.floor(remainderMs / 86_400_000);
+  const hours = Math.floor((remainderMs % 86_400_000) / 3_600_000);
+
+  return { diff, months, days, hours };
 }
 
 export default function Countdown({ targetIso, compact = false }: { targetIso: string; compact?: boolean }) {
@@ -22,7 +35,8 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
   useEffect(() => {
     const tick = () => setParts(getParts(targetMs));
     const firstTick = setTimeout(tick, 0);
-    const id = setInterval(tick, 1000);
+    // Hours is the finest unit shown, so a per-minute tick is plenty.
+    const id = setInterval(tick, 60_000);
     return () => {
       clearTimeout(firstTick);
       clearInterval(id);
@@ -44,7 +58,7 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
   if (compact) {
     return (
       <span className="text-xs text-zinc-500">
-        {parts.days}d {parts.hours}h {parts.minutes}m
+        {parts.months}mo {parts.days}d {parts.hours}h
       </span>
     );
   }
@@ -52,12 +66,11 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
   return (
     <div className="flex justify-center gap-3 text-center sm:gap-6">
       {[
+        ["Months", parts.months],
         ["Days", parts.days],
         ["Hours", parts.hours],
-        ["Min", parts.minutes],
-        ["Sec", parts.seconds],
       ].map(([label, value]) => (
-        <div key={label as string} className="w-12 sm:w-16">
+        <div key={label as string} className="w-14 sm:w-16">
           <div className="text-2xl font-semibold text-accent sm:text-4xl">{value}</div>
           <div className="text-[10px] uppercase tracking-wide text-zinc-500 sm:text-xs">{label}</div>
         </div>

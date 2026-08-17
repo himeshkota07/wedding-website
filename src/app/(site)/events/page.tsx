@@ -10,7 +10,6 @@ type EventRow = {
   name: string;
   description: string | null;
   event_date: string;
-  dress_code: string | null;
   theme_color: string | null;
   special_instructions: string | null;
   venue: { name: string; address: string } | { name: string; address: string }[] | null;
@@ -24,7 +23,7 @@ function venue(v: EventRow["venue"]) {
 export default async function EventsPage() {
   const { data: events } = await supabase
     .from("events")
-    .select("id, name, description, event_date, dress_code, theme_color, special_instructions, venue:venues(name, address)")
+    .select("id, name, description, event_date, theme_color, special_instructions, venue:venues(name, address)")
     .order("sort_order", { ascending: true })
     .returns<EventRow[]>();
 
@@ -62,12 +61,6 @@ export default async function EventsPage() {
                   <div>
                     <dt className="inline font-medium text-zinc-800">Venue: </dt>
                     <dd className="inline">{v.name}</dd>
-                  </div>
-                )}
-                {event.dress_code && (
-                  <div>
-                    <dt className="inline font-medium text-zinc-800">Dress code: </dt>
-                    <dd className="inline">{event.dress_code}</dd>
                   </div>
                 )}
                 {event.special_instructions && (
