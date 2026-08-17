@@ -101,7 +101,7 @@ export default async function AdminEventsPage() {
           </label>
           <label className="text-sm">
             Theme color (hex)
-            <input name="theme_color" placeholder="#8b3a5c" className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
+            <input name="theme_color" placeholder="#3e6690" className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
           </label>
           <label className="text-sm">
             Sort order

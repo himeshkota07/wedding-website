@@ -40,7 +40,7 @@ export default async function EventsPage() {
             <div
               key={event.id}
               className="rounded-lg border border-black/10 bg-white p-5 shadow-sm"
-              style={{ borderLeft: `4px solid ${event.theme_color ?? "#8b3a5c"}` }}
+              style={{ borderLeft: `4px solid ${event.theme_color ?? "#3e6690"}` }}
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h2 className="text-xl font-semibold text-zinc-900">{event.name}</h2>
