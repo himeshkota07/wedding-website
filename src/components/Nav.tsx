@@ -4,14 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/our-story", label: "Our Story" },
-  { href: "/events", label: "Events" },
-  { href: "/venue", label: "Venue" },
-  { href: "/family", label: "Family" },
-  { href: "/gallery", label: "Gallery" },
-  { href: "/faq", label: "FAQ & Chat" },
-  { href: "/contact", label: "Contact" },
+  { href: "/#top", label: "Home" },
+  { href: "/#our-story", label: "Our Story" },
+  { href: "/#events", label: "Events" },
+  { href: "/#venue", label: "Venue" },
+  { href: "/#family", label: "Family" },
+  { href: "/#gallery", label: "Gallery" },
+  { href: "/#faq", label: "FAQ & Chat" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 export default function Nav() {
@@ -20,7 +20,7 @@ export default function Nav() {
   return (
     <header className="sticky top-0 z-20 border-b border-black/10 bg-white/80 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-lg font-semibold text-accent" onClick={() => setOpen(false)}>
+        <Link href="/#top" className="text-lg font-semibold text-accent" onClick={() => setOpen(false)}>
           Our Wedding
         </Link>
 

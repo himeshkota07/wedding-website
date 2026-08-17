@@ -13,7 +13,7 @@ function faqFields(formData: FormData) {
 }
 
 function revalidateFaqs() {
-  revalidatePath("/faq");
+  revalidatePath("/");
   revalidatePath("/admin/faqs");
 }
 

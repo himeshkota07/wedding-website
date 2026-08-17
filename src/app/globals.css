@@ -1,10 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --accent: #8b3a5c;
-  --accent-soft: #f5e6ec;
+  --background: #f6f2ea; /* creamy white */
+  --foreground: #2b2420;
+  /* Ocean blue from the palette, darkened for AA text/button contrast on a
+     light background -- the swatch value itself (~#6e90b8) is a ~3:1
+     contrast against white, short of the 4.5:1 normal-text minimum. */
+  --accent: #3e6690;
+  --accent-soft: #f2dcda; /* rose pink -- soft background washes */
+  --blush: #c58983; /* blush pink -- secondary decorative accent */
+  --sky: #bcc9d8; /* light blue -- secondary decorative accent */
 }
 
 @theme inline {
@@ -12,15 +17,14 @@
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-blush: var(--blush);
+  --color-sky: var(--sky);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {

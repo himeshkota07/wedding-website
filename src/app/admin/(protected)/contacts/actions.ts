@@ -15,7 +15,7 @@ function contactFields(formData: FormData) {
 }
 
 function revalidateContacts() {
-  revalidatePath("/contact");
+  revalidatePath("/");
   revalidatePath("/admin/contacts");
 }
 

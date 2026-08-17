@@ -24,7 +24,6 @@ export async function updateHomeHero(formData: FormData) {
   await admin.from("site_settings").upsert({ key: "home_hero", value });
 
   revalidatePath("/");
-  revalidatePath("/venue");
   revalidatePath("/admin/site-settings");
 }
 
@@ -37,6 +36,6 @@ export async function updateOurStory(formData: FormData) {
   const admin = createAdminSupabase();
   await admin.from("site_settings").upsert({ key: "our_story", value });
 
-  revalidatePath("/our-story");
+  revalidatePath("/");
   revalidatePath("/admin/site-settings");
 }
