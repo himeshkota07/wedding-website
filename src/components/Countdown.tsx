@@ -7,7 +7,7 @@ function getParts(targetMs: number) {
   const diff = Math.max(0, targetMs - now.getTime());
 
   if (diff <= 0) {
-    return { diff, months: 0, days: 0, hours: 0 };
+    return { diff, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
   }
 
   // Calendar-aware month count (not a flat /30 average), so "4 months" means
@@ -22,8 +22,10 @@ function getParts(targetMs: number) {
   const remainderMs = targetMs - anchor.getTime();
   const days = Math.floor(remainderMs / 86_400_000);
   const hours = Math.floor((remainderMs % 86_400_000) / 3_600_000);
+  const minutes = Math.floor((remainderMs % 3_600_000) / 60_000);
+  const seconds = Math.floor((remainderMs % 60_000) / 1_000);
 
-  return { diff, months, days, hours };
+  return { diff, months, days, hours, minutes, seconds };
 }
 
 export default function Countdown({ targetIso, compact = false }: { targetIso: string; compact?: boolean }) {
@@ -35,8 +37,9 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
   useEffect(() => {
     const tick = () => setParts(getParts(targetMs));
     const firstTick = setTimeout(tick, 0);
-    // Hours is the finest unit shown, so a per-minute tick is plenty.
-    const id = setInterval(tick, 60_000);
+    // The full display ticks down to the second; compact only shows down to
+    // hours, but a 1s interval is cheap either way and keeps this simple.
+    const id = setInterval(tick, 1_000);
     return () => {
       clearTimeout(firstTick);
       clearInterval(id);
@@ -64,15 +67,17 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
   }
 
   return (
-    <div className="flex justify-center gap-3 text-center sm:gap-6">
+    <div className="flex justify-center gap-2 text-center sm:gap-5">
       {[
         ["Months", parts.months],
         ["Days", parts.days],
         ["Hours", parts.hours],
+        ["Min", parts.minutes],
+        ["Sec", parts.seconds],
       ].map(([label, value]) => (
-        <div key={label as string} className="w-14 sm:w-16">
-          <div className="text-2xl font-semibold text-accent sm:text-4xl">{value}</div>
-          <div className="text-[10px] uppercase tracking-wide text-zinc-500 sm:text-xs">{label}</div>
+        <div key={label as string} className="w-11 sm:w-14">
+          <div className="text-xl font-semibold text-accent sm:text-4xl">{value}</div>
+          <div className="text-[9px] uppercase tracking-wide text-zinc-500 sm:text-xs">{label}</div>
         </div>
       ))}
     </div>
