@@ -15,7 +15,7 @@ function venueFields(formData: FormData) {
 }
 
 function revalidateVenues() {
-  revalidatePath("/venue");
+  revalidatePath("/");
   revalidatePath("/admin/venues");
   revalidatePath("/admin/events");
 }

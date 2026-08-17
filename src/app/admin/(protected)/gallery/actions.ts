@@ -6,7 +6,7 @@ import { createAdminSupabase } from "@/lib/supabase-admin";
 import { destroyCloudinaryImage } from "@/lib/cloudinary";
 
 function revalidateGallery() {
-  revalidatePath("/gallery");
+  revalidatePath("/");
   revalidatePath("/admin/gallery");
 }
 

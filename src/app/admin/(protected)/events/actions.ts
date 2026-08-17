@@ -18,7 +18,7 @@ function eventFields(formData: FormData) {
 }
 
 function revalidateEvents() {
-  revalidatePath("/events");
+  revalidatePath("/");
   revalidatePath("/admin/events");
 }
 

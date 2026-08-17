@@ -15,7 +15,7 @@ function memberFields(formData: FormData) {
 }
 
 function revalidateFamily() {
-  revalidatePath("/family");
+  revalidatePath("/");
   revalidatePath("/admin/family");
 }
 
