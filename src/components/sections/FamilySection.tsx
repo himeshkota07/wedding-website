@@ -37,7 +37,7 @@ export default async function FamilySection() {
   const groom = members?.filter((m) => m.side === "groom") ?? [];
 
   return (
-    <PageSection id="family" title="Bride & Groom + Family" subtitle="Introducing both families to each other" tint>
+    <PageSection id="family" title="Bride & Groom + Family" subtitle="Introducing both families to each other">
       {!members?.length && <p>Family introductions will be added soon.</p>}
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
         {bride.length > 0 && <FamilyGroup title="Bride's Family" people={bride} />}

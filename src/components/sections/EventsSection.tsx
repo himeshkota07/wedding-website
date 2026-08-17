@@ -30,7 +30,6 @@ export default async function EventsSection() {
       id="events"
       title="Events"
       subtitle="One entry per function — Mehendi, Haldi, Sangeet, Wedding, Reception"
-      tint
     >
       {!events?.length && <p>No events have been added yet.</p>}
       <div className="space-y-6">

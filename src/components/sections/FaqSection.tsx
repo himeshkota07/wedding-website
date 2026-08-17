@@ -8,7 +8,7 @@ export default async function FaqSection() {
     .order("sort_order", { ascending: true });
 
   return (
-    <PageSection id="faq" title="FAQ & Chat" subtitle="Answers guests need, on demand" tint>
+    <PageSection id="faq" title="FAQ & Chat" subtitle="Answers guests need, on demand">
       {!faqs?.length && <p>FAQs will be added soon.</p>}
       <div className="divide-y divide-black/10 rounded-lg border border-black/10 bg-white shadow-sm">
         {faqs?.map((faq) => (

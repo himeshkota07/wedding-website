@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { getHomeHero } from "@/lib/site-settings";
 import Countdown from "@/components/Countdown";
 import SiteQrCode from "@/components/SiteQrCode";
@@ -11,16 +10,6 @@ import FaqSection from "@/components/sections/FaqSection";
 import ContactSection from "@/components/sections/ContactSection";
 
 export const revalidate = 60;
-
-const quickNav = [
-  { href: "#our-story", label: "Our Story", blurb: "How we met" },
-  { href: "#events", label: "Events", blurb: "Full itinerary" },
-  { href: "#venue", label: "Venue", blurb: "Getting there" },
-  { href: "#family", label: "Family", blurb: "Meet the family" },
-  { href: "#gallery", label: "Gallery", blurb: "Photos" },
-  { href: "#faq", label: "FAQ & Chat", blurb: "Questions? Ask away" },
-  { href: "#contact", label: "Contact", blurb: "Reach the coordinators" },
-];
 
 export default async function Home() {
   const hero = await getHomeHero();
@@ -44,19 +33,6 @@ export default async function Home() {
             <Countdown targetIso={hero.wedding_datetime} />
           </div>
         )}
-
-        <div className="mt-12 grid w-full max-w-3xl grid-cols-2 gap-4 sm:grid-cols-3">
-          {quickNav.map((s) => (
-            <Link
-              key={s.href}
-              href={s.href}
-              className="rounded-lg border border-black/10 bg-white p-4 text-left shadow-sm transition hover:border-accent hover:shadow-md"
-            >
-              <div className="font-medium text-zinc-900">{s.label}</div>
-              <div className="text-sm text-zinc-500">{s.blurb}</div>
-            </Link>
-          ))}
-        </div>
 
         <div className="mt-12">
           <SiteQrCode />
