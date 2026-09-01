@@ -27,6 +27,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ audio: audioBase64, languageCode });
   } catch (error) {
     console.error("[voice/speak] failed:", error);
-    return NextResponse.json({ error: "Speech synthesis failed" }, { status: 502 });
+    return NextResponse.json(
+      { error: "Speech synthesis failed", debugError: error instanceof Error ? error.message : String(error) },
+      { status: 502 },
+    );
   }
 }

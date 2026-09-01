@@ -31,6 +31,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ text });
   } catch (error) {
     console.error("[voice/transcribe] failed:", error);
-    return NextResponse.json({ error: "Transcription failed" }, { status: 502 });
+    return NextResponse.json(
+      { error: "Transcription failed", debugError: error instanceof Error ? error.message : String(error) },
+      { status: 502 },
+    );
   }
 }
