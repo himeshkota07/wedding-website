@@ -162,8 +162,8 @@ export default function ChatWidget() {
   const micBusy = transcribing;
 
   return (
-    <div className="rounded-lg border border-black/10 bg-white shadow-sm">
-      <div ref={listRef} className="max-h-96 space-y-3 overflow-y-auto p-4">
+    <div className="flex flex-col">
+      <div ref={listRef} className="max-h-96 min-h-64 flex-1 space-y-3 overflow-y-auto p-4">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
