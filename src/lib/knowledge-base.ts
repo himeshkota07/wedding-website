@@ -1,7 +1,7 @@
 import "server-only";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { embedTexts } from "@/lib/gemini";
-import { getHomeHero, getOurStory } from "@/lib/site-settings";
+import { getHomeHero, getOurStory, getKnowledgeBaseNotes } from "@/lib/site-settings";
 
 type Chunk = { source_type: string; source_id: string; content: string };
 
@@ -27,7 +27,7 @@ function formatEventDate(iso: string) {
 export async function syncKnowledgeBase() {
   const admin = createAdminSupabase();
 
-  const [{ data: events }, { data: venues }, { data: family }, { data: faqs }, { data: contacts }, hero, ourStory] =
+  const [{ data: events }, { data: venues }, { data: family }, { data: faqs }, { data: contacts }, hero, ourStory, notes] =
     await Promise.all([
       admin
         .from("events")
@@ -48,6 +48,7 @@ export async function syncKnowledgeBase() {
       admin.from("contacts").select("id, name, role, phone, whatsapp_link"),
       getHomeHero(admin),
       getOurStory(admin),
+      getKnowledgeBaseNotes(admin),
     ]);
 
   const chunks: Chunk[] = [];
@@ -105,6 +106,14 @@ export async function syncKnowledgeBase() {
   for (const faq of faqs ?? []) {
     chunks.push({ source_type: "faq", source_id: faq.id, content: `Q: ${faq.question} A: ${faq.answer}` });
   }
+
+  const noteParagraphs = notes.content
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  noteParagraphs.forEach((paragraph, i) => {
+    chunks.push({ source_type: "notes", source_id: `notes-${i}`, content: paragraph });
+  });
 
   for (const contact of contacts ?? []) {
     chunks.push({
