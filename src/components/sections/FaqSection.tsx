@@ -1,6 +1,5 @@
 import PageSection from "@/components/PageSection";
 import { supabase } from "@/lib/supabase";
-import ChatWidget from "@/components/ChatWidget";
 
 export default async function FaqSection() {
   const { data: faqs } = await supabase
@@ -21,9 +20,9 @@ export default async function FaqSection() {
           </details>
         ))}
       </div>
-      <ChatWidget />
       <p className="text-xs text-zinc-400">
-        Tap 🎤 to ask by voice, or 🔊 on any reply to hear it read aloud.
+        Still have a question? Use the &ldquo;Ask us anything&rdquo; chat at the bottom of the screen — you can ask
+        by typing or by voice, in English, Telugu, or Kannada.
       </p>
     </PageSection>
   );
