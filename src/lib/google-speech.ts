@@ -2,10 +2,14 @@ import "server-only";
 
 const API_KEY = process.env.GOOGLE_CLOUD_API_KEY!;
 
-// Guests ask in whichever of these three languages they're comfortable with.
-const SPEECH_LANGUAGES = { primary: "en-IN", alternatives: ["te-IN", "kn-IN"] };
+export const SPEECH_LANGUAGE_CODES = ["en-IN", "te-IN", "kn-IN"] as const;
+export type SpeechLanguageCode = (typeof SPEECH_LANGUAGE_CODES)[number];
 
-export async function transcribeAudio(base64Audio: string): Promise<string> {
+export function isSpeechLanguageCode(value: unknown): value is SpeechLanguageCode {
+  return typeof value === "string" && (SPEECH_LANGUAGE_CODES as readonly string[]).includes(value);
+}
+
+export async function transcribeAudio(base64Audio: string, languageCode: SpeechLanguageCode): Promise<string> {
   const res = await fetch(`https://speech.googleapis.com/v1/speech:recognize?key=${API_KEY}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -16,8 +20,12 @@ export async function transcribeAudio(base64Audio: string): Promise<string> {
         // the API requires this explicitly rather than reading it from the
         // container (confirmed directly against the live API).
         sampleRateHertz: 48000,
-        languageCode: SPEECH_LANGUAGES.primary,
-        alternativeLanguageCodes: SPEECH_LANGUAGES.alternatives,
+        // A single explicit language recognizes noticeably more accurately
+        // than asking the API to guess between English/Telugu/Kannada --
+        // confirmed directly: Kannada accuracy was poor under 3-way
+        // auto-detection with alternativeLanguageCodes. The guest picks
+        // their language in the UI before recording instead.
+        languageCode,
         model: "default",
       },
       audio: { content: base64Audio },
@@ -35,7 +43,7 @@ export async function transcribeAudio(base64Audio: string): Promise<string> {
 
 // Telugu and Kannada script Unicode blocks -- used to pick a TTS voice
 // language since the API needs an explicit languageCode, not auto-detect.
-function detectSpeechLanguage(text: string): string {
+function detectSpeechLanguage(text: string): SpeechLanguageCode {
   if (/[ఀ-౿]/.test(text)) return "te-IN";
   if (/[ಀ-೿]/.test(text)) return "kn-IN";
   return "en-IN";

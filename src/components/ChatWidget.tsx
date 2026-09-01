@@ -3,8 +3,15 @@
 import { useRef, useState, useEffect } from "react";
 
 type Message = { role: "user" | "model"; text: string };
+type SpeechLanguageCode = "en-IN" | "te-IN" | "kn-IN";
 
 const RECORDING_MIME_TYPE = "audio/webm;codecs=opus";
+
+const VOICE_LANGUAGES: { code: SpeechLanguageCode; label: string }[] = [
+  { code: "en-IN", label: "English" },
+  { code: "te-IN", label: "తెలుగు" },
+  { code: "kn-IN", label: "ಕನ್ನಡ" },
+];
 
 function blobToBase64(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -28,6 +35,7 @@ export default function ChatWidget() {
   const [transcribing, setTranscribing] = useState(false);
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
+  const [voiceLanguage, setVoiceLanguage] = useState<SpeechLanguageCode>("en-IN");
 
   const listRef = useRef<HTMLDivElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -97,7 +105,7 @@ export default function ChatWidget() {
           const res = await fetch("/api/voice/transcribe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ audio: base64 }),
+            body: JSON.stringify({ audio: base64, languageCode: voiceLanguage }),
           });
           const data = await res.json();
           if (res.ok && data.text) {
@@ -183,13 +191,31 @@ export default function ChatWidget() {
           </div>
         )}
       </div>
-      {voiceError && <p className="border-t border-black/10 px-3 pt-2 text-xs text-red-600">{voiceError}</p>}
+
+      <div className="flex items-center gap-1.5 border-t border-black/10 px-3 pt-2 text-xs text-zinc-500">
+        <span>Voice language:</span>
+        {VOICE_LANGUAGES.map((lang) => (
+          <button
+            key={lang.code}
+            type="button"
+            onClick={() => setVoiceLanguage(lang.code)}
+            disabled={recording || micBusy}
+            className={`rounded-full px-2 py-0.5 disabled:opacity-50 ${
+              voiceLanguage === lang.code ? "bg-accent text-white" : "border border-black/20 text-zinc-600"
+            }`}
+          >
+            {lang.label}
+          </button>
+        ))}
+      </div>
+
+      {voiceError && <p className="px-3 pt-2 text-xs text-red-600">{voiceError}</p>}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           send(input);
         }}
-        className="flex gap-2 border-t border-black/10 p-3"
+        className="flex gap-2 p-3"
       >
         <button
           type="button"

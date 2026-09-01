@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { transcribeAudio } from "@/lib/google-speech";
+import { transcribeAudio, isSpeechLanguageCode } from "@/lib/google-speech";
 
 export const maxDuration = 30;
 
 const MAX_AUDIO_BYTES = 8 * 1024 * 1024; // ~8MB, generous for a short voice question
 
 export async function POST(request: NextRequest) {
-  let body: { audio?: unknown };
+  let body: { audio?: unknown; languageCode?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -23,8 +23,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Audio is too long" }, { status: 400 });
   }
 
+  const languageCode = isSpeechLanguageCode(body.languageCode) ? body.languageCode : "en-IN";
+
   try {
-    const text = await transcribeAudio(audio);
+    const text = await transcribeAudio(audio, languageCode);
     if (!text) {
       return NextResponse.json({ error: "Couldn't make out what you said" }, { status: 422 });
     }
