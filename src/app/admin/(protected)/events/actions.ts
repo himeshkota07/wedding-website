@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { toIstTimestamp } from "@/lib/ist-datetime";
+import { syncKnowledgeBase } from "@/lib/knowledge-base";
 
 function eventFields(formData: FormData) {
   return {
@@ -17,16 +18,17 @@ function eventFields(formData: FormData) {
   };
 }
 
-function revalidateEvents() {
+async function revalidateEvents() {
   revalidatePath("/");
   revalidatePath("/admin/events");
+  await syncKnowledgeBase();
 }
 
 export async function createEvent(formData: FormData) {
   await requireAdmin();
   const admin = createAdminSupabase();
   await admin.from("events").insert(eventFields(formData));
-  revalidateEvents();
+  await revalidateEvents();
 }
 
 export async function updateEvent(formData: FormData) {
@@ -34,7 +36,7 @@ export async function updateEvent(formData: FormData) {
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();
   await admin.from("events").update(eventFields(formData)).eq("id", id);
-  revalidateEvents();
+  await revalidateEvents();
 }
 
 export async function deleteEvent(formData: FormData) {
@@ -42,5 +44,5 @@ export async function deleteEvent(formData: FormData) {
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();
   await admin.from("events").delete().eq("id", id);
-  revalidateEvents();
+  await revalidateEvents();
 }

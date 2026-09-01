@@ -1,5 +1,6 @@
 import PageSection from "@/components/PageSection";
 import { supabase } from "@/lib/supabase";
+import ChatWidget from "@/components/ChatWidget";
 
 export default async function FaqSection() {
   const { data: faqs } = await supabase
@@ -20,8 +21,9 @@ export default async function FaqSection() {
           </details>
         ))}
       </div>
-      <p className="rounded-lg border border-dashed border-black/20 p-4 text-sm text-zinc-500">
-        [Placeholder — the chatbot widget (text + voice, Telugu/Kannada/English) goes here.]
+      <ChatWidget />
+      <p className="text-xs text-zinc-400">
+        Voice input/output is coming in a follow-up — for now, type your question above.
       </p>
     </PageSection>
   );

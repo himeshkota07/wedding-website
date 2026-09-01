@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
+import { syncKnowledgeBase } from "@/lib/knowledge-base";
 
 function faqFields(formData: FormData) {
   return {
@@ -12,16 +13,17 @@ function faqFields(formData: FormData) {
   };
 }
 
-function revalidateFaqs() {
+async function revalidateFaqs() {
   revalidatePath("/");
   revalidatePath("/admin/faqs");
+  await syncKnowledgeBase();
 }
 
 export async function createFaq(formData: FormData) {
   await requireAdmin();
   const admin = createAdminSupabase();
   await admin.from("faqs").insert(faqFields(formData));
-  revalidateFaqs();
+  await revalidateFaqs();
 }
 
 export async function updateFaq(formData: FormData) {
@@ -29,7 +31,7 @@ export async function updateFaq(formData: FormData) {
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();
   await admin.from("faqs").update(faqFields(formData)).eq("id", id);
-  revalidateFaqs();
+  await revalidateFaqs();
 }
 
 export async function deleteFaq(formData: FormData) {
@@ -37,5 +39,5 @@ export async function deleteFaq(formData: FormData) {
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();
   await admin.from("faqs").delete().eq("id", id);
-  revalidateFaqs();
+  await revalidateFaqs();
 }

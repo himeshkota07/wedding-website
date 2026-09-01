@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { toIstTimestamp } from "@/lib/ist-datetime";
+import { syncKnowledgeBase } from "@/lib/knowledge-base";
 import type { HomeHero, OurStory } from "@/lib/site-settings";
 
 export async function updateHomeHero(formData: FormData) {
@@ -25,6 +26,7 @@ export async function updateHomeHero(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/site-settings");
+  await syncKnowledgeBase();
 }
 
 export async function updateOurStory(formData: FormData) {
@@ -38,4 +40,5 @@ export async function updateOurStory(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/site-settings");
+  await syncKnowledgeBase();
 }

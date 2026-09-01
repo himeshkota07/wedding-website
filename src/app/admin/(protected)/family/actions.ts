@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
+import { syncKnowledgeBase } from "@/lib/knowledge-base";
 
 function memberFields(formData: FormData) {
   return {
@@ -14,16 +15,17 @@ function memberFields(formData: FormData) {
   };
 }
 
-function revalidateFamily() {
+async function revalidateFamily() {
   revalidatePath("/");
   revalidatePath("/admin/family");
+  await syncKnowledgeBase();
 }
 
 export async function createFamilyMember(formData: FormData) {
   await requireAdmin();
   const admin = createAdminSupabase();
   await admin.from("family_members").insert(memberFields(formData));
-  revalidateFamily();
+  await revalidateFamily();
 }
 
 export async function updateFamilyMember(formData: FormData) {
@@ -31,7 +33,7 @@ export async function updateFamilyMember(formData: FormData) {
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();
   await admin.from("family_members").update(memberFields(formData)).eq("id", id);
-  revalidateFamily();
+  await revalidateFamily();
 }
 
 export async function deleteFamilyMember(formData: FormData) {
@@ -39,5 +41,5 @@ export async function deleteFamilyMember(formData: FormData) {
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();
   await admin.from("family_members").delete().eq("id", id);
-  revalidateFamily();
+  await revalidateFamily();
 }
