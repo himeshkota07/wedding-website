@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { toIstTimestamp } from "@/lib/ist-datetime";
 import { syncKnowledgeBase } from "@/lib/knowledge-base";
-import type { HomeHero, OurStory } from "@/lib/site-settings";
+import type { HomeHero, OurStory, KnowledgeBaseNotes } from "@/lib/site-settings";
 
 export async function updateHomeHero(formData: FormData) {
   await requireAdmin();
@@ -39,6 +39,19 @@ export async function updateOurStory(formData: FormData) {
   await admin.from("site_settings").upsert({ key: "our_story", value });
 
   revalidatePath("/");
+  revalidatePath("/admin/site-settings");
+  await syncKnowledgeBase();
+}
+
+export async function updateKnowledgeBaseNotes(formData: FormData) {
+  await requireAdmin();
+  const value: KnowledgeBaseNotes = {
+    content: String(formData.get("content") ?? "").trim(),
+  };
+
+  const admin = createAdminSupabase();
+  await admin.from("site_settings").upsert({ key: "knowledge_base_notes", value });
+
   revalidatePath("/admin/site-settings");
   await syncKnowledgeBase();
 }

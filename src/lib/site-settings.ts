@@ -18,6 +18,10 @@ export type OurStory = {
   content: string;
 };
 
+export type KnowledgeBaseNotes = {
+  content: string;
+};
+
 const defaultHomeHero: HomeHero = {
   bride_name: "[Bride]",
   groom_name: "[Groom]",
@@ -30,6 +34,7 @@ const defaultHomeHero: HomeHero = {
 };
 
 const defaultOurStory: OurStory = { content: "" };
+const defaultKnowledgeBaseNotes: KnowledgeBaseNotes = { content: "" };
 
 export async function getHomeHero(client: SupabaseClient = supabase): Promise<HomeHero> {
   const { data } = await client.from("site_settings").select("value").eq("key", "home_hero").maybeSingle();
@@ -39,4 +44,9 @@ export async function getHomeHero(client: SupabaseClient = supabase): Promise<Ho
 export async function getOurStory(client: SupabaseClient = supabase): Promise<OurStory> {
   const { data } = await client.from("site_settings").select("value").eq("key", "our_story").maybeSingle();
   return { ...defaultOurStory, ...(data?.value as Partial<OurStory> | undefined) };
+}
+
+export async function getKnowledgeBaseNotes(client: SupabaseClient = supabase): Promise<KnowledgeBaseNotes> {
+  const { data } = await client.from("site_settings").select("value").eq("key", "knowledge_base_notes").maybeSingle();
+  return { ...defaultKnowledgeBaseNotes, ...(data?.value as Partial<KnowledgeBaseNotes> | undefined) };
 }
