@@ -110,8 +110,6 @@ export async function POST(request: NextRequest) {
         "Sorry, I'm having trouble answering right now. " +
         (whatsappLink ? `Please try the coordinators on WhatsApp: ${whatsappLink}` : "Please try again shortly."),
       escalate: true,
-      // TEMPORARY diagnostic field -- remove before merging to main.
-      debugError: error instanceof Error ? error.message : String(error),
     });
   }
 }
