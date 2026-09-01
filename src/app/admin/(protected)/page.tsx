@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { createAdminSupabase } from "@/lib/supabase-admin";
+import { resyncKnowledgeBase } from "./actions";
 
 const sections = [
   { href: "/admin/site-settings", label: "Site Content", blurb: "Home hero & Our Story" },
@@ -10,7 +12,10 @@ const sections = [
   { href: "/admin/contacts", label: "Contacts", blurb: "Coordinators & WhatsApp link" },
 ];
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const admin = createAdminSupabase();
+  const { count } = await admin.from("content_chunks").select("id", { count: "exact", head: true });
+
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
       <h1 className="text-2xl font-semibold text-zinc-900">Dashboard</h1>
@@ -26,6 +31,19 @@ export default function AdminDashboard() {
             <div className="text-sm text-zinc-500">{s.blurb}</div>
           </Link>
         ))}
+      </div>
+
+      <h2 className="mt-10 text-lg font-semibold text-zinc-900">Chatbot Knowledge Base</h2>
+      <div className="mt-3 rounded-lg border border-black/10 bg-white p-4 shadow-sm">
+        <p className="text-sm text-zinc-600">
+          {count ?? 0} indexed chunk{count === 1 ? "" : "s"}. This resyncs automatically after every save elsewhere on
+          this dashboard — use this only if something looks out of date.
+        </p>
+        <form action={resyncKnowledgeBase} className="mt-3">
+          <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">
+            Resync now
+          </button>
+        </form>
       </div>
     </div>
   );

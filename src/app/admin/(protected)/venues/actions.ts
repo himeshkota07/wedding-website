@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
+import { syncKnowledgeBase } from "@/lib/knowledge-base";
 
 function venueFields(formData: FormData) {
   return {
@@ -14,17 +15,18 @@ function venueFields(formData: FormData) {
   };
 }
 
-function revalidateVenues() {
+async function revalidateVenues() {
   revalidatePath("/");
   revalidatePath("/admin/venues");
   revalidatePath("/admin/events");
+  await syncKnowledgeBase();
 }
 
 export async function createVenue(formData: FormData) {
   await requireAdmin();
   const admin = createAdminSupabase();
   await admin.from("venues").insert(venueFields(formData));
-  revalidateVenues();
+  await revalidateVenues();
 }
 
 export async function updateVenue(formData: FormData) {
@@ -32,7 +34,7 @@ export async function updateVenue(formData: FormData) {
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();
   await admin.from("venues").update(venueFields(formData)).eq("id", id);
-  revalidateVenues();
+  await revalidateVenues();
 }
 
 export async function deleteVenue(formData: FormData) {
@@ -40,5 +42,5 @@ export async function deleteVenue(formData: FormData) {
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();
   await admin.from("venues").delete().eq("id", id);
-  revalidateVenues();
+  await revalidateVenues();
 }

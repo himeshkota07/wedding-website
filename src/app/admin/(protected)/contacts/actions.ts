@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
+import { syncKnowledgeBase } from "@/lib/knowledge-base";
 
 function contactFields(formData: FormData) {
   return {
@@ -14,16 +15,17 @@ function contactFields(formData: FormData) {
   };
 }
 
-function revalidateContacts() {
+async function revalidateContacts() {
   revalidatePath("/");
   revalidatePath("/admin/contacts");
+  await syncKnowledgeBase();
 }
 
 export async function createContact(formData: FormData) {
   await requireAdmin();
   const admin = createAdminSupabase();
   await admin.from("contacts").insert(contactFields(formData));
-  revalidateContacts();
+  await revalidateContacts();
 }
 
 export async function updateContact(formData: FormData) {
@@ -31,7 +33,7 @@ export async function updateContact(formData: FormData) {
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();
   await admin.from("contacts").update(contactFields(formData)).eq("id", id);
-  revalidateContacts();
+  await revalidateContacts();
 }
 
 export async function deleteContact(formData: FormData) {
@@ -39,5 +41,5 @@ export async function deleteContact(formData: FormData) {
   const id = String(formData.get("id"));
   const admin = createAdminSupabase();
   await admin.from("contacts").delete().eq("id", id);
-  revalidateContacts();
+  await revalidateContacts();
 }
