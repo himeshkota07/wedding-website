@@ -12,6 +12,10 @@ export async function transcribeAudio(base64Audio: string): Promise<string> {
     body: JSON.stringify({
       config: {
         encoding: "WEBM_OPUS",
+        // Chrome/Firefox/Edge/Safari all record Opus at 48kHz by default;
+        // the API requires this explicitly rather than reading it from the
+        // container (confirmed directly against the live API).
+        sampleRateHertz: 48000,
         languageCode: SPEECH_LANGUAGES.primary,
         alternativeLanguageCodes: SPEECH_LANGUAGES.alternatives,
         model: "default",
