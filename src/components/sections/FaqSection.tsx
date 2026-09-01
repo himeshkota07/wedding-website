@@ -23,7 +23,7 @@ export default async function FaqSection() {
       </div>
       <ChatWidget />
       <p className="text-xs text-zinc-400">
-        Voice input/output is coming in a follow-up — for now, type your question above.
+        Tap 🎤 to ask by voice, or 🔊 on any reply to hear it read aloud.
       </p>
     </PageSection>
   );
