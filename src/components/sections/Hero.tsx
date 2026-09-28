@@ -1,10 +1,11 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, RotateCcw } from "lucide-react";
 import type { HomeHero } from "@/lib/site-settings";
 import Countdown from "@/components/Countdown";
 import Monogram from "@/components/ui/Monogram";
+import PuppetSilhouette from "@/components/ui/PuppetSilhouette";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 16 },
@@ -38,6 +39,17 @@ export default function Hero({ hero, qrCode }: { hero: HomeHero; qrCode: React.R
           ["--drift-x" as string]: "-24px",
           ["--drift-y" as string]: "18px",
         }}
+      />
+      <PuppetSilhouette
+        size={130}
+        opacity={0.1}
+        className="pointer-events-none absolute -left-4 bottom-8 hidden sm:block"
+      />
+      <PuppetSilhouette
+        size={130}
+        opacity={0.1}
+        flip
+        className="pointer-events-none absolute -right-4 bottom-8 hidden sm:block"
       />
 
       <motion.div
@@ -77,6 +89,16 @@ export default function Hero({ hero, qrCode }: { hero: HomeHero; qrCode: React.R
         <motion.div variants={itemVariants} className="mt-12">
           {qrCode}
         </motion.div>
+
+        <motion.button
+          variants={itemVariants}
+          type="button"
+          onClick={() => window.dispatchEvent(new Event("replay-intro"))}
+          className="mt-6 flex items-center gap-1.5 text-xs text-foreground/40 transition-colors hover:text-accent-deep"
+        >
+          <RotateCcw size={12} />
+          Watch the opening again
+        </motion.button>
       </motion.div>
 
       <motion.div
