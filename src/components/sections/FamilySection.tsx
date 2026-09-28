@@ -1,5 +1,6 @@
 import PageSection from "@/components/PageSection";
 import { supabase } from "@/lib/supabase";
+import { getHomeHero } from "@/lib/site-settings";
 
 type FamilyMember = {
   id: string;
@@ -9,39 +10,60 @@ type FamilyMember = {
   bio: string | null;
 };
 
-function FamilyGroup({ title, people }: { title: string; people: FamilyMember[] }) {
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? "") + (parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "")).toUpperCase();
+}
+
+function FamilyGroup({ title, people, tone }: { title: string; people: FamilyMember[]; tone: "marigold" | "leaf" }) {
   return (
     <div>
-      <h3 className="text-xl font-semibold text-zinc-900">{title}</h3>
-      <div className="mt-4 space-y-4">
+      <h3 className="font-display text-3xl text-ink">{title}</h3>
+      <ul className="mt-6">
         {people.map((p) => (
-          <div key={p.id} className="rounded-lg border border-black/10 bg-white p-4 shadow-sm">
-            <div className="font-medium text-zinc-900">
-              {p.name} <span className="font-normal text-zinc-500">— {p.role}</span>
+          <li key={p.id} className="flex items-start gap-4 border-t border-hairline py-4">
+            <span
+              aria-hidden
+              className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-display text-lg ${
+                tone === "marigold" ? "bg-turmeric text-teak" : "bg-leaf text-paper"
+              }`}
+            >
+              {initials(p.name)}
+            </span>
+            <div>
+              <p className="font-display text-xl text-ink">{p.name}</p>
+              <p className="text-ink-soft">{p.role}</p>
+              {p.bio && <p className="mt-1.5 max-w-[55ch] text-ink-soft">{p.bio}</p>}
             </div>
-            {p.bio && <p className="mt-1 text-sm text-zinc-600">{p.bio}</p>}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
 
 export default async function FamilySection() {
-  const { data: members } = await supabase
-    .from("family_members")
-    .select("id, side, role, name, bio")
-    .order("sort_order", { ascending: true });
+  const [{ data: members }, hero] = await Promise.all([
+    supabase.from("family_members").select("id, side, role, name, bio").order("sort_order", { ascending: true }),
+    getHomeHero(),
+  ]);
 
   const bride = members?.filter((m) => m.side === "bride") ?? [];
   const groom = members?.filter((m) => m.side === "groom") ?? [];
 
   return (
-    <PageSection id="family" title="Bride & Groom + Family" subtitle="Introducing both families to each other">
-      {!members?.length && <p>Family introductions will be added soon.</p>}
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-        {bride.length > 0 && <FamilyGroup title="Bride's Family" people={bride} />}
-        {groom.length > 0 && <FamilyGroup title="Groom's Family" people={groom} />}
+    <PageSection
+      id="family"
+      tone="deep"
+      title="Bride & Groom + Family"
+      subtitle="So both sides can put names to faces before the day."
+    >
+      {!members?.length && (
+        <p className="max-w-[60ch] text-lg text-ink-soft">Family introductions from both sides will be added soon.</p>
+      )}
+      <div className="grid grid-cols-1 gap-14 md:grid-cols-2 md:gap-12">
+        {bride.length > 0 && <FamilyGroup title={`${hero.bride_name}'s family`} people={bride} tone="marigold" />}
+        {groom.length > 0 && <FamilyGroup title={`${hero.groom_name}'s family`} people={groom} tone="leaf" />}
       </div>
     </PageSection>
   );

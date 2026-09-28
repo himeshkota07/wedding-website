@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { ImagePlus } from "lucide-react";
 import { resizeImageToBlob } from "@/lib/image-resize";
 import { recordGalleryUpload } from "@/app/(site)/gallery/actions";
 
@@ -56,28 +57,45 @@ export default function GalleryUpload() {
   }
 
   return (
-    <div className="rounded-lg border border-dashed border-black/20 p-4">
-      <label className="block text-sm font-medium text-zinc-900">Add your photos</label>
-      <input
-        type="text"
-        placeholder="Your name (optional)"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="mt-2 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
-      />
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        disabled={pending}
-        onChange={(e) => handleFiles(e.target.files)}
-        className="mt-2 block w-full text-sm"
-      />
-      <p className="mt-1 text-xs text-zinc-500">
-        Up to {MAX_FILES} photos at a time. Photos appear here right away.
-      </p>
-      {pending && <p className="mt-2 text-sm text-zinc-600">Uploading…</p>}
-      {status && !pending && <p className="mt-2 text-sm text-zinc-600">{status}</p>}
+    <div className="flex flex-col gap-5 border border-brass/60 bg-paper-deep p-5 sm:flex-row sm:items-end sm:p-7">
+      <div className="flex-1">
+        <h3 className="font-display text-2xl text-ink">Add your photos</h3>
+        <p className="mt-1 text-ink-soft">Up to {MAX_FILES} at a time. They appear in the gallery right away.</p>
+        <label className="mt-4 block text-sm font-semibold uppercase tracking-[0.12em] text-ink-soft" htmlFor="uploader-name">
+          Your name <span className="font-normal normal-case tracking-normal">(optional)</span>
+        </label>
+        <input
+          id="uploader-name"
+          type="text"
+          autoComplete="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="mt-1.5 h-12 w-full max-w-sm border border-brass/70 bg-paper px-3 text-base text-ink placeholder:text-ink-soft/70 focus:border-kumkum focus:outline-none"
+        />
+      </div>
+      <div className="sm:text-right">
+        <label
+          className={`inline-flex h-12 cursor-pointer items-center gap-2 rounded-full bg-kumkum px-6 font-semibold text-paper transition-colors hover:bg-kumkum-deep ${
+            pending ? "pointer-events-none opacity-60" : ""
+          }`}
+        >
+          <ImagePlus size={18} />
+          {pending ? "Uploading…" : "Choose photos"}
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            disabled={pending}
+            onChange={(e) => handleFiles(e.target.files)}
+            className="sr-only"
+          />
+        </label>
+        {status && !pending && (
+          <p role="status" className="mt-2 text-ink-soft">
+            {status}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

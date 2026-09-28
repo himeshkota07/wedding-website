@@ -1,0 +1,531 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-28T12:48:50.019Z",
+  "title": "Design System: Tarunya & Ashish Wedding",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Invite Paper",
+        "canonical": "#fbf3e2",
+        "oklch": "oklch(96.6% 0.024 85.8)",
+        "tonalRamp": [
+          "#0d0b07",
+          "#27241d",
+          "#443f35",
+          "#635d50",
+          "#868072",
+          "#a9a498",
+          "#cecac1",
+          "#f1eee8"
+        ],
+        "aliases": [
+          "background"
+        ]
+      },
+      "paper-deep": {
+        "role": "neutral",
+        "displayName": "Second Sheet",
+        "canonical": "#f4e4c1",
+        "oklch": "oklch(92.3% 0.049 86.3)",
+        "tonalRamp": [
+          "#0f0b04",
+          "#2a2315",
+          "#483f2a",
+          "#695c41",
+          "#8c7f61",
+          "#afa48b",
+          "#d2cab7",
+          "#f4eee1"
+        ]
+      },
+      "turmeric": {
+        "role": "secondary",
+        "displayName": "Turmeric",
+        "canonical": "#f1b52c",
+        "oklch": "oklch(80.8% 0.155 82.4)",
+        "tonalRamp": [
+          "#170700",
+          "#381e00",
+          "#5c3700",
+          "#835200",
+          "#aa7500",
+          "#c89d48",
+          "#e6c68a",
+          "#ffecc3"
+        ]
+      },
+      "turmeric-deep": {
+        "role": "secondary",
+        "displayName": "Turmeric Deep",
+        "canonical": "#d98f0b",
+        "oklch": "oklch(70.8% 0.149 72.2)",
+        "tonalRamp": [
+          "#190600",
+          "#3b1b00",
+          "#613300",
+          "#8a4d00",
+          "#b27000",
+          "#cf9951",
+          "#ecc28f",
+          "#ffe9c6"
+        ]
+      },
+      "marigold": {
+        "role": "secondary",
+        "displayName": "Marigold",
+        "canonical": "#e8861a",
+        "oklch": "oklch(71.1% 0.160 60.3)",
+        "tonalRamp": [
+          "#1c0300",
+          "#411500",
+          "#692c00",
+          "#944400",
+          "#be6700",
+          "#da9254",
+          "#f5be90",
+          "#ffe6c7"
+        ],
+        "aliases": [
+          "blush"
+        ]
+      },
+      "kumkum": {
+        "role": "primary",
+        "displayName": "Kumkum Red",
+        "canonical": "#a3172d",
+        "oklch": "oklch(46.3% 0.172 20.2)",
+        "tonalRamp": [
+          "#200002",
+          "#47060f",
+          "#731922",
+          "#a22c37",
+          "#ce5157",
+          "#e98283",
+          "#ffb2b1",
+          "#ffdedc"
+        ],
+        "aliases": [
+          "accent"
+        ]
+      },
+      "kumkum-deep": {
+        "role": "primary",
+        "displayName": "Kumkum Deep",
+        "canonical": "#7e0f21",
+        "oklch": "oklch(38.3% 0.143 20.0)",
+        "tonalRamp": [
+          "#1d0103",
+          "#420f13",
+          "#6c2428",
+          "#98393f",
+          "#c25c5f",
+          "#df8989",
+          "#fab7b5",
+          "#ffe1e0"
+        ]
+      },
+      "leaf": {
+        "role": "tertiary",
+        "displayName": "Banana Leaf",
+        "canonical": "#4c6a20",
+        "oklch": "oklch(48.5% 0.107 128.8)",
+        "tonalRamp": [
+          "#060e00",
+          "#1b2906",
+          "#334717",
+          "#4d6829",
+          "#6e8c49",
+          "#96af7a",
+          "#bfd3aa",
+          "#e6f4d8"
+        ]
+      },
+      "leaf-soft": {
+        "role": "tertiary",
+        "displayName": "Leaf Soft",
+        "canonical": "#93b04a",
+        "oklch": "oklch(71.4% 0.133 123.1)",
+        "tonalRamp": [
+          "#080e00",
+          "#1d2900",
+          "#364700",
+          "#516800",
+          "#728c2e",
+          "#99af68",
+          "#c1d39e",
+          "#e8f5d0"
+        ]
+      },
+      "teak": {
+        "role": "neutral",
+        "displayName": "Teak",
+        "canonical": "#3d2517",
+        "oklch": "oklch(29.1% 0.044 50.6)",
+        "tonalRamp": [
+          "#110906",
+          "#2e211a",
+          "#4e3b31",
+          "#70584a",
+          "#957a6b",
+          "#b69f93",
+          "#d8c6bd",
+          "#f8ece5"
+        ],
+        "aliases": [
+          "accent-deep"
+        ]
+      },
+      "teak-soft": {
+        "role": "neutral",
+        "displayName": "Teak Soft",
+        "canonical": "#5b3a24",
+        "oklch": "oklch(38.2% 0.058 53.8)",
+        "tonalRamp": [
+          "#120904",
+          "#302015",
+          "#513a2b",
+          "#755642",
+          "#9a7862",
+          "#bb9e8c",
+          "#dcc5b8",
+          "#fbebe1"
+        ]
+      },
+      "brass": {
+        "role": "tertiary",
+        "displayName": "Brass",
+        "canonical": "#b0823a",
+        "oklch": "oklch(63.8% 0.105 75.9)",
+        "tonalRamp": [
+          "#140800",
+          "#341f00",
+          "#563903",
+          "#7c5511",
+          "#a17837",
+          "#c19e6d",
+          "#e1c6a1",
+          "#feecd2"
+        ],
+        "aliases": [
+          "gold"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#2e1f15",
+        "oklch": "oklch(25.5% 0.029 54.7)",
+        "tonalRamp": [
+          "#0f0a07",
+          "#2a221d",
+          "#493d35",
+          "#6a5a50",
+          "#8e7c71",
+          "#b0a198",
+          "#d3c8c1",
+          "#f5ede8"
+        ],
+        "aliases": [
+          "foreground"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Ink Soft",
+        "canonical": "#5c4534",
+        "oklch": "oklch(41.0% 0.042 57.7)",
+        "tonalRamp": [
+          "#100a05",
+          "#2d2119",
+          "#4c3c30",
+          "#6e5949",
+          "#927b6a",
+          "#b4a092",
+          "#d7c7bc",
+          "#f7ece4"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#d6bb86",
+        "oklch": "oklch(80.3% 0.076 83.8)",
+        "tonalRamp": [
+          "#110a01",
+          "#2e220a",
+          "#4d3d1b",
+          "#705a2e",
+          "#947d4e",
+          "#b5a27d",
+          "#d8c9ac",
+          "#f8edd9"
+        ]
+      },
+      "accent-soft": {
+        "role": "neutral",
+        "displayName": "Accent Soft (alias-only light)",
+        "canonical": "#f7dfa6",
+        "oklch": "oklch(91.0% 0.078 87.8)",
+        "tonalRamp": [
+          "#100a00",
+          "#2d2309",
+          "#4c3e1a",
+          "#6e5b2c",
+          "#927e4d",
+          "#b4a37c",
+          "#d6c9ac",
+          "#f7eed9"
+        ]
+      },
+      "gold-soft": {
+        "role": "neutral",
+        "displayName": "Gold Soft (alias-only light)",
+        "canonical": "#f3e2b8",
+        "oklch": "oklch(91.6% 0.058 88.6)",
+        "tonalRamp": [
+          "#0f0b03",
+          "#2a2311",
+          "#493f25",
+          "#695c3b",
+          "#8d7f5b",
+          "#afa487",
+          "#d3cab4",
+          "#f4eede"
+        ]
+      },
+      "blush-soft": {
+        "role": "neutral",
+        "displayName": "Blush Soft (alias-only light)",
+        "canonical": "#f8e7c2",
+        "oklch": "oklch(93.2% 0.052 86.2)",
+        "tonalRamp": [
+          "#0f0b03",
+          "#2a2314",
+          "#483f29",
+          "#695c3f",
+          "#8d7f60",
+          "#afa38a",
+          "#d3cab6",
+          "#f4eee0"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Names (Courgette)",
+        "purpose": "The couple's names and their date numerals only."
+      },
+      "headline": {
+        "displayName": "Bay Heading (Kurale)",
+        "purpose": "One per bay, under its thoranam."
+      },
+      "title": {
+        "displayName": "Title (Kurale)",
+        "purpose": "Function, venue and family-side names."
+      },
+      "lead": {
+        "displayName": "Lead (Kurale)",
+        "purpose": "Invitation sentence, story opener, place name, weather reading."
+      },
+      "numeral": {
+        "displayName": "Numeral (Kurale, tabular)",
+        "purpose": "Countdown digits between brass diamonds."
+      },
+      "body": {
+        "displayName": "Body (Anek Latin)",
+        "purpose": "All reading text, 55-65ch."
+      },
+      "body-large": {
+        "displayName": "Body Large (Anek Latin)",
+        "purpose": "Bay subtitles and intros."
+      },
+      "label": {
+        "displayName": "Ledger Label (Anek Latin, uppercase)",
+        "purpose": "Field labels inside a record only; never a kicker."
+      }
+    },
+    "shadows": [],
+    "depth": [
+      {
+        "name": "second-sheet",
+        "value": "background: var(--paper-deep); transform: translate(8px, 10px) rotate(0.7deg);",
+        "purpose": "The sheet laid beneath a function slip; the only lift on paper."
+      },
+      {
+        "name": "double-frame",
+        "value": "border: 2px solid var(--teak); outline: 2px solid var(--brass); outline-offset: 2px;",
+        "purpose": "Floating chat panel; lift without shadow."
+      },
+      {
+        "name": "brass-frame",
+        "value": "border: 1px solid rgb(176 130 58 / 0.6); padding: 8px;",
+        "purpose": "Frames around slips and the map; the upload panel carries the frame on paper-deep."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-settle",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "All UI state: menu, accordion, chat panel (0.2-0.3s)."
+      },
+      {
+        "name": "ease-curtain",
+        "value": "cubic-bezier(0.65, 0, 0.35, 1)",
+        "purpose": "Marigold curtain parting, 1.1s after a 1.3s hold."
+      },
+      {
+        "name": "sway-once",
+        "value": "sway 3.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s 1 both",
+        "purpose": "Hero garland swings once on load, then settles."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Curtain omitted, sway and smooth scroll off, durations zero."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Pill",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Kumkum action pill on light fields.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">See the functions <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 5v14\"/><path d=\"m19 12-7 7-7-7\"/></svg></a>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 24px;border-radius:9999px;background:var(--kumkum,#a3172d);color:var(--paper,#fbf3e2);font-family:'Anek Latin',system-ui,sans-serif;font-size:1rem;font-weight:600;text-decoration:none;transition:background-color .15s}.ds-btn-primary:hover{background:var(--kumkum-deep,#7e0f21)}.ds-btn-primary:focus-visible{outline:2px solid var(--kumkum,#a3172d);outline-offset:3px}"
+    },
+    {
+      "name": "Outline Pill",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action and add-to-calendar.",
+      "html": "<button class=\"ds-btn-outline\">Ask us anything</button>",
+      "css": ".ds-btn-outline{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 20px;border-radius:9999px;border:1px solid rgba(46,31,21,.25);background:transparent;color:var(--ink,#2e1f15);font-family:'Anek Latin',system-ui,sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:color .15s,border-color .15s}.ds-btn-outline:hover{border-color:var(--kumkum,#a3172d);color:var(--kumkum,#a3172d)}.ds-btn-outline:focus-visible{outline:2px solid var(--kumkum,#a3172d);outline-offset:3px}"
+    },
+    {
+      "name": "Turmeric Pill on Teak",
+      "kind": "button",
+      "refersTo": "button-on-teak",
+      "description": "Call action on the teak contact bay.",
+      "html": "<div class=\"ds-teak\"><a class=\"ds-btn-teak\" href=\"#\">Call the family</a></div>",
+      "css": ".ds-teak{background:var(--teak,#3d2517);padding:24px}.ds-btn-teak{display:inline-flex;align-items:center;height:48px;padding:0 20px;border-radius:9999px;background:var(--turmeric,#f1b52c);color:var(--teak,#3d2517);font-family:'Anek Latin',system-ui,sans-serif;font-weight:600;text-decoration:none;transition:background-color .15s}.ds-btn-teak:hover{background:var(--paper,#fbf3e2)}.ds-btn-teak:focus-visible{outline:2px solid var(--kumkum,#a3172d);outline-offset:3px}"
+    },
+    {
+      "name": "Name Field",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Square paper field under a ledger label.",
+      "html": "<label class=\"ds-label\" for=\"ds-n\">Your name</label><input id=\"ds-n\" class=\"ds-input\" type=\"text\">",
+      "css": ".ds-label{display:block;font-family:'Anek Latin',system-ui,sans-serif;font-size:.875rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft,#5c4534)}.ds-input{margin-top:6px;height:48px;width:100%;max-width:24rem;padding:0 12px;border:1px solid rgba(176,130,58,.7);border-radius:0;background:var(--paper,#fbf3e2);color:var(--ink,#2e1f15);font-family:'Anek Latin',system-ui,sans-serif;font-size:1rem}.ds-input:focus{border-color:var(--kumkum,#a3172d);outline:none}"
+    },
+    {
+      "name": "Canopy Beam",
+      "kind": "nav",
+      "refersTo": "nav-beam",
+      "description": "Sticky teak nav with a brass rule and carved scallop trim.",
+      "html": "<header><div class=\"ds-beam\"><span class=\"ds-mono\">T &amp; A</span><nav class=\"ds-links\"><a href=\"#\">Our Story</a><a href=\"#\">Events</a><a href=\"#\">Venue</a></nav></div><svg class=\"ds-trim\" preserveAspectRatio=\"none\"><defs><pattern id=\"ds-sc\" width=\"18\" height=\"12\" patternUnits=\"userSpaceOnUse\"><path d=\"M0,0 H18 V3 Q9,13 0,3 Z\" fill=\"#3d2517\"/><circle cx=\"9\" cy=\"6.5\" r=\"1.3\" fill=\"#b0823a\"/></pattern></defs><rect width=\"100%\" height=\"1.5\" fill=\"#b0823a\"/><rect y=\"1.5\" width=\"100%\" height=\"10.5\" fill=\"url(#ds-sc)\"/></svg></header>",
+      "css": ".ds-beam{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 32px;background:var(--teak,#3d2517)}.ds-mono{font-family:Courgette,cursive;font-size:1.5rem;color:var(--turmeric,#f1b52c)}.ds-links{display:flex;gap:28px}.ds-links a{font-family:'Anek Latin',system-ui,sans-serif;font-size:.95rem;font-weight:500;color:rgba(251,243,226,.85);text-decoration:none;text-underline-offset:8px;transition:color .15s}.ds-links a:hover{color:var(--turmeric,#f1b52c);text-decoration:underline}.ds-links a:focus-visible{outline:2px solid var(--kumkum,#a3172d);outline-offset:3px}.ds-trim{display:block;width:100%;height:12px}"
+    },
+    {
+      "name": "Function Slip",
+      "kind": "card",
+      "refersTo": "function-slip",
+      "description": "Fixed-field ticket stub laid on a second sheet; the signature record.",
+      "html": "<div class=\"ds-slip\"><div class=\"ds-sheet\"></div><div class=\"ds-face\"><div class=\"ds-frame\"><div class=\"ds-stub\"><span class=\"ds-day\">14</span><span class=\"ds-mon\">February<br>Saturday</span></div><div class=\"ds-main\"><h3>Muhurtham</h3><dl><div><dt>When</dt><dd>10:30 am</dd></div><div><dt>Where</dt><dd>Sambhrama, Bangalore</dd></div><div><dt>Colour</dt><dd>Any festive colour</dd></div><div><dt>Please note</dt><dd>Nothing special</dd></div></dl></div></div></div></div>",
+      "css": ".ds-slip{position:relative;isolation:isolate;max-width:40rem;margin:12px}.ds-sheet{position:absolute;inset:0;z-index:-1;background:var(--paper-deep,#f4e4c1);transform:translate(8px,10px) rotate(.7deg)}.ds-face{background:var(--paper,#fbf3e2);padding:8px}.ds-frame{display:grid;grid-template-columns:10rem 1fr;border:1px solid rgba(176,130,58,.6)}.ds-stub{display:flex;flex-direction:column;justify-content:center;gap:4px;padding:24px 20px;border-right:1px dashed var(--brass,#b0823a)}.ds-day{font-family:Courgette,cursive;font-size:3.75rem;line-height:1;color:var(--kumkum,#a3172d)}.ds-mon{font-family:Kurale,Georgia,serif;font-size:1.125rem;color:var(--ink-soft,#5c4534)}.ds-main{padding:24px 28px}.ds-main h3{margin:0;font-family:Kurale,Georgia,serif;font-weight:400;font-size:1.875rem;color:var(--ink,#2e1f15)}.ds-main dl{display:grid;grid-template-columns:1fr 1fr;gap:16px 32px;margin:20px 0 0}.ds-main dl div{border-top:1px solid var(--hairline,#d6bb86);padding-top:8px}.ds-main dt{font-family:'Anek Latin',system-ui,sans-serif;font-size:.875rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft,#5c4534)}.ds-main dd{margin:2px 0 0;font-family:'Anek Latin',system-ui,sans-serif;color:var(--ink,#2e1f15)}"
+    },
+    {
+      "name": "Ledger Accordion on Leaf",
+      "kind": "custom",
+      "refersTo": "bay-leaf",
+      "description": "FAQ rows ruled on the banana-leaf field.",
+      "html": "<div class=\"ds-leaf\"><button class=\"ds-q\">Is there parking at the venue?<span>+</span></button><button class=\"ds-q\">Can we bring children?<span>+</span></button></div>",
+      "css": ".ds-leaf{background:var(--leaf,#4c6a20);padding:24px 32px}.ds-q{display:flex;width:100%;min-height:56px;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;border:0;border-top:1px solid rgba(251,243,226,.25);background:none;color:var(--paper,#fbf3e2);font-family:Kurale,Georgia,serif;font-size:1.25rem;text-align:left;cursor:pointer;transition:color .15s}.ds-q:last-child{border-bottom:1px solid rgba(251,243,226,.25)}.ds-q span{color:var(--turmeric,#f1b52c);font-size:1.5rem}.ds-q:hover{color:var(--turmeric,#f1b52c)}.ds-q:focus-visible{outline:2px solid var(--turmeric,#f1b52c);outline-offset:3px}"
+    },
+    {
+      "name": "Family Seal Row",
+      "kind": "custom",
+      "refersTo": "family-seal",
+      "description": "Initials seal in turmeric (bride side) or leaf (groom side) on a hairline row.",
+      "html": "<div class=\"ds-fam\"><div class=\"ds-row\"><span class=\"ds-seal\">SR</span><div><p class=\"ds-nm\">Family member</p><p class=\"ds-rl\">Mother of the bride</p></div></div></div>",
+      "css": ".ds-fam{background:var(--paper-deep,#f4e4c1);padding:16px 24px}.ds-row{display:flex;gap:16px;align-items:flex-start;padding:16px 0;border-top:1px solid var(--hairline,#d6bb86)}.ds-seal{display:flex;width:48px;height:48px;flex-shrink:0;align-items:center;justify-content:center;border-radius:9999px;background:var(--turmeric,#f1b52c);color:var(--teak,#3d2517);font-family:Kurale,Georgia,serif;font-size:1.125rem}.ds-nm{margin:0;font-family:Kurale,Georgia,serif;font-size:1.25rem;color:var(--ink,#2e1f15)}.ds-rl{margin:0;font-family:'Anek Latin',system-ui,sans-serif;color:var(--ink-soft,#5c4534)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Walk Through the Mandapam",
+    "overview": "The site is the kalyana mandapam a guest walks into, built out of the family's printed invite. A carved teak canopy beam carries the navigation and a row of scallops. Marigold strings and a mango-leaf thoranam hang over every entrance. Each section is a bay you step into under its own thoranam, and each bay stands on a committed field of colour: invite paper, a second sheet of paper, turmeric, banana leaf or teak. The invite's own watercolour art (the pillar, the garland, Ganesha) sits right in the page. It was whitened and multiplied into the paper, so it reads as printed on it and not pasted over it.\n\nEverything is flat and cut out. Depth comes from one sheet overlapping another, the way a papercut or a stack of patrikas gets it. There is no shading, no blur and no soft shadow. The type works like the card: brush lettering for the couple's names, a letterpress serif for headings, and a humanist Indian-foundry sans for everything a guest has to read. The layout is generous and made to be read on a phone: large sizes, 48px targets and one column that opens into two only where the content has two sides.\n\nThis replaces the earlier \"Rani Pink & Gold\" world. Its token names (`accent`, `gold`, `blush`, `accent-deep`) still exist as aliases in `globals.css`, now pointing at the mandapam palette, so the admin panel takes on the new skin without edits.",
+    "keyCharacteristics": [
+      "Committed full-width colour fields per bay, each hung with a thoranam",
+      "Flat cut shapes. Depth by overlap only.",
+      "The invite's own art multiplied into the paper",
+      "Three type voices: brush names, letterpress headings, humanist body",
+      "Pill-shaped actions on square-cornered paper",
+      "Motion happens once: the curtain parts and the garlands swing, then settle"
+    ],
+    "rules": [
+      {
+        "name": "The Committed Field Rule",
+        "body": "A bay takes a whole field of paper, paper-deep, turmeric, leaf or teak from edge to edge. Colour is never a tinted card floating on paper. Text on leaf and teak is paper, with opacity for supporting lines (75-90%).",
+        "section": "colors"
+      },
+      {
+        "name": "The Kumkum Means Act Rule",
+        "body": "Kumkum is for actions and the one auspicious mark per group: the \"&\", a slip's date numeral, the focus ring. Don't use it for decoration or a field.",
+        "section": "colors"
+      },
+      {
+        "name": "The Brass Thread Rule",
+        "body": "Structural lines are brass or hairline. They are never grey and never ink.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three Hands Rule",
+        "body": "Courgette is for the couple and their date, Kurale is for what is announced, and Anek is for what is read. Never set body copy or buttons in either of the first two.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ledger Label Rule",
+        "body": "Uppercase tracked labels name a field inside a record, sitting on a hairline above their value. They never sit above a heading as a kicker or eyebrow.",
+        "section": "typography"
+      },
+      {
+        "name": "The Papercut Rule",
+        "body": "Lift is one sheet laid over another, or a frame around it. If something needs to feel raised, offset a second flat sheet behind it. Don't blur anything.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** give every bay a committed field (paper, paper-deep, turmeric, leaf, teak) and hang a thoranam at its top.",
+      "**Do** build depth by overlap: a paper-deep sheet offset 8px / 10px and turned 0.7deg, or a brass frame with a paper inset.",
+      "**Do** use the invite's own art with `mix-blend-multiply` on whitened paper, and keep its provenance embedded.",
+      "**Do** keep actions as 48px pills: kumkum on light fields, turmeric on teak, paper on leaf.",
+      "**Do** set repeated records with identical fields in identical positions, labelled with Ledger Labels on hairlines.",
+      "**Do** use easing `cubic-bezier(0.22, 1, 0.36, 1)` at 0.2–0.3s for UI state, and honour `prefers-reduced-motion` everywhere.",
+      "**Do** keep text on leaf and teak in paper, with supporting lines at 75–90% opacity."
+    ],
+    "donts": [
+      "**Don't** use `box-shadow`, blurred blobs or gradient fills for decoration. A mask fade on invite artwork is the only gradient allowed.",
+      "**Don't** set body copy, buttons or labels in Courgette or Kurale.",
+      "**Don't** put uppercase tracked kickers or eyebrows above headings.",
+      "**Don't** use kumkum as a field or for ornament beyond marigold heads and the slip's corner dabs.",
+      "**Don't** draw lines in grey. Rules are brass or hairline.",
+      "**Don't** round paper surfaces. Corners are square except pills, seals and chat bubbles.",
+      "**Don't** loop ornamental motion. Garlands swing once and settle."
+    ]
+  }
+}

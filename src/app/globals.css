@@ -1,15 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f2ea; /* creamy white */
-  --foreground: #2b2420;
-  /* Ocean blue from the palette, darkened for AA text/button contrast on a
-     light background -- the swatch value itself (~#6e90b8) is a ~3:1
-     contrast against white, short of the 4.5:1 normal-text minimum. */
-  --accent: #3e6690;
-  --accent-soft: #f2dcda; /* rose pink -- soft background washes */
-  --blush: #c58983; /* blush pink -- secondary decorative accent */
-  --sky: #bcc9d8; /* light blue -- secondary decorative accent */
+  /* "Mandapam": colours lifted from the family's printed invite -- the card's
+     paper, its marigold strings, banana leaves, the carved teak pillar and
+     brass. Older token names (accent, gold, blush...) are kept so the admin
+     panel re-skins without edits. */
+  --paper: #fbf3e2; /* the invite's paper -- page ground */
+  --paper-deep: #f4e4c1; /* a second sheet laid under the first */
+  --turmeric: #f1b52c; /* committed field: the functions bay */
+  --turmeric-deep: #d98f0b; /* turmeric dabs, marigold centres */
+  --marigold: #e8861a;
+  --kumkum: #a3172d; /* primary actions, the "&" */
+  --kumkum-deep: #7e0f21;
+  --leaf: #4c6a20; /* banana leaf -- committed field: questions bay */
+  --leaf-soft: #93b04a;
+  --teak: #3d2517; /* canopy beam, closing bay */
+  --teak-soft: #5b3a24;
+  --brass: #b0823a;
+  --ink: #2e1f15;
+  --ink-soft: #5c4534;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --accent: var(--kumkum);
+  --accent-soft: #f7dfa6;
+  --accent-deep: var(--teak);
+  --gold: var(--brass);
+  --gold-soft: #f3e2b8;
+  --blush: var(--marigold);
+  --hairline: #d6bb86;
+  --blush-soft: #f8e7c2;
 }
 
 @theme inline {
@@ -17,18 +37,98 @@
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-deep: var(--accent-deep);
   --color-blush: var(--blush);
-  --color-sky: var(--sky);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-blush-soft: var(--blush-soft);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-hairline: var(--hairline);
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-turmeric: var(--turmeric);
+  --color-turmeric-deep: var(--turmeric-deep);
+  --color-marigold: var(--marigold);
+  --color-kumkum: var(--kumkum);
+  --color-kumkum-deep: var(--kumkum-deep);
+  --color-leaf: var(--leaf);
+  --color-leaf-soft: var(--leaf-soft);
+  --color-teak: var(--teak);
+  --color-teak-soft: var(--teak-soft);
+  --color-brass: var(--brass);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
+  --font-script: var(--font-names);
 }
 
 html {
   scroll-behavior: smooth;
+  scrollbar-color: var(--brass) var(--paper-deep);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  caret-color: var(--kumkum);
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--turmeric);
+  color: var(--teak);
+}
+
+:focus-visible {
+  outline: 2px solid var(--kumkum);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Marigold strings swing a little when they're first hung, then settle. */
+@keyframes sway {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(2.2deg);
+  }
+  60% {
+    transform: rotate(-1.4deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-sway {
+  transform-origin: top center;
+  animation: sway 3.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s 1 both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-sway {
+    animation: none !important;
+  }
 }
