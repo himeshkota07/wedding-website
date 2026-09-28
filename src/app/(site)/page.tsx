@@ -1,5 +1,6 @@
 import { getHomeHero } from "@/lib/site-settings";
 import SiteQrCode from "@/components/SiteQrCode";
+import IntroSequence from "@/components/IntroSequence";
 import Hero from "@/components/sections/Hero";
 import OurStorySection from "@/components/sections/OurStorySection";
 import EventsSection from "@/components/sections/EventsSection";
@@ -16,6 +17,7 @@ export default async function Home() {
 
   return (
     <>
+      <IntroSequence />
       <Hero hero={hero} qrCode={<SiteQrCode />} />
 
       <OurStorySection />
