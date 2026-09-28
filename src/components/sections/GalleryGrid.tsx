@@ -28,7 +28,7 @@ export default function GalleryGrid({ images }: { images: GalleryImage[] }) {
             type="button"
             variants={variants}
             onClick={() => setOpenIndex(i)}
-            className="mb-3 block w-full overflow-hidden rounded-lg border border-hairline/60 bg-white transition-shadow hover:shadow-md"
+            className="mb-3 block w-full overflow-hidden rounded-lg border border-hairline/70 bg-[#fffaf3] transition-shadow hover:shadow-md"
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- external Cloudinary URLs, no next/image domain config needed */}
             <img src={img.cloudinary_url} alt={img.caption ?? "Wedding photo"} className="block w-full" />

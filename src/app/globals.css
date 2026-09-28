@@ -1,23 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f2ea; /* creamy white */
-  --foreground: #2b2420;
-  /* Ocean blue from the palette, darkened for AA text/button contrast on a
-     light background -- the swatch value itself (~#6e90b8) is a ~3:1
-     contrast against white, short of the 4.5:1 normal-text minimum. */
-  --accent: #3e6690;
-  --accent-soft: #f2dcda; /* rose pink -- soft background washes */
-  --blush: #c58983; /* blush pink -- secondary decorative accent */
-  --sky: #bcc9d8; /* light blue -- secondary decorative accent */
+  /* "Rani Pink & Gold" -- a vibrant traditional Indian wedding palette,
+     chosen to replace the earlier muted/pale system. */
+  --background: #fbf3e7; /* warm ivory */
+  --foreground: #3a2430; /* deep warm plum-black for body text */
+  --accent: #c4177a; /* rani pink -- primary: nav, buttons, links, headings accent */
+  --accent-soft: #f7d7e6; /* soft pink -- background washes */
+  --accent-deep: #7a1f3d; /* deep maroon -- hover/active states, monogram linework */
+  --gold: #c9972f; /* warm gold -- secondary accent, dividers, borders */
+  --gold-soft: #f3e3bd; /* soft gold wash -- decorative fills */
+  --blush: #e88fb0; /* vivid blush pink -- secondary decorative accent */
 
-  /* Derived tokens (shades/tints of the palette above, no new hues) --
-     introduced for the visual redesign so dividers/headings/hover states
-     read as intentional rather than falling back to generic Tailwind grays. */
-  --ink: #211c17; /* deep neutral for headings -- richer than body --foreground */
-  --hairline: #c9b8ae; /* dividers, timeline spine, card borders */
-  --accent-deep: #294a68; /* hover/active states, monogram linework */
-  --blush-soft: #f6e9e7; /* soft fills: avatar circles, marker backgrounds */
+  --ink: #3a1420; /* deep maroon-black for headings -- richer than body --foreground */
+  --hairline: #e0bd7e; /* warm gold-tan -- dividers, timeline spine, card borders */
+  --blush-soft: #fbe4ea; /* soft pink fills: avatar circles, marker backgrounds */
 }
 
 @theme inline {
@@ -26,7 +23,8 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-blush: var(--blush);
-  --color-sky: var(--sky);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
   --color-ink: var(--ink);
   --color-hairline: var(--hairline);
   --color-accent-deep: var(--accent-deep);

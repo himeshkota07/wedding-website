@@ -11,7 +11,7 @@ export default function Accordion({ items }: { items: AccordionItem[] }) {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="divide-y divide-hairline/50 rounded-xl border border-hairline/60 bg-white shadow-sm">
+    <div className="divide-y divide-hairline/50 rounded-xl border border-hairline/70 bg-[#fffaf3] shadow-sm">
       {items.map((item) => {
         const open = openId === item.id;
         return (

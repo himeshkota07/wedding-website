@@ -21,18 +21,18 @@ export default function Hero({ hero, qrCode }: { hero: HomeHero; qrCode: React.R
       className="relative flex min-h-[90svh] scroll-mt-20 flex-col items-center justify-center overflow-hidden px-6 py-20 text-center"
       style={{
         background:
-          "radial-gradient(at 15% 10%, var(--accent-soft) 0%, transparent 55%), radial-gradient(at 85% 90%, var(--blush-soft) 0%, transparent 55%), var(--background)",
+          "radial-gradient(at 15% 10%, var(--accent-soft) 0%, transparent 65%), radial-gradient(at 85% 90%, var(--gold-soft) 0%, transparent 65%), var(--background)",
       }}
     >
       {/* decorative drifting washes -- plain CSS animation, inert under prefers-reduced-motion via globals.css */}
       <div
         aria-hidden
-        className="animate-drift pointer-events-none absolute -left-16 top-10 h-64 w-64 rounded-full opacity-40 blur-3xl"
-        style={{ background: "var(--sky)", ["--drift-x" as string]: "30px", ["--drift-y" as string]: "-20px" }}
+        className="animate-drift pointer-events-none absolute -left-16 top-10 h-64 w-64 rounded-full opacity-50 blur-3xl"
+        style={{ background: "var(--gold)", ["--drift-x" as string]: "30px", ["--drift-y" as string]: "-20px" }}
       />
       <div
         aria-hidden
-        className="animate-drift pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full opacity-30 blur-3xl"
+        className="animate-drift pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full opacity-40 blur-3xl"
         style={{
           background: "var(--blush)",
           animationDelay: "-6s",
@@ -41,15 +41,15 @@ export default function Hero({ hero, qrCode }: { hero: HomeHero; qrCode: React.R
         }}
       />
       <PuppetSilhouette
-        size={130}
-        opacity={0.1}
-        className="pointer-events-none absolute -left-4 bottom-8 hidden sm:block"
+        size={110}
+        opacity={0.18}
+        className="pointer-events-none absolute -left-2 bottom-10 hidden sm:block"
       />
       <PuppetSilhouette
-        size={130}
-        opacity={0.1}
+        size={110}
+        opacity={0.18}
         flip
-        className="pointer-events-none absolute -right-4 bottom-8 hidden sm:block"
+        className="pointer-events-none absolute -right-2 bottom-10 hidden sm:block"
       />
 
       <motion.div

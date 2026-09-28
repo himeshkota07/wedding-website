@@ -31,7 +31,7 @@ export default function FloatingChat() {
               <Minus size={16} />
             </button>
           </div>
-          <div className="overflow-hidden rounded-b-lg border border-hairline/60 bg-white shadow-lg">
+          <div className="overflow-hidden rounded-b-lg border border-hairline/60 bg-[#fffaf3] shadow-lg">
             <ChatWidget />
           </div>
         </motion.div>
