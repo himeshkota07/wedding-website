@@ -1,5 +1,6 @@
 import PageSection from "@/components/PageSection";
 import GalleryUpload from "@/components/GalleryUpload";
+import GalleryGrid from "@/components/sections/GalleryGrid";
 import { supabase } from "@/lib/supabase";
 
 export default async function GallerySection() {
@@ -16,19 +17,7 @@ export default async function GallerySection() {
       {!images?.length ? (
         <p>No photos yet — check back soon, or be the first to add one above.</p>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {images.map((img) => (
-            <figure key={img.id} className="overflow-hidden rounded-lg border border-black/10 bg-white">
-              {/* eslint-disable-next-line @next/next/no-img-element -- external Cloudinary URLs, no next/image domain config needed */}
-              <img src={img.cloudinary_url} alt={img.caption ?? "Wedding photo"} className="aspect-square w-full object-cover" />
-              {(img.caption || img.uploaded_by) && (
-                <figcaption className="p-2 text-xs text-zinc-500">
-                  {img.caption} {img.uploaded_by && `— ${img.uploaded_by}`}
-                </figcaption>
-              )}
-            </figure>
-          ))}
-        </div>
+        <GalleryGrid images={images} />
       )}
     </PageSection>
   );

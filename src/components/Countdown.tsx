@@ -47,12 +47,12 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
   }, [targetMs]);
 
   if (!parts) {
-    return compact ? <span className="text-xs text-zinc-400">&nbsp;</span> : <div className="h-16" />;
+    return compact ? <span className="text-xs text-foreground/40">&nbsp;</span> : <div className="h-16" />;
   }
 
   if (parts.diff <= 0) {
     return (
-      <span className={compact ? "text-xs text-zinc-500" : "text-lg text-zinc-600"}>
+      <span className={compact ? "text-xs text-foreground/60" : "text-lg text-foreground/70"}>
         {compact ? "Happening now" : "It's happening!"}
       </span>
     );
@@ -60,7 +60,7 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
 
   if (compact) {
     return (
-      <span className="text-xs text-zinc-500">
+      <span className="text-xs text-foreground/60">
         {parts.months}mo {parts.days}d {parts.hours}h
       </span>
     );
