@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { Mic, Square, Volume2, Pause, Send } from "lucide-react";
 
 type Message = { role: "user" | "model"; text: string };
 type SpeechLanguageCode = "en-IN" | "te-IN" | "kn-IN";
@@ -168,7 +169,7 @@ export default function ChatWidget() {
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
               className={`flex max-w-[80%] items-start gap-1.5 rounded-lg px-3 py-2 text-sm ${
-                m.role === "user" ? "bg-accent text-white" : "bg-accent-soft/60 text-zinc-800"
+                m.role === "user" ? "bg-accent text-white" : "bg-accent-soft/60 text-ink"
               }`}
             >
               <span>{m.text}</span>
@@ -177,9 +178,9 @@ export default function ChatWidget() {
                   type="button"
                   onClick={() => playMessage(i, m.text)}
                   aria-label={speakingIndex === i ? "Stop playback" : "Listen to this message"}
-                  className="shrink-0 text-zinc-500 hover:text-accent"
+                  className="shrink-0 text-foreground/50 transition-colors hover:text-accent"
                 >
-                  {speakingIndex === i ? "⏸" : "🔊"}
+                  {speakingIndex === i ? <Pause size={14} /> : <Volume2 size={14} />}
                 </button>
               )}
             </div>
@@ -187,12 +188,12 @@ export default function ChatWidget() {
         ))}
         {pending && (
           <div className="flex justify-start">
-            <div className="max-w-[80%] rounded-lg bg-accent-soft/60 px-3 py-2 text-sm text-zinc-500">Thinking…</div>
+            <div className="max-w-[80%] rounded-lg bg-accent-soft/60 px-3 py-2 text-sm text-foreground/60">Thinking…</div>
           </div>
         )}
       </div>
 
-      <div className="flex items-center gap-1.5 border-t border-black/10 px-3 pt-2 text-xs text-zinc-500">
+      <div className="flex items-center gap-1.5 border-t border-hairline/50 px-3 pt-2 text-xs text-foreground/60">
         <span>Voice language:</span>
         {VOICE_LANGUAGES.map((lang) => (
           <button
@@ -200,8 +201,8 @@ export default function ChatWidget() {
             type="button"
             onClick={() => setVoiceLanguage(lang.code)}
             disabled={recording || micBusy}
-            className={`rounded-full px-2 py-0.5 disabled:opacity-50 ${
-              voiceLanguage === lang.code ? "bg-accent text-white" : "border border-black/20 text-zinc-600"
+            className={`rounded-full px-2 py-0.5 transition-colors disabled:opacity-50 ${
+              voiceLanguage === lang.code ? "bg-accent text-white" : "border border-hairline/60 text-foreground/60"
             }`}
           >
             {lang.label}
@@ -222,11 +223,11 @@ export default function ChatWidget() {
           onClick={toggleRecording}
           disabled={pending || micBusy}
           aria-label={recording ? "Stop recording" : "Ask by voice"}
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm disabled:opacity-50 ${
-            recording ? "animate-pulse border-red-400 bg-red-50 text-red-600" : "border-black/20 text-zinc-600"
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm transition-colors disabled:opacity-50 ${
+            recording ? "animate-pulse border-red-400 bg-red-50 text-red-600" : "border-hairline/60 text-foreground/60"
           }`}
         >
-          {micBusy ? "…" : recording ? "⏹" : "🎤"}
+          {micBusy ? "…" : recording ? <Square size={16} /> : <Mic size={16} />}
         </button>
         <input
           type="text"
@@ -234,13 +235,15 @@ export default function ChatWidget() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask a question…"
           disabled={pending}
-          className="flex-1 rounded-md border border-black/20 px-3 py-2 text-sm"
+          className="flex-1 rounded-md border border-hairline/60 px-3 py-2 text-sm"
         />
         <button
           type="submit"
           disabled={pending || !input.trim()}
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          aria-label="Send"
+          className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-50"
         >
+          <Send size={14} />
           Send
         </button>
       </form>

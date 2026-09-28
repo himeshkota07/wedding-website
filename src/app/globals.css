@@ -10,6 +10,14 @@
   --accent-soft: #f2dcda; /* rose pink -- soft background washes */
   --blush: #c58983; /* blush pink -- secondary decorative accent */
   --sky: #bcc9d8; /* light blue -- secondary decorative accent */
+
+  /* Derived tokens (shades/tints of the palette above, no new hues) --
+     introduced for the visual redesign so dividers/headings/hover states
+     read as intentional rather than falling back to generic Tailwind grays. */
+  --ink: #211c17; /* deep neutral for headings -- richer than body --foreground */
+  --hairline: #c9b8ae; /* dividers, timeline spine, card borders */
+  --accent-deep: #294a68; /* hover/active states, monogram linework */
+  --blush-soft: #f6e9e7; /* soft fills: avatar circles, marker backgrounds */
 }
 
 @theme inline {
@@ -19,8 +27,14 @@
   --color-accent-soft: var(--accent-soft);
   --color-blush: var(--blush);
   --color-sky: var(--sky);
+  --color-ink: var(--ink);
+  --color-hairline: var(--hairline);
+  --color-accent-deep: var(--accent-deep);
+  --color-blush-soft: var(--blush-soft);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
+  --font-script: var(--font-script);
 }
 
 html {
@@ -30,5 +44,14 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Slow ambient drift used by the hero's decorative background shapes
+   (plain CSS, not motion/react, since it's a passive on-load loop) --
+   guarded here so it's inert for anyone who prefers reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-drift {
+    animation: none !important;
+  }
 }

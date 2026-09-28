@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 
 export default function BackgroundMusic() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -26,9 +27,9 @@ export default function BackgroundMusic() {
         type="button"
         onClick={toggle}
         aria-label={playing ? "Pause background music" : "Play background music"}
-        className="fixed bottom-4 left-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-lg shadow-md hover:border-accent"
+        className="fixed bottom-4 left-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-hairline/60 bg-white text-accent-deep shadow-md transition-colors hover:border-accent"
       >
-        {playing ? "🔊" : "🔇"}
+        {playing ? <Volume2 size={18} /> : <VolumeX size={18} />}
       </button>
     </>
   );
