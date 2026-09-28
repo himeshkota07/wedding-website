@@ -67,7 +67,7 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
   }
 
   return (
-    <div className="flex justify-center gap-2 text-center sm:gap-5">
+    <div className="flex justify-center gap-2 text-center sm:gap-4">
       {[
         ["Months", parts.months],
         ["Days", parts.days],
@@ -75,9 +75,12 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
         ["Min", parts.minutes],
         ["Sec", parts.seconds],
       ].map(([label, value]) => (
-        <div key={label as string} className="w-11 sm:w-14">
-          <div className="text-xl font-semibold text-accent sm:text-4xl">{value}</div>
-          <div className="text-[9px] uppercase tracking-wide text-zinc-500 sm:text-xs">{label}</div>
+        <div
+          key={label as string}
+          className="w-12 rounded-xl border border-hairline/50 bg-white/70 py-2 shadow-sm backdrop-blur sm:w-16 sm:py-3"
+        >
+          <div className="font-display text-xl font-semibold text-accent sm:text-4xl">{value}</div>
+          <div className="text-[9px] uppercase tracking-wide text-foreground/50 sm:text-xs">{label}</div>
         </div>
       ))}
     </div>
