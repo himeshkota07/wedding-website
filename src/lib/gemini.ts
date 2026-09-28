@@ -14,10 +14,11 @@ export const gemini = new GoogleGenAI({ apiKey, httpOptions: { timeout: 12_000 }
 export const EMBEDDING_MODEL = "gemini-embedding-001";
 export const EMBEDDING_DIMENSIONS = 768;
 
-// Try the full-quality Flash model first; Google's infra occasionally
-// returns 503 UNAVAILABLE on it under load, so fall back to Flash-Lite
-// rather than let the whole request fail.
-const GENERATION_MODELS = ["gemini-flash-latest", "gemini-flash-lite-latest"] as const;
+// Pinned Flash first: the "-latest" aliases point at whatever model is
+// newest, and those have been returning 503 UNAVAILABLE ("high demand") on
+// every call for sustained periods while the pinned model kept answering.
+// The aliases stay as fallbacks rather than letting the whole request fail.
+const GENERATION_MODELS = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-flash-lite-latest"] as const;
 
 // The embedding endpoint's per-minute quota counts each text in a batch
 // separately, so a knowledge-base resync (a few dozen chunks) can trip a
