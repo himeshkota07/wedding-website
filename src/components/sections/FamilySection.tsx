@@ -1,5 +1,7 @@
 import PageSection from "@/components/PageSection";
 import { supabase } from "@/lib/supabase";
+import Card from "@/components/ui/Card";
+import Reveal from "@/components/ui/Reveal";
 
 type FamilyMember = {
   id: string;
@@ -9,18 +11,30 @@ type FamilyMember = {
   bio: string | null;
 };
 
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? "") + (parts[parts.length - 1]?.[0] ?? "")).toUpperCase();
+}
+
 function FamilyGroup({ title, people }: { title: string; people: FamilyMember[] }) {
   return (
     <div>
-      <h3 className="text-xl font-semibold text-zinc-900">{title}</h3>
+      <h3 className="font-display text-xl font-semibold text-ink">{title}</h3>
       <div className="mt-4 space-y-4">
         {people.map((p) => (
-          <div key={p.id} className="rounded-lg border border-black/10 bg-white p-4 shadow-sm">
-            <div className="font-medium text-zinc-900">
-              {p.name} <span className="font-normal text-zinc-500">— {p.role}</span>
-            </div>
-            {p.bio && <p className="mt-1 text-sm text-zinc-600">{p.bio}</p>}
-          </div>
+          <Reveal key={p.id}>
+            <Card padding="sm" className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blush-soft font-display text-sm font-semibold text-accent-deep">
+                {initials(p.name)}
+              </div>
+              <div>
+                <div className="font-medium text-ink">
+                  {p.name} <span className="font-normal text-foreground/60">— {p.role}</span>
+                </div>
+                {p.bio && <p className="mt-1 text-sm text-foreground/70">{p.bio}</p>}
+              </div>
+            </Card>
+          </Reveal>
         ))}
       </div>
     </div>

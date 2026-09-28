@@ -1,7 +1,6 @@
 import PageSection from "@/components/PageSection";
 import { supabase } from "@/lib/supabase";
-import Countdown from "@/components/Countdown";
-import AddToCalendar from "@/components/AddToCalendar";
+import EventsTimeline from "@/components/sections/EventsTimeline";
 
 type EventRow = {
   id: string;
@@ -25,62 +24,16 @@ export default async function EventsSection() {
     .order("sort_order", { ascending: true })
     .returns<EventRow[]>();
 
+  const normalized = (events ?? []).map((event) => ({ ...event, venue: venue(event.venue) }));
+
   return (
     <PageSection
       id="events"
       title="Events"
       subtitle="One entry per function — Mehendi, Haldi, Sangeet, Wedding, Reception"
     >
-      {!events?.length && <p>No events have been added yet.</p>}
-      <div className="space-y-6">
-        {events?.map((event) => {
-          const v = venue(event.venue);
-          return (
-            <div
-              key={event.id}
-              className="rounded-lg border border-black/10 bg-white p-5 shadow-sm"
-              style={{ borderLeft: `4px solid ${event.theme_color ?? "#3e6690"}` }}
-            >
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h3 className="text-xl font-semibold text-zinc-900">{event.name}</h3>
-                <span className="text-sm text-zinc-500">
-                  {new Date(event.event_date).toLocaleString("en-IN", {
-                    weekday: "short",
-                    day: "numeric",
-                    month: "short",
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}
-                </span>
-              </div>
-              <Countdown targetIso={event.event_date} compact />
-              {event.description && <p className="mt-1 text-zinc-600">{event.description}</p>}
-              <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 text-sm text-zinc-600 sm:grid-cols-2">
-                {v && (
-                  <div>
-                    <dt className="inline font-medium text-zinc-800">Venue: </dt>
-                    <dd className="inline">{v.name}</dd>
-                  </div>
-                )}
-                {event.special_instructions && (
-                  <div className="sm:col-span-2">
-                    <dt className="inline font-medium text-zinc-800">Note: </dt>
-                    <dd className="inline">{event.special_instructions}</dd>
-                  </div>
-                )}
-              </dl>
-              <div className="mt-3">
-                <AddToCalendar
-                  title={event.name}
-                  description={event.description}
-                  location={v?.address}
-                  startIso={event.event_date}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      {!normalized.length && <p>No events have been added yet.</p>}
+      {normalized.length > 0 && <EventsTimeline events={normalized} />}
     </PageSection>
   );
 }
