@@ -5,7 +5,7 @@ import { ChevronDown, RotateCcw } from "lucide-react";
 import type { HomeHero } from "@/lib/site-settings";
 import Countdown from "@/components/Countdown";
 import Monogram from "@/components/ui/Monogram";
-import PuppetSilhouette from "@/components/ui/PuppetSilhouette";
+import WeddingDancer from "@/components/ui/WeddingDancer";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 16 },
@@ -40,16 +40,17 @@ export default function Hero({ hero, qrCode }: { hero: HomeHero; qrCode: React.R
           ["--drift-y" as string]: "18px",
         }}
       />
-      <PuppetSilhouette
-        size={110}
-        opacity={0.18}
-        className="pointer-events-none absolute -left-2 bottom-10 hidden sm:block"
+      <WeddingDancer
+        variant="bride"
+        size={150}
+        opacity={0.9}
+        className="pointer-events-none absolute -left-2 bottom-6 hidden sm:block"
       />
-      <PuppetSilhouette
-        size={110}
-        opacity={0.18}
-        flip
-        className="pointer-events-none absolute -right-2 bottom-10 hidden sm:block"
+      <WeddingDancer
+        variant="groom"
+        size={150}
+        opacity={0.9}
+        className="pointer-events-none absolute -right-2 bottom-6 hidden sm:block"
       />
 
       <motion.div
