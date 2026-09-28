@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import PuppetSilhouette from "@/components/ui/PuppetSilhouette";
+import WeddingDancer from "@/components/ui/WeddingDancer";
 
 const STORAGE_KEY = "wedding-intro-seen";
 const AUTO_DISMISS_MS = 2700;
@@ -86,10 +86,10 @@ export default function IntroSequence() {
           <div className="flex items-center justify-center gap-4 sm:gap-14">
             <motion.div
               initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 0.6 }}
+              animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             >
-              <PuppetSilhouette size={110} />
+              <WeddingDancer variant="bride" size={150} />
             </motion.div>
 
             <div className="relative flex h-28 w-28 shrink-0 items-center justify-center sm:h-32 sm:w-32">
@@ -140,10 +140,10 @@ export default function IntroSequence() {
 
             <motion.div
               initial={{ x: 50, opacity: 0 }}
-              animate={{ x: 0, opacity: 0.6 }}
+              animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             >
-              <PuppetSilhouette size={110} flip />
+              <WeddingDancer variant="groom" size={150} />
             </motion.div>
           </div>
         </motion.div>
