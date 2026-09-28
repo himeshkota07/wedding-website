@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { ImagePlus } from "lucide-react";
 import { resizeImageToBlob } from "@/lib/image-resize";
 import { recordGalleryUpload } from "@/app/(site)/gallery/actions";
 
@@ -56,14 +57,17 @@ export default function GalleryUpload() {
   }
 
   return (
-    <div className="rounded-lg border border-dashed border-black/20 p-4">
-      <label className="block text-sm font-medium text-zinc-900">Add your photos</label>
+    <div className="rounded-xl border border-dashed border-hairline p-4">
+      <label className="flex items-center gap-2 text-sm font-medium text-ink">
+        <ImagePlus size={16} className="text-accent-deep" />
+        Add your photos
+      </label>
       <input
         type="text"
         placeholder="Your name (optional)"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="mt-2 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+        className="mt-2 w-full rounded-md border border-hairline/60 px-2 py-1.5 text-sm"
       />
       <input
         type="file"
@@ -73,11 +77,11 @@ export default function GalleryUpload() {
         onChange={(e) => handleFiles(e.target.files)}
         className="mt-2 block w-full text-sm"
       />
-      <p className="mt-1 text-xs text-zinc-500">
+      <p className="mt-1 text-xs text-foreground/60">
         Up to {MAX_FILES} photos at a time. Photos appear here right away.
       </p>
-      {pending && <p className="mt-2 text-sm text-zinc-600">Uploading…</p>}
-      {status && !pending && <p className="mt-2 text-sm text-zinc-600">{status}</p>}
+      {pending && <p className="mt-2 text-sm text-foreground/70">Uploading…</p>}
+      {status && !pending && <p className="mt-2 text-sm text-foreground/70">{status}</p>}
     </div>
   );
 }
