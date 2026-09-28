@@ -47,12 +47,12 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
   }, [targetMs]);
 
   if (!parts) {
-    return compact ? <span className="text-xs text-foreground/40">&nbsp;</span> : <div className="h-16" />;
+    return compact ? <span className="text-sm">&nbsp;</span> : <div className="h-16" />;
   }
 
   if (parts.diff <= 0) {
     return (
-      <span className={compact ? "text-xs text-foreground/60" : "text-lg text-foreground/70"}>
+      <span className={compact ? "text-sm font-medium" : "font-display text-2xl text-kumkum"}>
         {compact ? "Happening now" : "It's happening!"}
       </span>
     );
@@ -60,27 +60,30 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
 
   if (compact) {
     return (
-      <span className="text-xs text-foreground/60">
-        {parts.months}mo {parts.days}d {parts.hours}h
+      <span className="text-sm tabular-nums">
+        in {parts.months > 0 && `${parts.months} mo `}
+        {parts.days} d {parts.hours} h
       </span>
     );
   }
 
   return (
-    <div className="flex justify-center gap-2 text-center sm:gap-4">
+    <div className="flex items-end gap-3 sm:gap-5" role="timer" aria-label="Time until the wedding">
       {[
-        ["Months", parts.months],
-        ["Days", parts.days],
-        ["Hours", parts.hours],
-        ["Min", parts.minutes],
-        ["Sec", parts.seconds],
-      ].map(([label, value]) => (
-        <div
-          key={label as string}
-          className="w-12 rounded-xl border border-hairline/50 bg-white/70 py-2 shadow-sm backdrop-blur sm:w-16 sm:py-3"
-        >
-          <div className="font-display text-xl font-semibold text-accent sm:text-4xl">{value}</div>
-          <div className="text-[9px] uppercase tracking-wide text-foreground/50 sm:text-xs">{label}</div>
+        ["months", parts.months],
+        ["days", parts.days],
+        ["hours", parts.hours],
+        ["min", parts.minutes],
+        ["sec", parts.seconds],
+      ].map(([label, value], i) => (
+        <div key={label as string} className="flex items-end gap-3 sm:gap-5">
+          {i > 0 && <span aria-hidden className="mb-3 h-1.5 w-1.5 rotate-45 bg-brass" />}
+          <div>
+            <div className="font-display text-4xl leading-none tabular-nums text-ink sm:text-5xl">
+              {String(value).padStart(2, "0")}
+            </div>
+            <div className="mt-1 text-sm text-ink-soft">{label}</div>
+          </div>
         </div>
       ))}
     </div>

@@ -1,5 +1,5 @@
+import { CloudSun } from "lucide-react";
 import { getForecastForDate, getHistoricalAverageForDate } from "@/lib/weather";
-import Card from "@/components/ui/Card";
 
 function toF(c: number) {
   return Math.round((c * 9) / 5 + 32);
@@ -24,20 +24,22 @@ export default async function WeatherWidget({
   const minC = Math.round(day.tempMinC);
 
   return (
-    <Card className="mb-6" padding="sm">
-      <h3 className="font-display font-medium text-ink">Weather</h3>
-      <p className="mt-1 text-sm text-foreground/60">
-        {forecast
-          ? `Forecast for ${new Date(targetIso).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`
-          : "Typical conditions around this time (based on past years) — a real forecast opens up closer to the date"}
-      </p>
-      <p className="mt-2 text-2xl font-semibold text-accent">
-        {maxC}&deg;C <span className="text-base font-normal text-foreground/60">/ {minC}&deg;C</span>
-      </p>
-      <p className="text-xs text-foreground/60">
-        ({toF(day.tempMaxC)}&deg;F / {toF(day.tempMinC)}&deg;F)
-        {day.precipitationMm > 1 && ` · ${Math.round(day.precipitationMm)}mm rain`}
-      </p>
-    </Card>
+    <div className="mb-12 flex max-w-2xl items-start gap-4 border-y border-hairline py-4">
+      <CloudSun size={32} className="shrink-0 text-marigold" aria-hidden />
+      <div>
+        <p className="font-display text-2xl text-ink">
+          {maxC}&deg;C <span className="text-ink-soft">/ {minC}&deg;C</span>
+          <span className="ml-2 text-base text-ink-soft">
+            ({toF(day.tempMaxC)}&deg;F / {toF(day.tempMinC)}&deg;F)
+            {day.precipitationMm > 1 && ` · ${Math.round(day.precipitationMm)} mm rain`}
+          </span>
+        </p>
+        <p className="text-ink-soft">
+          {forecast
+            ? `Forecast for ${new Date(targetIso).toLocaleDateString("en-IN", { day: "numeric", month: "long" })}.`
+            : "Typical weather around the date, from past years. A real forecast appears closer to the day."}
+        </p>
+      </div>
+    </div>
   );
 }

@@ -11,14 +11,18 @@ export default async function GallerySection() {
     .order("created_at", { ascending: false });
 
   return (
-    <PageSection id="gallery" title="Gallery" subtitle="Photos before, during, and after">
+    <PageSection id="gallery" title="Gallery" subtitle="Photos from before, during and after. Add yours too.">
       <GalleryUpload />
 
-      {!images?.length ? (
-        <p>No photos yet — check back soon, or be the first to add one above.</p>
-      ) : (
-        <GalleryGrid images={images} />
-      )}
+      <div className="mt-12">
+        {!images?.length ? (
+          <p className="max-w-[60ch] text-lg text-ink-soft">
+            No photos yet. Be the first to add one above.
+          </p>
+        ) : (
+          <GalleryGrid images={images} />
+        )}
+      </div>
     </PageSection>
   );
 }

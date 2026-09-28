@@ -164,12 +164,12 @@ export default function ChatWidget() {
 
   return (
     <div className="flex flex-col">
-      <div ref={listRef} className="max-h-96 min-h-64 flex-1 space-y-3 overflow-y-auto p-4">
+      <div ref={listRef} className="max-h-[min(24rem,55svh)] min-h-56 flex-1 space-y-3 overflow-y-auto p-4">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`flex max-w-[80%] items-start gap-1.5 rounded-lg px-3 py-2 text-sm ${
-                m.role === "user" ? "bg-accent text-white" : "bg-accent-soft/60 text-ink"
+              className={`flex max-w-[85%] items-start gap-2 px-3.5 py-2.5 text-base leading-snug ${
+                m.role === "user" ? "rounded-2xl rounded-br-sm bg-kumkum text-paper" : "rounded-2xl rounded-bl-sm bg-paper-deep text-ink"
               }`}
             >
               <span>{m.text}</span>
@@ -178,7 +178,7 @@ export default function ChatWidget() {
                   type="button"
                   onClick={() => playMessage(i, m.text)}
                   aria-label={speakingIndex === i ? "Stop playback" : "Listen to this message"}
-                  className="shrink-0 text-foreground/50 transition-colors hover:text-accent"
+                  className="-m-1 flex h-8 w-8 shrink-0 items-center justify-center text-ink-soft transition-colors hover:text-kumkum"
                 >
                   {speakingIndex === i ? <Pause size={14} /> : <Volume2 size={14} />}
                 </button>
@@ -188,21 +188,22 @@ export default function ChatWidget() {
         ))}
         {pending && (
           <div className="flex justify-start">
-            <div className="max-w-[80%] rounded-lg bg-accent-soft/60 px-3 py-2 text-sm text-foreground/60">Thinking…</div>
+            <div className="max-w-[85%] rounded-2xl rounded-bl-sm bg-paper-deep px-3.5 py-2.5 text-base text-ink-soft">Thinking…</div>
           </div>
         )}
       </div>
 
-      <div className="flex items-center gap-1.5 border-t border-hairline/50 px-3 pt-2 text-xs text-foreground/60">
-        <span>Voice language:</span>
+      <div className="flex flex-wrap items-center gap-1.5 border-t border-hairline px-3 pt-3 text-sm text-ink-soft">
+        <span className="mr-1">Speak in:</span>
         {VOICE_LANGUAGES.map((lang) => (
           <button
             key={lang.code}
             type="button"
             onClick={() => setVoiceLanguage(lang.code)}
             disabled={recording || micBusy}
-            className={`rounded-full px-2 py-0.5 transition-colors disabled:opacity-50 ${
-              voiceLanguage === lang.code ? "bg-accent text-white" : "border border-hairline/60 text-foreground/60"
+            aria-pressed={voiceLanguage === lang.code}
+            className={`h-8 rounded-full px-3 transition-colors disabled:opacity-50 ${
+              voiceLanguage === lang.code ? "bg-leaf text-paper" : "border border-brass/60 text-ink hover:border-leaf"
             }`}
           >
             {lang.label}
@@ -210,7 +211,11 @@ export default function ChatWidget() {
         ))}
       </div>
 
-      {voiceError && <p className="px-3 pt-2 text-xs text-red-600">{voiceError}</p>}
+      {voiceError && (
+        <p role="alert" className="px-3 pt-2 text-sm text-kumkum">
+          {voiceError}
+        </p>
+      )}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -223,8 +228,8 @@ export default function ChatWidget() {
           onClick={toggleRecording}
           disabled={pending || micBusy}
           aria-label={recording ? "Stop recording" : "Ask by voice"}
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm transition-colors disabled:opacity-50 ${
-            recording ? "animate-pulse border-red-400 bg-red-50 text-red-600" : "border-hairline/60 text-foreground/60"
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors disabled:opacity-50 ${
+            recording ? "animate-pulse border-kumkum bg-kumkum text-paper" : "border-brass/70 text-ink hover:border-kumkum hover:text-kumkum"
           }`}
         >
           {micBusy ? "…" : recording ? <Square size={16} /> : <Mic size={16} />}
@@ -235,16 +240,16 @@ export default function ChatWidget() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask a question…"
           disabled={pending}
-          className="flex-1 rounded-md border border-hairline/60 px-3 py-2 text-sm"
+          aria-label="Your question"
+          className="h-11 min-w-0 flex-1 rounded-full border border-brass/70 bg-paper px-4 text-base text-ink placeholder:text-ink-soft/80 focus:border-kumkum focus:outline-none"
         />
         <button
           type="submit"
           disabled={pending || !input.trim()}
           aria-label="Send"
-          className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-50"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-kumkum text-paper transition-colors hover:bg-kumkum-deep disabled:bg-kumkum/40"
         >
-          <Send size={14} />
-          Send
+          <Send size={18} />
         </button>
       </form>
     </div>

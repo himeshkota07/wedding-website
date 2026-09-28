@@ -22,15 +22,18 @@ export type KnowledgeBaseNotes = {
   content: string;
 };
 
+// Sample fallbacks taken from the printed engagement invite, shown until the
+// admin panel saves real wedding details. No datetime on purpose: the invite's
+// date has passed, so no countdown is shown until a real one is set.
 const defaultHomeHero: HomeHero = {
-  bride_name: "[Bride]",
-  groom_name: "[Groom]",
-  wedding_date_label: "[Wedding date]",
+  bride_name: "Tarunya",
+  groom_name: "Ashish",
+  wedding_date_label: "Sunday, 06 September · 10:30 am",
   wedding_datetime: "",
-  location: "[City]",
+  location: "Sambhrama, Anjanapura Twp, Bangalore",
   welcome_note: "",
-  weather_lat: 17.385,
-  weather_lon: 78.4867,
+  weather_lat: 12.8625,
+  weather_lon: 77.5575,
 };
 
 const defaultOurStory: OurStory = { content: "" };

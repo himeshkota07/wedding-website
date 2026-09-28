@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import WeddingDancer from "@/components/ui/WeddingDancer";
 
 const STORAGE_KEY = "wedding-intro-seen";
-const AUTO_DISMISS_MS = 2700;
+const AUTO_DISMISS_MS = 2600;
+const STRINGS_PER_SIDE = 18;
 
 function markSeen() {
   try {
@@ -15,9 +15,51 @@ function markSeen() {
   }
 }
 
-export default function IntroSequence() {
-  // Combined into one state object so the mount-check effect below only
-  // needs a single setState call.
+/** One hanging string of marigolds, alternating orange and yellow heads with a leaf between. */
+function MarigoldString({ index }: { index: number }) {
+  const id = useId();
+  const shift = (index * 23) % 68;
+  const first = index % 3 === 1 ? "var(--turmeric)" : "var(--marigold)";
+  const second = index % 3 === 1 ? "var(--marigold)" : index % 3 === 2 ? "var(--kumkum)" : "var(--turmeric)";
+  return (
+    <svg aria-hidden className="h-full w-11 shrink-0" preserveAspectRatio="none">
+      <defs>
+        <pattern id={id} width="44" height="68" patternUnits="userSpaceOnUse" patternTransform={`translate(0 ${shift})`}>
+          <line x1="22" y1="0" x2="22" y2="68" stroke="var(--brass)" strokeWidth="1" />
+          <circle cx="22" cy="17" r="14" fill={first} />
+          <circle cx="22" cy="17" r="8.5" fill="#f7cf57" />
+          <circle cx="22" cy="17" r="3.5" fill="var(--turmeric-deep)" />
+          <path d="M22,33 C28,31 33,34 35,39 C29,40 24,38 22,33 Z" fill="var(--leaf)" />
+          <circle cx="22" cy="51" r="13" fill={second} />
+          <circle cx="22" cy="51" r="7.5" fill="var(--marigold)" />
+          <circle cx="22" cy="51" r="3" fill="var(--turmeric)" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill={`url(#${id})`} />
+    </svg>
+  );
+}
+
+function CurtainHalf({ side }: { side: "left" | "right" }) {
+  return (
+    <motion.div
+      className={`absolute inset-y-0 flex w-1/2 overflow-hidden ${side === "left" ? "left-0 justify-end" : "right-0 justify-start"}`}
+      initial={{ x: 0 }}
+      animate={{ x: side === "left" ? "-102%" : "102%" }}
+      transition={{ duration: 1.1, delay: 1.3, ease: [0.65, 0, 0.35, 1] }}
+    >
+      {Array.from({ length: STRINGS_PER_SIDE }, (_, i) => (
+        <MarigoldString key={i} index={side === "left" ? i : i + STRINGS_PER_SIDE} />
+      ))}
+    </motion.div>
+  );
+}
+
+/**
+ * The opening: a curtain of marigold strings across the mandapam's entrance,
+ * with the couple's names at its centre, parting to let the guest in.
+ */
+export default function IntroSequence({ brideName, groomName }: { brideName: string; groomName: string }) {
   const [{ mounted, visible }, setState] = useState({ mounted: false, visible: false });
   const reduceMotion = useReducedMotion();
 
@@ -26,10 +68,8 @@ export default function IntroSequence() {
     markSeen();
   }, []);
 
-  // Decide whether to show the intro only after mount -- localStorage isn't
-  // available during SSR, and reading it during render would risk a
-  // hydration mismatch. This one-time client-only check can't be computed
-  // during render, so it has to live in an effect.
+  // localStorage isn't available during SSR, and reading it during render
+  // would risk a hydration mismatch, so the first-visit check lives here.
   useEffect(() => {
     if (reduceMotion) {
       markSeen();
@@ -46,9 +86,7 @@ export default function IntroSequence() {
     setState({ mounted: true, visible: !seen });
   }, [reduceMotion]);
 
-  // Lets the Hero's "Watch the opening again" button re-trigger this
-  // independently of the first-visit check, without prop-drilling between
-  // two sibling components in page.tsx.
+  // The Hero's "Watch the opening again" button re-triggers this.
   useEffect(() => {
     function onReplay() {
       setState((s) => ({ ...s, visible: true }));
@@ -69,83 +107,39 @@ export default function IntroSequence() {
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-background"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-[60] overflow-hidden"
+          onClick={dismiss}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
         >
+          <motion.div
+            aria-hidden
+            className="absolute inset-0 bg-teak"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 0.8, delay: 1.5, ease: "easeOut" }}
+          />
+          <CurtainHalf side="left" />
+          <CurtainHalf side="right" />
+
+          <motion.div
+            className="absolute left-1/2 top-1/2 z-10 flex h-64 w-64 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-paper text-center ring-[6px] ring-brass sm:h-72 sm:w-72"
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: [0.85, 1, 1, 1.04], opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 1.6, times: [0, 0.3, 0.8, 1], ease: "easeOut" }}
+          >
+            <span className="font-script text-4xl leading-tight text-ink sm:text-5xl">{brideName}</span>
+            <span className="font-script text-2xl text-kumkum">&amp;</span>
+            <span className="font-script text-4xl leading-tight text-ink sm:text-5xl">{groomName}</span>
+          </motion.div>
+
           <button
             type="button"
             onClick={dismiss}
-            className="absolute right-5 top-5 text-sm text-foreground/50 transition-colors hover:text-accent-deep"
+            className="absolute right-4 top-4 rounded-full bg-teak/80 px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-teak"
           >
             Skip
           </button>
-
-          <div className="flex items-center justify-center gap-4 sm:gap-14">
-            <motion.div
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <WeddingDancer variant="bride" size={150} />
-            </motion.div>
-
-            <div className="relative flex h-28 w-28 shrink-0 items-center justify-center sm:h-32 sm:w-32">
-              <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden>
-                <motion.circle
-                  cx="50"
-                  cy="50"
-                  r="42"
-                  fill="none"
-                  stroke="var(--accent-deep)"
-                  strokeWidth="1"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.9, delay: 0.1, ease: "easeInOut" }}
-                />
-                <motion.line
-                  x1="50"
-                  y1="4"
-                  x2="50"
-                  y2="12"
-                  stroke="var(--accent-deep)"
-                  strokeWidth="1"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.3, delay: 0.9 }}
-                />
-                <motion.line
-                  x1="50"
-                  y1="88"
-                  x2="50"
-                  y2="96"
-                  stroke="var(--accent-deep)"
-                  strokeWidth="1"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.3, delay: 0.9 }}
-                />
-              </svg>
-              <motion.span
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, delay: 0.9 }}
-                className="font-script text-2xl italic text-accent-deep sm:text-3xl"
-              >
-                T &amp; A
-              </motion.span>
-            </div>
-
-            <motion.div
-              initial={{ x: 50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <WeddingDancer variant="groom" size={150} />
-            </motion.div>
-          </div>
         </motion.div>
       )}
     </AnimatePresence>
