@@ -1,4 +1,5 @@
 import "server-only";
+import { after } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { embedTexts } from "@/lib/gemini";
 import { getHomeHero, getOurStory, getKnowledgeBaseNotes } from "@/lib/site-settings";
@@ -146,4 +147,35 @@ export async function syncKnowledgeBase() {
       })),
     );
   }
+}
+
+// Gemini's free embedding quota is per minute, and each sync embeds every
+// chunk, so a few saves in a row can exhaust it. Waits long enough for the
+// quota window to move on before trying again.
+const BACKGROUND_RETRY_DELAYS_MS = [15_000, 45_000];
+
+/**
+ * Rebuild the knowledge base after the admin's save has already been
+ * answered. The edit itself is stored before this runs, so a busy or
+ * rate-limited Gemini must never turn a successful save into an error (it
+ * did: saves showed as failed even though the content had been written).
+ * On final failure the chatbot keeps answering from the previous version
+ * until the next save or a manual "Resync now".
+ */
+export function scheduleKnowledgeBaseSync() {
+  after(async () => {
+    for (let attempt = 0; ; attempt++) {
+      try {
+        await syncKnowledgeBase();
+        return;
+      } catch (error) {
+        if (attempt >= BACKGROUND_RETRY_DELAYS_MS.length) {
+          console.error("[knowledge-base] background sync gave up; chatbot keeps the previous version:", error);
+          return;
+        }
+        console.warn(`[knowledge-base] background sync failed (attempt ${attempt + 1}), retrying:`, error);
+        await new Promise((resolve) => setTimeout(resolve, BACKGROUND_RETRY_DELAYS_MS[attempt]));
+      }
+    }
+  });
 }

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
-import { syncKnowledgeBase } from "@/lib/knowledge-base";
+import { scheduleKnowledgeBaseSync } from "@/lib/knowledge-base";
 
 function contactFields(formData: FormData) {
   return {
@@ -18,7 +18,7 @@ function contactFields(formData: FormData) {
 async function revalidateContacts() {
   revalidatePath("/");
   revalidatePath("/admin/contacts");
-  await syncKnowledgeBase();
+  scheduleKnowledgeBaseSync();
 }
 
 export async function createContact(formData: FormData) {

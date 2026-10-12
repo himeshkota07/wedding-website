@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
-import { syncKnowledgeBase } from "@/lib/knowledge-base";
+import { scheduleKnowledgeBaseSync } from "@/lib/knowledge-base";
 
 function venueFields(formData: FormData) {
   return {
@@ -19,7 +19,7 @@ async function revalidateVenues() {
   revalidatePath("/");
   revalidatePath("/admin/venues");
   revalidatePath("/admin/events");
-  await syncKnowledgeBase();
+  scheduleKnowledgeBaseSync();
 }
 
 export async function createVenue(formData: FormData) {

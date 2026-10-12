@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { toIstTimestamp } from "@/lib/ist-datetime";
-import { syncKnowledgeBase } from "@/lib/knowledge-base";
+import { scheduleKnowledgeBaseSync } from "@/lib/knowledge-base";
 
 function eventFields(formData: FormData) {
   return {
@@ -21,7 +21,7 @@ function eventFields(formData: FormData) {
 async function revalidateEvents() {
   revalidatePath("/");
   revalidatePath("/admin/events");
-  await syncKnowledgeBase();
+  scheduleKnowledgeBaseSync();
 }
 
 export async function createEvent(formData: FormData) {
