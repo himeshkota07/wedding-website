@@ -8,6 +8,7 @@ const sections = [
   { href: "/admin/venues", label: "Venues", blurb: "Addresses, parking, accessibility" },
   { href: "/admin/family", label: "Family", blurb: "Bride & groom bios" },
   { href: "/admin/gallery", label: "Gallery", blurb: "Hide or delete photos" },
+  { href: "/admin/wishes", label: "Wishes", blurb: "Guest wishes & the Pelli Pustakam book" },
   { href: "/admin/faqs", label: "FAQs", blurb: "Static FAQ entries" },
   { href: "/admin/contacts", label: "Contacts", blurb: "Coordinators & WhatsApp link" },
 ];

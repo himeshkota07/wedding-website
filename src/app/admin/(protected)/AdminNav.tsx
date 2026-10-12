@@ -11,6 +11,7 @@ const sections = [
   { href: "/admin/venues", label: "Venues" },
   { href: "/admin/family", label: "Family" },
   { href: "/admin/gallery", label: "Gallery" },
+  { href: "/admin/wishes", label: "Wishes" },
   { href: "/admin/faqs", label: "FAQs" },
   { href: "/admin/contacts", label: "Contacts" },
 ];
@@ -23,7 +24,7 @@ export default function AdminNav({ who }: { who: string }) {
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
         <span className="text-lg font-semibold text-accent">Admin</span>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-5 whitespace-nowrap lg:flex xl:gap-6">
           {sections.map((s) => (
             <Link key={s.href} href={s.href} className="text-sm font-medium text-zinc-600 hover:text-accent">
               {s.label}
@@ -42,14 +43,14 @@ export default function AdminNav({ who }: { who: string }) {
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
-          className="flex h-9 w-9 items-center justify-center rounded-md text-zinc-600 md:hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-md text-zinc-600 lg:hidden"
         >
           {open ? "✕" : "☰"}
         </button>
       </div>
 
       {open && (
-        <nav className="flex flex-col gap-1 border-t border-black/10 px-6 py-3 md:hidden">
+        <nav className="flex flex-col gap-1 border-t border-black/10 px-6 py-3 lg:hidden">
           {sections.map((s) => (
             <Link
               key={s.href}
