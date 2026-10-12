@@ -1,9 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
-const AUTO_DISMISS_MS = 2600;
+// Seal fades in (0-0.5s), curtain parts (1.3-2.4s), then the seal flies to
+// the nav (2.1-2.85s) and the overlay hands over to the page.
+const FLY_AT_MS = 2100;
+const FLY_DURATION_S = 0.75;
+const AUTO_DISMISS_MS = 2950;
 const STRINGS_PER_SIDE = 18;
 
 /** Fired once the curtain has parted (or was skipped), so the chat can open without hiding behind it. */
@@ -59,14 +64,31 @@ function CurtainHalf({ side }: { side: "left" | "right" }) {
   );
 }
 
+type Flight = { x: number; y: number; scale: number };
+
+/** Where the seal must travel to sit exactly on the nav's logo, or null if there's no nav logo to land on. */
+function flightToNavLogo(seal: HTMLElement): Flight | null {
+  const target = document.getElementById("site-logo")?.getBoundingClientRect();
+  if (!target || target.height === 0) return null;
+  const from = seal.getBoundingClientRect();
+  return {
+    x: target.left + target.width / 2 - (from.left + from.width / 2),
+    y: target.top + target.height / 2 - (from.top + from.height / 2),
+    scale: target.height / from.height,
+  };
+}
+
 /**
- * The opening: a curtain of marigold strings across the mandapam's entrance,
- * with the couple's names at its centre, parting to let the guest in.
+ * The opening: a curtain of marigold strings with the couple's wax seal at
+ * its centre. The curtain parts, then the seal flies up into its place at
+ * the top left of the nav, and the page (and the chat) take over.
  */
 export default function IntroSequence({ brideName, groomName }: { brideName: string; groomName: string }) {
   // Plays on every visit, as the lead-in to the chat that opens after it.
   // Rendered from the server too, so the page never flashes before the curtain.
   const [visible, setVisible] = useState(true);
+  const [flight, setFlight] = useState<Flight | null>(null);
+  const sealRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
   const dismiss = useCallback(() => {
@@ -85,6 +107,9 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
   // The Hero's "Watch the opening again" button re-triggers this.
   useEffect(() => {
     function onReplay() {
+      // Reset here, not when the intro ends: clearing it then would pull the
+      // seal back to the centre while the overlay fades out.
+      setFlight(null);
       setVisible(true);
     }
     window.addEventListener("replay-intro", onReplay);
@@ -93,8 +118,18 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
 
   useEffect(() => {
     if (!visible) return;
-    const timer = setTimeout(dismiss, AUTO_DISMISS_MS);
-    return () => clearTimeout(timer);
+    // The nav's own logo hides while the intro plays (see globals.css), so the
+    // flying seal is the only one on screen until it lands.
+    document.documentElement.dataset.introPlaying = "1";
+    const flyTimer = setTimeout(() => {
+      if (sealRef.current) setFlight(flightToNavLogo(sealRef.current));
+    }, FLY_AT_MS);
+    const dismissTimer = setTimeout(dismiss, AUTO_DISMISS_MS);
+    return () => {
+      clearTimeout(flyTimer);
+      clearTimeout(dismissTimer);
+      delete document.documentElement.dataset.introPlaying;
+    };
   }, [visible, dismiss]);
 
   if (reduceMotion) return null;
@@ -118,16 +153,26 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
           <CurtainHalf side="left" />
           <CurtainHalf side="right" />
 
-          <motion.div
-            className="absolute left-1/2 top-1/2 z-10 flex h-64 w-64 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-paper text-center ring-[6px] ring-brass sm:h-72 sm:w-72"
-            initial={{ scale: 0.85, opacity: 0 }}
-            animate={{ scale: [0.85, 1, 1, 1.04], opacity: [0, 1, 1, 0] }}
-            transition={{ duration: 1.6, times: [0, 0.3, 0.8, 1], ease: "easeOut" }}
-          >
-            <span className="font-script text-4xl leading-tight text-ink sm:text-5xl">{brideName}</span>
-            <span className="font-script text-2xl text-kumkum">&amp;</span>
-            <span className="font-script text-4xl leading-tight text-ink sm:text-5xl">{groomName}</span>
-          </motion.div>
+          {/* Centred by the wrapper so the seal's own transform is free for the flight. */}
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+            <motion.div
+              ref={sealRef}
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={flight ? { x: flight.x, y: flight.y, scale: flight.scale, opacity: 1 } : { x: 0, y: 0, scale: 1, opacity: 1 }}
+              transition={flight ? { duration: FLY_DURATION_S, ease: [0.65, 0, 0.35, 1] } : { duration: 0.5, ease: "easeOut" }}
+              style={{ transformOrigin: "center" }}
+            >
+              <Image
+                src="/theme/logo-seal.png"
+                alt={`${brideName} & ${groomName}`}
+                width={508}
+                height={640}
+                preload
+                sizes="(min-width: 640px) 320px, 240px"
+                className="h-[min(50svh,18rem)] w-auto drop-shadow-[0_12px_24px_rgb(0_0_0/0.45)] sm:h-[min(55svh,22rem)]"
+              />
+            </motion.div>
+          </div>
 
           <button
             type="button"

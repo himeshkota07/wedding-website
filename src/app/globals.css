@@ -109,6 +109,12 @@ p {
   text-wrap: pretty;
 }
 
+/* While the intro plays, its seal stands in for the nav logo and flies into
+   this exact spot; showing both would put two seals on screen. */
+html[data-intro-playing] #site-logo {
+  visibility: hidden;
+}
+
 /* Marigold strings swing a little when they're first hung, then settle. */
 @keyframes sway {
   0% {

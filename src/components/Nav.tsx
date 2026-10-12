@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Menu, X } from "lucide-react";
@@ -26,12 +27,18 @@ export default function Nav() {
     <header className="sticky top-0 z-30">
       <div className="bg-teak text-paper">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
-          <Link
-            href="/#top"
-            onClick={() => setOpen(false)}
-            className="font-script text-2xl text-turmeric transition-colors hover:text-paper"
-          >
-            T &amp; A
+          {/* The couple's wax seal. id="site-logo" is where the intro's seal flies to as the curtain ends. */}
+          <Link href="/#top" onClick={() => setOpen(false)} aria-label="Tarunya & Ashish, back to top" className="shrink-0">
+            <Image
+              id="site-logo"
+              src="/theme/logo-seal.png"
+              alt=""
+              width={508}
+              height={640}
+              preload
+              sizes="48px"
+              className="h-14 w-auto drop-shadow-[0_2px_3px_rgb(0_0_0/0.35)]"
+            />
           </Link>
 
           <nav aria-label="Sections" className="hidden items-center gap-7 lg:flex">
