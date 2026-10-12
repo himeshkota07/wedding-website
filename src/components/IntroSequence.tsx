@@ -4,12 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
-// Seal fades in on the gypsophila curtain (0-0.5s), the curtain parts to
-// reveal the page (1.3-2.4s) while the seal flies to the nav (2.1-2.85s),
-// then the overlay hands over to the page.
-const FLY_AT_MS = 2100;
-const FLY_DURATION_S = 0.75;
-const AUTO_DISMISS_MS = 2950;
+// The seal fades in over the Haldi scene (0-0.5s) and rests there; then the
+// scene dissolves into the page while the seal flies to the nav
+// (2.4-3.2s), and the overlay hands over.
+const FLY_AT_MS = 2400;
+const FLY_DURATION_S = 0.8;
+const AUTO_DISMISS_MS = 3300;
 
 /** Fired once the curtain has parted (or was skipped), so the chat can open without hiding behind it. */
 export const INTRO_DONE_EVENT = "intro-done";
@@ -22,27 +22,6 @@ export function isIntroDone() {
 function signalIntroDone() {
   document.documentElement.dataset.introDone = "1";
   window.dispatchEvent(new Event(INTRO_DONE_EVENT));
-}
-
-/**
- * Half of the curtain: the gypsophila pattern, laid out as one screen-wide
- * picture and cut down the middle, so the two halves meet seamlessly and then
- * slide apart to reveal the page.
- */
-function CurtainHalf({ side }: { side: "left" | "right" }) {
-  return (
-    <motion.div
-      className={`absolute inset-y-0 w-1/2 overflow-hidden ${side === "left" ? "left-0" : "right-0"}`}
-      initial={{ x: 0 }}
-      animate={{ x: side === "left" ? "-102%" : "102%" }}
-      transition={{ duration: 1.1, delay: 1.3, ease: [0.65, 0, 0.35, 1] }}
-    >
-      <div
-        aria-hidden
-        className={`absolute inset-y-0 w-screen bg-paper-deep bg-[url(/theme/intro-gypsophila.jpg)] bg-cover bg-center ${side === "left" ? "left-0" : "right-0"}`}
-      />
-    </motion.div>
-  );
 }
 
 type Flight = { x: number; y: number; scale: number };
@@ -60,9 +39,9 @@ function flightToNavLogo(seal: HTMLElement): Flight | null {
 }
 
 /**
- * The opening: a curtain of gypsophila with the couple's wax seal at its
- * centre. The curtain parts, the seal flies up into its place at the top left
- * of the nav, and the page (and the chat) take over.
+ * The opening: the couple's Haldi illustration with their wax seal resting at
+ * the centre. The scene dissolves into the page as the seal flies up into its
+ * place at the top left of the nav, and the page (and the chat) take over.
  */
 export default function IntroSequence({ brideName, groomName }: { brideName: string; groomName: string }) {
   // Plays on every visit, as the lead-in to the chat that opens after it.
@@ -124,8 +103,16 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <CurtainHalf side="left" />
-          <CurtainHalf side="right" />
+          {/* The Haldi scene. Portrait screens fill with it, anchored at the bottom so the couple always
+              shows; landscape ones show the whole picture on its own cream. It dissolves, rather than
+              parting, at the same moment the seal takes flight. */}
+          <motion.div
+            aria-hidden
+            className="absolute inset-0 bg-[#f9f4e8] bg-[url(/theme/intro-haldi.jpg)] bg-cover bg-bottom bg-no-repeat landscape:bg-contain landscape:bg-center"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: FLY_DURATION_S, delay: FLY_AT_MS / 1000, ease: "easeInOut" }}
+          />
 
           {/* Centred by the wrapper so the seal's own transform is free for the flight. */}
           <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
