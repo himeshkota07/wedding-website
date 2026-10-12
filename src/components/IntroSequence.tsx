@@ -1,16 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
-// Seal fades in (0-0.5s), curtain parts (1.3-2.4s) onto the jasmine backdrop,
-// then the seal flies to the nav as the backdrop fades (2.1-2.85s) and the
-// overlay hands over to the page.
+// Seal fades in on the gypsophila curtain (0-0.5s), the curtain parts to
+// reveal the page (1.3-2.4s) while the seal flies to the nav (2.1-2.85s),
+// then the overlay hands over to the page.
 const FLY_AT_MS = 2100;
 const FLY_DURATION_S = 0.75;
 const AUTO_DISMISS_MS = 2950;
-const STRINGS_PER_SIDE = 18;
 
 /** Fired once the curtain has parted (or was skipped), so the chat can open without hiding behind it. */
 export const INTRO_DONE_EVENT = "intro-done";
@@ -25,42 +24,23 @@ function signalIntroDone() {
   window.dispatchEvent(new Event(INTRO_DONE_EVENT));
 }
 
-/** One hanging string of marigolds, alternating orange and yellow heads with a leaf between. */
-function MarigoldString({ index }: { index: number }) {
-  const id = useId();
-  const shift = (index * 23) % 68;
-  const first = index % 3 === 1 ? "var(--turmeric)" : "var(--marigold)";
-  const second = index % 3 === 1 ? "var(--marigold)" : index % 3 === 2 ? "var(--kumkum)" : "var(--turmeric)";
-  return (
-    <svg aria-hidden className="h-full w-11 shrink-0" preserveAspectRatio="none">
-      <defs>
-        <pattern id={id} width="44" height="68" patternUnits="userSpaceOnUse" patternTransform={`translate(0 ${shift})`}>
-          <line x1="22" y1="0" x2="22" y2="68" stroke="var(--brass)" strokeWidth="1" />
-          <circle cx="22" cy="17" r="14" fill={first} />
-          <circle cx="22" cy="17" r="8.5" fill="#f7cf57" />
-          <circle cx="22" cy="17" r="3.5" fill="var(--turmeric-deep)" />
-          <path d="M22,33 C28,31 33,34 35,39 C29,40 24,38 22,33 Z" fill="var(--leaf)" />
-          <circle cx="22" cy="51" r="13" fill={second} />
-          <circle cx="22" cy="51" r="7.5" fill="var(--marigold)" />
-          <circle cx="22" cy="51" r="3" fill="var(--turmeric)" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill={`url(#${id})`} />
-    </svg>
-  );
-}
-
+/**
+ * Half of the curtain: the gypsophila pattern, laid out as one screen-wide
+ * picture and cut down the middle, so the two halves meet seamlessly and then
+ * slide apart to reveal the page.
+ */
 function CurtainHalf({ side }: { side: "left" | "right" }) {
   return (
     <motion.div
-      className={`absolute inset-y-0 flex w-1/2 overflow-hidden ${side === "left" ? "left-0 justify-end" : "right-0 justify-start"}`}
+      className={`absolute inset-y-0 w-1/2 overflow-hidden ${side === "left" ? "left-0" : "right-0"}`}
       initial={{ x: 0 }}
       animate={{ x: side === "left" ? "-102%" : "102%" }}
       transition={{ duration: 1.1, delay: 1.3, ease: [0.65, 0, 0.35, 1] }}
     >
-      {Array.from({ length: STRINGS_PER_SIDE }, (_, i) => (
-        <MarigoldString key={i} index={side === "left" ? i : i + STRINGS_PER_SIDE} />
-      ))}
+      <div
+        aria-hidden
+        className={`absolute inset-y-0 w-screen bg-paper-deep bg-[url(/theme/intro-gypsophila.jpg)] bg-cover bg-center ${side === "left" ? "left-0" : "right-0"}`}
+      />
     </motion.div>
   );
 }
@@ -80,9 +60,9 @@ function flightToNavLogo(seal: HTMLElement): Flight | null {
 }
 
 /**
- * The opening: a curtain of marigold strings with the couple's wax seal at
- * its centre. The curtain parts, then the seal flies up into its place at
- * the top left of the nav, and the page (and the chat) take over.
+ * The opening: a curtain of gypsophila with the couple's wax seal at its
+ * centre. The curtain parts, the seal flies up into its place at the top left
+ * of the nav, and the page (and the chat) take over.
  */
 export default function IntroSequence({ brideName, groomName }: { brideName: string; groomName: string }) {
   // Plays on every visit, as the lead-in to the chat that opens after it.
@@ -144,16 +124,6 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          {/* Behind the curtain: jasmine on cream paper, revealed as the strings part and faded out while the
-              seal flies to the nav. Portrait screens fill with it; landscape ones show the whole (portrait)
-              picture centred on its own paper colour rather than cropping the flowers away. */}
-          <motion.div
-            aria-hidden
-            className="absolute inset-0 bg-[#d0c0ae] bg-[url(/theme/intro-floral.jpg)] bg-cover bg-center bg-no-repeat landscape:bg-contain"
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 0 }}
-            transition={{ duration: FLY_DURATION_S, delay: FLY_AT_MS / 1000, ease: "easeOut" }}
-          />
           <CurtainHalf side="left" />
           <CurtainHalf side="right" />
 
@@ -181,7 +151,7 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
           <button
             type="button"
             onClick={dismiss}
-            className="absolute right-4 top-4 rounded-full bg-teak/80 px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-teak"
+            className="absolute right-4 top-4 rounded-full bg-olive/85 px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-olive"
           >
             Skip
           </button>
