@@ -4,8 +4,9 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
-// Seal fades in (0-0.5s), curtain parts (1.3-2.4s), then the seal flies to
-// the nav (2.1-2.85s) and the overlay hands over to the page.
+// Seal fades in (0-0.5s), curtain parts (1.3-2.4s) onto the jasmine backdrop,
+// then the seal flies to the nav as the backdrop fades (2.1-2.85s) and the
+// overlay hands over to the page.
 const FLY_AT_MS = 2100;
 const FLY_DURATION_S = 0.75;
 const AUTO_DISMISS_MS = 2950;
@@ -143,12 +144,15 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
+          {/* Behind the curtain: jasmine on cream paper, revealed as the strings part and faded out while the
+              seal flies to the nav. Portrait screens fill with it; landscape ones show the whole (portrait)
+              picture centred on its own paper colour rather than cropping the flowers away. */}
           <motion.div
             aria-hidden
-            className="absolute inset-0 bg-teak"
+            className="absolute inset-0 bg-[#d0c0ae] bg-[url(/theme/intro-floral.jpg)] bg-cover bg-center bg-no-repeat landscape:bg-contain"
             initial={{ opacity: 1 }}
             animate={{ opacity: 0 }}
-            transition={{ duration: 0.8, delay: 1.5, ease: "easeOut" }}
+            transition={{ duration: FLY_DURATION_S, delay: FLY_AT_MS / 1000, ease: "easeOut" }}
           />
           <CurtainHalf side="left" />
           <CurtainHalf side="right" />

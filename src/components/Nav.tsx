@@ -25,7 +25,8 @@ export default function Nav() {
 
   return (
     <header className="sticky top-0 z-30">
-      <div className="bg-teak text-paper">
+      {/* Olive velvet (a photo texture, darkened so paper text stays above 5.5:1); the flat olive is its fallback. */}
+      <div className="bg-olive bg-[url(/theme/nav-velvet.jpg)] bg-cover bg-center text-paper">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
           {/* The couple's wax seal, hung from the beam: centred on the bar's bottom edge, half on the bar and
               half over the page. The link keeps the seal's width in the row; the seal itself is positioned
@@ -53,7 +54,7 @@ export default function Nav() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[0.95rem] font-medium text-paper/85 underline-offset-8 transition-colors hover:text-turmeric hover:underline"
+                className="text-[0.95rem] font-medium text-paper underline-offset-8 transition-colors hover:text-turmeric hover:underline"
               >
                 {link.label}
               </Link>
