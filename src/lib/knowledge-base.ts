@@ -4,7 +4,7 @@ import { createAdminSupabase } from "@/lib/supabase-admin";
 import { embedTexts } from "@/lib/gemini";
 import { getHomeHero, getOurStory, getKnowledgeBaseNotes } from "@/lib/site-settings";
 
-type Chunk = { source_type: string; source_id: string; content: string };
+export type Chunk = { source_type: string; source_id: string; content: string };
 
 function formatEventDate(iso: string) {
   return new Date(iso).toLocaleString("en-IN", {
@@ -19,15 +19,13 @@ function formatEventDate(iso: string) {
 }
 
 /**
- * Rebuilds the entire chatbot knowledge base from current DB content. Called
- * after any admin mutation to events/venues/family/faqs/contacts/site content
- * -- a full resync rather than incremental updates, since the content volume
- * here is tiny (a few dozen rows) and Gemini embeddings are free, so the
- * simplicity is worth more than the (negligible) extra API calls.
+ * Every fact the chatbot knows, built from current DB content. The chat
+ * route calls this on each question and gives the model all of it: the whole
+ * site is a few dozen short facts, so there's no need to embed and search
+ * (which ran into Gemini's free embedding quota and served stale content
+ * whenever a rebuild failed). Admin edits reach the chatbot immediately.
  */
-export async function syncKnowledgeBase() {
-  const admin = createAdminSupabase();
-
+export async function buildKnowledgeBase(admin = createAdminSupabase()): Promise<Chunk[]> {
   const [{ data: events }, { data: venues }, { data: family }, { data: faqs }, { data: contacts }, hero, ourStory, notes] =
     await Promise.all([
       admin
@@ -129,6 +127,19 @@ export async function syncKnowledgeBase() {
         .join(" "),
     });
   }
+
+  return chunks;
+}
+
+/**
+ * Rebuilds the embedded copy of the knowledge base in `content_chunks`,
+ * after any admin mutation (or "Resync now"). The chatbot no longer reads it;
+ * it is kept for the admin dashboard's count and as an index if search is
+ * ever needed again.
+ */
+export async function syncKnowledgeBase() {
+  const admin = createAdminSupabase();
+  const chunks = await buildKnowledgeBase(admin);
 
   const embeddings = await embedTexts(
     chunks.map((c) => c.content),

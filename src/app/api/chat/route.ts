@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { embedTexts, generateWithFallback } from "@/lib/gemini";
+import { generateWithFallback } from "@/lib/gemini";
+import { buildKnowledgeBase } from "@/lib/knowledge-base";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 
 // Give retries room within Vercel's function budget, but the individual
@@ -10,7 +11,6 @@ export const maxDuration = 30;
 
 const MAX_MESSAGE_LENGTH = 500;
 const MAX_HISTORY_TURNS = 6;
-const LOW_CONFIDENCE_THRESHOLD = 0.35;
 
 type ChatTurn = { role: "user" | "model"; text: string };
 
@@ -23,7 +23,7 @@ Rules:
 - Keep answers short and warm, like a helpful friend, not a formal document.`;
 
 function buildContext(chunks: { source_type: string; content: string }[]) {
-  if (chunks.length === 0) return "(no matching information found)";
+  if (chunks.length === 0) return "(no information has been added yet)";
   return chunks.map((c) => `- [${c.source_type}] ${c.content}`).join("\n");
 }
 
@@ -65,42 +65,10 @@ export async function POST(request: NextRequest) {
   const admin = createAdminSupabase();
 
   try {
-    let matches: { source_type: string; content: string; similarity: number }[] | null = null;
-    let retrievalFailed = false;
-    try {
-      const [queryEmbedding] = await embedTexts([message], "RETRIEVAL_QUERY");
-      const { data, error } = await admin.rpc("match_content_chunks", {
-        query_embedding: queryEmbedding,
-        match_count: 6,
-      });
-      if (error) throw error;
-      matches = data;
-    } catch (error) {
-      // The embedding endpoint's quota is easily exhausted (every admin save
-      // re-embeds the whole knowledge base). The knowledge base is small, so
-      // rather than fail the guest, answer from all of it; the system
-      // instruction still makes the model admit when the answer isn't there.
-      console.warn("[chat] retrieval failed, answering from the full knowledge base:", error);
-      retrievalFailed = true;
-      const { data } = await admin.from("content_chunks").select("source_type, content");
-      matches = (data ?? []).map((chunk) => ({ ...chunk, similarity: 1 }));
-    }
-
-    const bestSimilarity = matches?.[0]?.similarity ?? 0;
-
-    if (!retrievalFailed && bestSimilarity < LOW_CONFIDENCE_THRESHOLD) {
-      const whatsappLink = await getWhatsappLink(admin);
-      return NextResponse.json({
-        reply:
-          "I don't have information about that yet. " +
-          (whatsappLink
-            ? `Could you ask the coordinators directly on WhatsApp? ${whatsappLink}`
-            : "Please check the Contact section for a coordinator to ask."),
-        escalate: true,
-      });
-    }
-
-    const context = buildContext(matches ?? []);
+    // The model reads the whole, current knowledge base rather than a
+    // searched subset (see buildKnowledgeBase). The system instruction makes
+    // it admit when the answer isn't there.
+    const context = buildContext(await buildKnowledgeBase(admin));
     const contents = [
       ...history.map((turn) => ({ role: turn.role, parts: [{ text: turn.text }] })),
       {
