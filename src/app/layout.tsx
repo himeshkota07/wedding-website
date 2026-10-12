@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Anek_Latin, Courgette, Kurale } from "next/font/google";
 import "./globals.css";
 
@@ -26,6 +26,14 @@ const courgette = Courgette({
 export const metadata: Metadata = {
   title: "Our Wedding",
   description: "Join us as we celebrate our wedding.",
+};
+
+// On phones, the keyboard shrinks the layout instead of sliding over it, so
+// the chat sheet (pinned to the bottom) stays above the keyboard while typing.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

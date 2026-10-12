@@ -4,8 +4,8 @@ import { ArrowDown, MessageCircle, RotateCcw } from "lucide-react";
 
 export default function HeroActions() {
   return (
-    <div className="mt-10">
-      <div className="flex flex-wrap items-center gap-3">
+    <div className="mt-10 flex flex-col items-center">
+      <div className="flex flex-wrap items-center justify-center gap-3">
         <a
           href="#events"
           className="inline-flex h-12 items-center gap-2 rounded-full bg-kumkum px-6 text-base font-semibold text-paper transition-colors hover:bg-kumkum-deep"

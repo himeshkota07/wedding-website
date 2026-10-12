@@ -2,15 +2,17 @@ import "server-only";
 
 const API_KEY = process.env.GOOGLE_CLOUD_API_KEY!;
 
-export const SPEECH_LANGUAGE_CODES = ["en-IN", "te-IN", "kn-IN"] as const;
-export type SpeechLanguageCode = (typeof SPEECH_LANGUAGE_CODES)[number];
+type SpeechLanguageCode = "en-IN" | "te-IN" | "kn-IN";
 
-export function isSpeechLanguageCode(value: unknown): value is SpeechLanguageCode {
-  return typeof value === "string" && (SPEECH_LANGUAGE_CODES as readonly string[]).includes(value);
-}
-
-export async function transcribeAudio(base64Audio: string, languageCode: SpeechLanguageCode): Promise<string> {
-  const res = await fetch(`https://speech.googleapis.com/v1/speech:recognize?key=${API_KEY}`, {
+/**
+ * Backup transcription for when Gemini is unavailable. Its 3-way language
+ * auto-detection is noticeably weaker than Gemini's (Kannada and Telugu are
+ * often heard as English), but a rough transcript beats a failed question.
+ * Only understands WebM/Opus, not the MP4 some Safari versions record.
+ */
+export async function transcribeAudio(base64Audio: string): Promise<string> {
+  // alternativeLanguageCodes is only available on v1p1beta1.
+  const res = await fetch(`https://speech.googleapis.com/v1p1beta1/speech:recognize?key=${API_KEY}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -20,12 +22,8 @@ export async function transcribeAudio(base64Audio: string, languageCode: SpeechL
         // the API requires this explicitly rather than reading it from the
         // container (confirmed directly against the live API).
         sampleRateHertz: 48000,
-        // A single explicit language recognizes noticeably more accurately
-        // than asking the API to guess between English/Telugu/Kannada --
-        // confirmed directly: Kannada accuracy was poor under 3-way
-        // auto-detection with alternativeLanguageCodes. The guest picks
-        // their language in the UI before recording instead.
-        languageCode,
+        languageCode: "en-IN",
+        alternativeLanguageCodes: ["te-IN", "kn-IN"],
         model: "default",
       },
       audio: { content: base64Audio },

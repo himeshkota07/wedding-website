@@ -3,16 +3,20 @@
 import { useCallback, useEffect, useId, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
-const STORAGE_KEY = "wedding-intro-seen";
 const AUTO_DISMISS_MS = 2600;
 const STRINGS_PER_SIDE = 18;
 
-function markSeen() {
-  try {
-    localStorage.setItem(STORAGE_KEY, "1");
-  } catch {
-    // Private browsing / storage disabled -- the intro will just replay next visit, harmless.
-  }
+/** Fired once the curtain has parted (or was skipped), so the chat can open without hiding behind it. */
+export const INTRO_DONE_EVENT = "intro-done";
+
+// Also recorded on <html> for listeners that mount after the event has fired.
+export function isIntroDone() {
+  return document.documentElement.dataset.introDone === "1";
+}
+
+function signalIntroDone() {
+  document.documentElement.dataset.introDone = "1";
+  window.dispatchEvent(new Event(INTRO_DONE_EVENT));
 }
 
 /** One hanging string of marigolds, alternating orange and yellow heads with a leaf between. */
@@ -60,36 +64,28 @@ function CurtainHalf({ side }: { side: "left" | "right" }) {
  * with the couple's names at its centre, parting to let the guest in.
  */
 export default function IntroSequence({ brideName, groomName }: { brideName: string; groomName: string }) {
-  const [{ mounted, visible }, setState] = useState({ mounted: false, visible: false });
+  // Plays on every visit, as the lead-in to the chat that opens after it.
+  // Rendered from the server too, so the page never flashes before the curtain.
+  const [visible, setVisible] = useState(true);
   const reduceMotion = useReducedMotion();
 
   const dismiss = useCallback(() => {
-    setState((s) => ({ ...s, visible: false }));
-    markSeen();
+    setVisible(false);
+    signalIntroDone();
   }, []);
 
-  // localStorage isn't available during SSR, and reading it during render
-  // would risk a hydration mismatch, so the first-visit check lives here.
+  // Guests who've asked for reduced motion skip it (CSS hides it before hydration, see motion-reduce below).
   useEffect(() => {
-    if (reduceMotion) {
-      markSeen();
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time client-only localStorage check, see comment above
-      setState({ mounted: true, visible: false });
-      return;
-    }
-    let seen = false;
-    try {
-      seen = localStorage.getItem(STORAGE_KEY) === "1";
-    } catch {
-      seen = false;
-    }
-    setState({ mounted: true, visible: !seen });
+    if (!reduceMotion) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reduced-motion preference is only known on the client
+    setVisible(false);
+    signalIntroDone();
   }, [reduceMotion]);
 
   // The Hero's "Watch the opening again" button re-triggers this.
   useEffect(() => {
     function onReplay() {
-      setState((s) => ({ ...s, visible: true }));
+      setVisible(true);
     }
     window.addEventListener("replay-intro", onReplay);
     return () => window.removeEventListener("replay-intro", onReplay);
@@ -101,13 +97,13 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
     return () => clearTimeout(timer);
   }, [visible, dismiss]);
 
-  if (!mounted || reduceMotion) return null;
+  if (reduceMotion) return null;
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          className="fixed inset-0 z-[60] overflow-hidden"
+          className="fixed inset-0 z-[60] overflow-hidden motion-reduce:hidden"
           onClick={dismiss}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}

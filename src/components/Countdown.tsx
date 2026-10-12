@@ -68,7 +68,7 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
   }
 
   return (
-    <div className="flex items-end gap-3 sm:gap-5" role="timer" aria-label="Time until the wedding">
+    <div className="flex items-end gap-2 sm:gap-5" role="timer" aria-label="Time until the wedding">
       {[
         ["months", parts.months],
         ["days", parts.days],
@@ -76,10 +76,10 @@ export default function Countdown({ targetIso, compact = false }: { targetIso: s
         ["min", parts.minutes],
         ["sec", parts.seconds],
       ].map(([label, value], i) => (
-        <div key={label as string} className="flex items-end gap-3 sm:gap-5">
+        <div key={label as string} className="flex items-end gap-2 sm:gap-5">
           {i > 0 && <span aria-hidden className="mb-3 h-1.5 w-1.5 rotate-45 bg-brass" />}
           <div>
-            <div className="font-display text-4xl leading-none tabular-nums text-ink sm:text-5xl">
+            <div className="font-display text-[2rem] leading-none tabular-nums text-ink sm:text-5xl">
               {String(value).padStart(2, "0")}
             </div>
             <div className="mt-1 text-sm text-ink-soft">{label}</div>

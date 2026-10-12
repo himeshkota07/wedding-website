@@ -40,7 +40,8 @@ It's the family's own invitation brought to life. It extends the printed card's 
 ## Brand Commitments
 
 - Couple: Tarunya & Ashish. The monogram reads "T & A".
-- The printed invite is the binding reference, per the user's direction on 2026-09-28: the site should feel like that card come to life.
+- The printed invite was the binding reference from 2026-09-28. On 2026-10-12 the user moved the theme to a watercolour of the couple's feet (`public/theme/couple-feet.jpg`) and the umbrella-arch card for events (`public/theme/event-card.jpg`).
+- The chatbot is the main feature, not a side widget. It opens by default after the intro animation, and guests minimise it to browse the rest of the site. Voice and text language are auto-detected, with no language picker.
 
 ## Evidence on Hand
 

@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { transcribeAudio, isSpeechLanguageCode } from "@/lib/google-speech";
+import { transcribeWithGemini } from "@/lib/gemini";
+import { transcribeAudio } from "@/lib/google-speech";
 
 export const maxDuration = 30;
 
 const MAX_AUDIO_BYTES = 8 * 1024 * 1024; // ~8MB, generous for a short voice question
 
+// What browsers' MediaRecorder produces: WebM/Opus almost everywhere, MP4/AAC
+// on older Safari. Codec parameters are stripped before this check.
+const ACCEPTED_MIME_TYPES = ["audio/webm", "audio/mp4"];
+
 export async function POST(request: NextRequest) {
-  let body: { audio?: unknown; languageCode?: unknown };
+  let body: { audio?: unknown; mimeType?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -23,16 +28,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Audio is too long" }, { status: 400 });
   }
 
-  const languageCode = isSpeechLanguageCode(body.languageCode) ? body.languageCode : "en-IN";
+  const requestedType = typeof body.mimeType === "string" ? body.mimeType.split(";")[0].trim() : "";
+  const mimeType = ACCEPTED_MIME_TYPES.includes(requestedType) ? requestedType : "audio/webm";
 
+  // The guest just speaks; the language (English, Telugu or Kannada) is
+  // detected from the audio rather than picked in the UI.
+  let text = "";
   try {
-    const text = await transcribeAudio(audio, languageCode);
-    if (!text) {
-      return NextResponse.json({ error: "Couldn't make out what you said" }, { status: 422 });
+    ({ text } = await transcribeWithGemini(audio, mimeType));
+  } catch (geminiError) {
+    console.warn("[voice/transcribe] Gemini failed, falling back to Speech-to-Text:", geminiError);
+    if (mimeType !== "audio/webm") {
+      return NextResponse.json({ error: "Transcription failed" }, { status: 502 });
     }
-    return NextResponse.json({ text });
-  } catch (error) {
-    console.error("[voice/transcribe] failed:", error);
-    return NextResponse.json({ error: "Transcription failed" }, { status: 502 });
+    try {
+      text = await transcribeAudio(audio);
+    } catch (error) {
+      console.error("[voice/transcribe] failed:", error);
+      return NextResponse.json({ error: "Transcription failed" }, { status: 502 });
+    }
   }
+
+  if (!text) {
+    return NextResponse.json({ error: "Couldn't make out what you said" }, { status: 422 });
+  }
+  return NextResponse.json({ text });
 }
