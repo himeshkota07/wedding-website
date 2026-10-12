@@ -61,13 +61,28 @@ export async function embedTexts(texts: string[], taskType: "RETRIEVAL_DOCUMENT"
   return results;
 }
 
+// "High demand" 503s tend to hit every Flash model at once but clear within
+// seconds, and they fail fast, so one more round after a short pause rescues
+// most requests while staying well inside a route's 30s budget.
+const RETRY_ROUND_DELAY_MS = 1500;
+
 export async function generateWithFallback(params: Omit<GenerateContentParameters, "model">) {
+  const startedAt = Date.now();
   let lastError: unknown;
-  for (const model of GENERATION_MODELS) {
-    try {
-      return await gemini.models.generateContent({ ...params, model });
-    } catch (error) {
-      lastError = error;
+  for (let round = 0; round < 2; round++) {
+    if (round > 0) {
+      // Only when the first round failed fast: a round of slow timeouts
+      // repeated would run past the 30s limit.
+      if (!isRetryableError(lastError) || Date.now() - startedAt > 8_000) break;
+      await sleep(RETRY_ROUND_DELAY_MS);
+    }
+    for (const model of GENERATION_MODELS) {
+      try {
+        return await gemini.models.generateContent({ ...params, model });
+      } catch (error) {
+        console.warn(`[gemini] ${model} failed:`, error instanceof Error ? error.message.slice(0, 120) : error);
+        lastError = error;
+      }
     }
   }
   throw lastError;
