@@ -15,7 +15,7 @@ const sections = [
   { href: "/admin/contacts", label: "Contacts" },
 ];
 
-export default function AdminNav({ userEmail }: { userEmail: string }) {
+export default function AdminNav({ who }: { who: string }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -29,7 +29,7 @@ export default function AdminNav({ userEmail }: { userEmail: string }) {
               {s.label}
             </Link>
           ))}
-          <span className="text-sm text-zinc-400">{userEmail}</span>
+          <span className="text-sm text-zinc-400">{who}</span>
           <form action={signOut}>
             <button type="submit" className="text-sm font-medium text-zinc-600 hover:text-accent">
               Sign out
@@ -61,7 +61,7 @@ export default function AdminNav({ userEmail }: { userEmail: string }) {
             </Link>
           ))}
           <div className="mt-2 flex items-center justify-between border-t border-black/10 px-2 pt-3">
-            <span className="text-xs text-zinc-400">{userEmail}</span>
+            <span className="text-xs text-zinc-400">{who}</span>
             <form action={signOut}>
               <button type="submit" className="text-sm font-medium text-zinc-600 hover:text-accent">
                 Sign out

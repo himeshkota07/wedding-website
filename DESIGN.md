@@ -1,25 +1,25 @@
 ---
 name: Tarunya & Ashish Wedding
-description: The kalyana mandapam you walk into, built from the family's printed invite.
+description: A watercolour wedding card come to life, with the chat as its front door.
 colors:
-  paper: "#fbf3e2"
-  paper-deep: "#f4e4c1"
-  turmeric: "#f1b52c"
-  turmeric-deep: "#d98f0b"
-  marigold: "#e8861a"
-  kumkum: "#a3172d"
-  kumkum-deep: "#7e0f21"
-  leaf: "#4c6a20"
-  leaf-soft: "#93b04a"
-  teak: "#3d2517"
-  teak-soft: "#5b3a24"
-  brass: "#b0823a"
-  ink: "#2e1f15"
-  ink-soft: "#5c4534"
-  hairline: "#d6bb86"
-  accent-soft: "#f7dfa6"
-  gold-soft: "#f3e2b8"
-  blush-soft: "#f8e7c2"
+  paper: "#fcfaf6"
+  paper-deep: "#f5eee3"
+  turmeric: "#eba93c"
+  turmeric-deep: "#cb7d1d"
+  marigold: "#e2812e"
+  kumkum: "#b3262c"
+  kumkum-deep: "#8b1b21"
+  leaf: "#587626"
+  leaf-soft: "#9db35c"
+  teak: "#4a2a1d"
+  teak-soft: "#6d4331"
+  brass: "#c49d6c"
+  ink: "#2b211c"
+  ink-soft: "#66544a"
+  hairline: "#e5d6c0"
+  accent-soft: "#f8e2c2"
+  gold-soft: "#f2e5d0"
+  blush-soft: "#fbe9d8"
 typography:
   display:
     fontFamily: "Courgette, cursive"
@@ -149,6 +149,8 @@ components:
 
 ## Overview
 
+> **2026-10-12 update: "Watercolour".** At the user's direction the theme now comes from a watercolour of the couple's feet (`public/theme/couple-feet.jpg`): her henna'd feet in a red-and-saffron saree, his in a tan dhoti with a green border, orange petals scattered around. The palette tokens keep their old names (`teak` is now henna brown, `brass` the dhoti's tan, `kumkum` the saree red), so the rules below still read correctly by token. The hero is centred, with the painting standing at the foot of the page instead of the pillar and garland art. Functions are **Umbrella Cards** (`public/theme/event-card.jpg`), not slips. The chat is the site's front door: it opens by itself after the curtain. The umbrella card and the chat panel may carry one soft shadow; everything else stays flat.
+
 **Creative North Star: "Walk Through the Mandapam"**
 
 The site is the kalyana mandapam a guest walks into, built out of the family's printed invite. A carved teak canopy beam carries the navigation and a row of scallops. Marigold strings and a mango-leaf thoranam hang over every entrance. Each section is a bay you step into under its own thoranam, and each bay stands on a committed field of colour: invite paper, a second sheet of paper, turmeric, banana leaf or teak. The invite's own watercolour art (the pillar, the garland, Ganesha) sits right in the page. It was whitened and multiplied into the paper, so it reads as printed on it and not pasted over it.
@@ -167,7 +169,7 @@ This replaces the earlier "Rani Pink & Gold" world. Its token names (`accent`, `
 
 ## Colors
 
-The palette is lifted from the printed invite: warm paper, the heat of turmeric and marigold, one kumkum red, banana-leaf green, carved teak and brass.
+The palette is lifted from the watercolour couple: whitened watercolour paper, saree saffron and red, scattered marigold petals, the dhoti's green border and tan, and henna brown. (Earlier it came from the printed invite; the token names are unchanged.)
 
 ### Primary
 - **Kumkum Red** (kumkum): the colour of doing. Used for primary action pills, the floating chat launcher, the send button, the focus ring and text caret, the "&" between the names, and the date numeral on each function slip. Hover deepens it to **Kumkum Deep** (kumkum-deep).
@@ -247,11 +249,11 @@ Pills with conviction, and big enough for elders' thumbs.
 - **On fields:** on teak, a turmeric pill with teak text (hover paper) and a paper/40% outline pill. On leaf, a paper pill with leaf text (hover turmeric with teak text).
 - **Text link:** small ink-soft text with an icon, underlined on hover in kumkum ("Watch the opening again").
 
-### Function Slip (signature)
-A ticket stub that reads the same every time.
-- **Structure:** a paper sheet with 8px inset, a brass/60% frame, and a date stub (Courgette day numeral in kumkum over month and weekday in Kurale), divided by a dashed brass rule. Then the name, an optional description, and four fixed fields: When · Where · Colour · Please note. Add-to-calendar sits last.
-- **Depth:** a paper-deep sheet offset behind it (see Elevation), with turmeric-and-kumkum dabs at the four corners.
-- **Empty state:** the same slip with a marigold and "Soon", and "To be announced" in every field.
+### Umbrella Card (signature)
+Painted umbrellas and jasmine hang over a scalloped arch, and the function is written inside the arch.
+- **Structure:** a rounded card in a grid (1, 2 or 3 columns). Centred inside the arch: weekday · month, then a Courgette day numeral in kumkum, the name in Kurale, a compact countdown, an optional description, four fixed fields (When · Where · Colour · Please note) and add-to-calendar last.
+- **Art:** `event-card.jpg` pinned to the top at full width. Behind it, `event-card-body.jpg`, a 67px strip of exactly two lace scallops, repeats downward, so a card with a lot to say grows without losing its lace edge. The art ends on a strip boundary to keep the join seamless.
+- **Empty state:** the same card with a marigold and "Soon", and "To be announced" in every field.
 
 ### Inputs / Fields
 - **Style:** paper fill, a brass/70% 1px border, square corners, 48px tall, ink text and ink-soft placeholder. The chat input is the one pill-shaped input (44px).
@@ -270,8 +272,8 @@ FAQ rows, contacts, family members and venue details are rows ruled by hairlines
 ### Marigold Curtain (signature motion)
 On first visit, strings of marigolds cover the screen. A paper medallion ringed in 6px brass shows the names, then the two halves part (1.1s, `cubic-bezier(0.65,0,0.35,1)`, starting at 1.3s) over a teak backdrop that fades out. The curtain can be skipped and replayed, and is omitted entirely under reduced motion. The hero garland swings once on load (3.6s) and then stays still.
 
-### Floating Chat
-The launcher is a kumkum pill ringed in paper and appears only after the hero leaves view. The panel is a square paper sheet with a teak border and brass outline, and a teak header that names the three languages. Bubbles are paper-deep for incoming and kumkum for the guest's own.
+### Chat (the front door)
+The marigold curtain plays on every visit, and the chat opens by itself once it parts. On a phone it is a sheet over the bottom ~60% of the screen, with the invitation still visible above and at the sides under a light wash; on desktop it is a panel at the bottom right. A "See invitation" button (or Escape, or a tap on the page behind) minimises it to a kumkum "Ask us anything" pill at the bottom right. Minimising lasts for that page view only; every load opens the chat again. The guest never picks a language: Gemini detects English, Telugu or Kannada from the voice, and the bot replies in the language and the mode the guest used: a typed question gets a text answer, and a spoken one is also read aloud automatically in the matching voice. Suggested-question pills sit under the greeting. Bubbles are paper-deep for incoming and kumkum for the guest's own, at 18px for elders.
 
 ## Do's and Don'ts
 

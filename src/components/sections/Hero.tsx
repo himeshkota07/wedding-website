@@ -10,9 +10,9 @@ function splitLocation(location: string) {
 }
 
 /**
- * The first page of the printed invite, standing up: the carved pillar with
- * its banana stem and brass elephant on the left, marigold strings hanging
- * from the beam, and the names cascading in the card's own brush lettering.
+ * The painted couple standing at the foot of the page -- her henna'd feet on
+ * tiptoe beside his, petals scattered around them -- with the invitation
+ * written above them like the words on a card.
  */
 export default function Hero({ hero }: { hero: HomeHero }) {
   const when = dateParts(hero.wedding_datetime, hero.wedding_date_label);
@@ -20,52 +20,20 @@ export default function Hero({ hero }: { hero: HomeHero }) {
 
   return (
     <div id="top" className="relative isolate -mt-3 overflow-hidden bg-paper">
-      {/* The invite's own watercolour art; its paper was lifted to white so it multiplies into this page's paper. */}
-      <Image
-        src="/invite/pillar-vignette.jpg"
-        alt=""
-        width={520}
-        height={1542}
-        priority
-        className="pointer-events-none absolute bottom-0 left-0 -z-10 hidden h-full w-auto mix-blend-multiply sm:block"
-      />
-      {/* On phones the card's lower corner -- pillar foot, elephant, flower pots -- sits beneath the text, as on the card. */}
-      <Image
-        src="/invite/pillar-foot.jpg"
-        alt=""
-        width={520}
-        height={842}
-        className="pointer-events-none absolute bottom-0 left-0 -z-10 h-[21rem] w-auto mix-blend-multiply [mask-image:linear-gradient(to_bottom,transparent,black_28%)] sm:hidden"
-      />
-      <Image
-        src="/invite/garland.jpg"
-        alt=""
-        width={283}
-        height={470}
-        priority
-        className="animate-sway pointer-events-none absolute right-1 top-3 -z-10 h-28 w-auto mix-blend-multiply sm:right-[4%] sm:h-48 lg:right-[6%] lg:h-72"
-      />
-
-      <div className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-6xl flex-col justify-center px-5 pb-[21rem] pt-14 sm:pb-20 sm:pl-[34%] sm:pr-[20%] lg:pl-[30%] lg:pr-8">
-        <Image
-          src="/invite/ganesha.jpg"
-          alt=""
-          width={100}
-          height={115}
-          className="mb-6 h-11 w-auto self-start mix-blend-multiply sm:h-14"
-        />
+      <div className="mx-auto flex max-w-3xl flex-col items-center px-5 pt-14 text-center sm:pt-20">
+        <Image src="/invite/ganesha.jpg" alt="" width={100} height={115} className="mb-6 h-12 w-auto mix-blend-multiply sm:h-14" />
 
         <p className="font-display text-xl text-ink-soft sm:text-2xl">You are warmly invited to the wedding of</p>
 
         <h1 className="mt-4 font-script leading-[1.05] text-ink">
           <span className="block text-[clamp(3.25rem,10vw,6rem)]">{hero.bride_name}</span>
-          <span className="block pl-[18%] text-[clamp(2.25rem,6vw,3.75rem)] text-kumkum">&amp;</span>
-          <span className="block pl-[30%] text-[clamp(3.25rem,10vw,6rem)]">{hero.groom_name}</span>
+          <span className="block text-[clamp(2.25rem,6vw,3.75rem)] text-kumkum">&amp;</span>
+          <span className="block text-[clamp(3.25rem,10vw,6rem)]">{hero.groom_name}</span>
         </h1>
 
-        <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
           {when ? (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 text-left">
               <span className="font-script text-6xl leading-none text-ink sm:text-7xl">{when.day}</span>
               <span className="h-16 w-px bg-brass" aria-hidden />
               <span className="font-display text-lg leading-snug text-ink-soft">
@@ -95,6 +63,17 @@ export default function Hero({ hero }: { hero: HomeHero }) {
 
         <HeroActions />
       </div>
+
+      {/* The painting's paper was lifted to white so it multiplies into this page's paper; its cropped top edge fades in. */}
+      <Image
+        src="/theme/couple-feet.jpg"
+        alt="A watercolour of the bride's henna-painted feet beside the groom's, with flower petals scattered around them"
+        width={714}
+        height={506}
+        preload
+        sizes="(min-width: 768px) 720px, 100vw"
+        className="mx-auto mt-6 block w-full max-w-[45rem] mix-blend-multiply [mask-image:linear-gradient(to_bottom,transparent,black_30%)]"
+      />
     </div>
   );
 }

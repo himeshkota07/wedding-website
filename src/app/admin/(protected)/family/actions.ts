@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
-import { syncKnowledgeBase } from "@/lib/knowledge-base";
+import { scheduleKnowledgeBaseSync } from "@/lib/knowledge-base";
 
 function memberFields(formData: FormData) {
   return {
@@ -18,7 +18,7 @@ function memberFields(formData: FormData) {
 async function revalidateFamily() {
   revalidatePath("/");
   revalidatePath("/admin/family");
-  await syncKnowledgeBase();
+  scheduleKnowledgeBaseSync();
 }
 
 export async function createFamilyMember(formData: FormData) {

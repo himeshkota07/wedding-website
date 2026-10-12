@@ -1,5 +1,5 @@
 import "server-only";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import type { GenerateContentParameters } from "@google/genai";
 
 const apiKey = process.env.GEMINI_API_KEY!;
@@ -71,4 +71,43 @@ export async function generateWithFallback(params: Omit<GenerateContentParameter
     }
   }
   throw lastError;
+}
+
+export type SpokenLanguage = "en" | "te" | "kn";
+
+// Asking for the language *before* the transcript matters: free-form
+// transcription wrote Kannada speech in Telugu script (the two sound alike),
+// while naming the language first got all three right -- confirmed against
+// TTS-generated English/Telugu/Kannada clips. Google Speech-to-Text's own
+// multi-language detection did worse still (Telugu came back as English).
+const TRANSCRIBE_PROMPT = `A wedding guest recorded this voice question. Identify the main spoken language (English, Telugu, or Kannada), then transcribe the speech word for word.
+Telugu and Kannada sound similar; listen carefully to vocabulary and endings before deciding. Write the transcript in the script of the identified language (Kannada in Kannada script, Telugu in Telugu script); keep any English words in English. Transcribe the complete utterance to the end. If there is no intelligible speech, use language "none" and an empty transcript.`;
+
+export async function transcribeWithGemini(
+  base64Audio: string,
+  mimeType: string,
+): Promise<{ text: string; language: SpokenLanguage | null }> {
+  const response = await generateWithFallback({
+    contents: [{ role: "user", parts: [{ inlineData: { mimeType, data: base64Audio } }, { text: TRANSCRIBE_PROMPT }] }],
+    config: {
+      // No reasoning needed to transcribe; skipping it keeps a voice question to ~3s.
+      thinkingConfig: { thinkingBudget: 0 },
+      // Transcription wants no creativity: at the default temperature a clean
+      // Telugu clip once came back as an invented, unrelated English question.
+      temperature: 0,
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          language: { type: Type.STRING, enum: ["en", "te", "kn", "none"] },
+          transcript: { type: Type.STRING },
+        },
+        required: ["language", "transcript"],
+        propertyOrdering: ["language", "transcript"],
+      },
+    },
+  });
+  const parsed = JSON.parse(response.text ?? "{}") as { language?: string; transcript?: string };
+  const language = parsed.language === "en" || parsed.language === "te" || parsed.language === "kn" ? parsed.language : null;
+  return { text: (parsed.transcript ?? "").trim(), language };
 }

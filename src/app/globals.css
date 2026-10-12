@@ -1,35 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  /* "Mandapam": colours lifted from the family's printed invite -- the card's
-     paper, its marigold strings, banana leaves, the carved teak pillar and
-     brass. Older token names (accent, gold, blush...) are kept so the admin
-     panel re-skins without edits. */
-  --paper: #fbf3e2; /* the invite's paper -- page ground */
-  --paper-deep: #f4e4c1; /* a second sheet laid under the first */
-  --turmeric: #f1b52c; /* committed field: the functions bay */
-  --turmeric-deep: #d98f0b; /* turmeric dabs, marigold centres */
-  --marigold: #e8861a;
-  --kumkum: #a3172d; /* primary actions, the "&" */
-  --kumkum-deep: #7e0f21;
-  --leaf: #4c6a20; /* banana leaf -- committed field: questions bay */
-  --leaf-soft: #93b04a;
-  --teak: #3d2517; /* canopy beam, closing bay */
-  --teak-soft: #5b3a24;
-  --brass: #b0823a;
-  --ink: #2e1f15;
-  --ink-soft: #5c4534;
+  /* "Watercolour": colours lifted from the painted couple -- the paper it's
+     painted on, her red-and-saffron saree and henna, his dhoti's tan and
+     green border, and the orange petals scattered at their feet. Older token
+     names (teak, brass, accent, gold, blush...) are kept so every component
+     and the admin panel re-skin without edits. */
+  --paper: #fcfaf6; /* watercolour paper -- page ground */
+  --paper-deep: #f5eee3; /* a wash of the dhoti's cream */
+  --turmeric: #eba93c; /* the saree's saffron */
+  --turmeric-deep: #cb7d1d;
+  --marigold: #e2812e; /* the scattered petals */
+  --kumkum: #b3262c; /* the saree's red -- primary actions, the "&" */
+  --kumkum-deep: #8b1b21;
+  --leaf: #587626; /* the dhoti's green border */
+  --leaf-soft: #9db35c;
+  --teak: #4a2a1d; /* henna -- nav, footer, the chat header */
+  --teak-soft: #6d4331;
+  --brass: #c49d6c; /* the dhoti's tan */
+  --ink: #2b211c; /* the sketch's ink line */
+  --ink-soft: #66544a;
 
   --background: var(--paper);
   --foreground: var(--ink);
   --accent: var(--kumkum);
-  --accent-soft: #f7dfa6;
+  --accent-soft: #f8e2c2;
   --accent-deep: var(--teak);
   --gold: var(--brass);
-  --gold-soft: #f3e2b8;
+  --gold-soft: #f2e5d0;
   --blush: var(--marigold);
-  --hairline: #d6bb86;
-  --blush-soft: #f8e7c2;
+  --hairline: #e5d6c0;
+  --blush-soft: #fbe9d8;
 }
 
 @theme inline {
@@ -82,10 +83,15 @@ body {
   color: var(--teak);
 }
 
-:focus-visible {
-  outline: 2px solid var(--kumkum);
-  outline-offset: 3px;
-  border-radius: 2px;
+/* In the base layer so a component's own focus utilities (e.g. the chat
+   input's focus:outline-none + kumkum border) can override it; unlayered,
+   it beat every Tailwind utility and drew a square ring on rounded inputs. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--kumkum);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
 }
 
 a {

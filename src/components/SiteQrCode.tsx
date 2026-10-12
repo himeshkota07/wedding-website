@@ -6,7 +6,7 @@ export default async function SiteQrCode() {
     type: "svg",
     margin: 1,
     width: 148,
-    color: { dark: "#3d2517", light: "#fbf3e2" },
+    color: { dark: "#4a2a1d", light: "#fcfaf6" },
   });
 
   return (
