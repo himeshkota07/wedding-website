@@ -260,7 +260,7 @@ Painted umbrellas and jasmine hang over a scalloped arch, and the function is wr
 - **Focus:** the border turns kumkum and the native outline is dropped.
 
 ### Navigation (the canopy beam)
-- **Style:** a sticky teak bar 64px tall, the couple's burgundy wax-seal logo (`public/theme/logo-seal.png`, 56px tall), and Anek links at 0.95rem in paper/85%. Hover turns a link turmeric with an 8px-offset underline. A brass rule and carved scallop trim hang beneath it.
+- **Style:** a sticky teak bar 64px tall, the couple's burgundy wax-seal logo (`public/theme/logo-seal.png`, 96px tall, hung from the bar: centred on its bottom edge, half on the bar and half over the page), and Anek links at 0.95rem in paper/85%. Hover turns a link turmeric with an 8px-offset underline. A brass rule and carved scallop trim hang beneath it.
 - **Mobile:** below lg, a menu button opens a two-column link grid inside the beam, with height animated at 0.28s.
 
 ### Thoranam

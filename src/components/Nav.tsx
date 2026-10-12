@@ -27,8 +27,15 @@ export default function Nav() {
     <header className="sticky top-0 z-30">
       <div className="bg-teak text-paper">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
-          {/* The couple's wax seal. id="site-logo" is where the intro's seal flies to as the curtain ends. */}
-          <Link href="/#top" onClick={() => setOpen(false)} aria-label="Tarunya & Ashish, back to top" className="shrink-0">
+          {/* The couple's wax seal, hung from the beam: centred on the bar's bottom edge, half on the bar and
+              half over the page. The link keeps the seal's width in the row; the seal itself is positioned
+              absolutely so it can overhang. id="site-logo" is where the intro's seal flies to. */}
+          <Link
+            href="/#top"
+            onClick={() => setOpen(false)}
+            aria-label="Tarunya & Ashish, back to top"
+            className="relative h-full w-[4.75rem] shrink-0"
+          >
             <Image
               id="site-logo"
               src="/theme/logo-seal.png"
@@ -36,8 +43,8 @@ export default function Nav() {
               width={508}
               height={640}
               preload
-              sizes="48px"
-              className="h-14 w-auto drop-shadow-[0_2px_3px_rgb(0_0_0/0.35)]"
+              sizes="80px"
+              className="absolute left-0 top-4 z-10 h-24 w-auto drop-shadow-[0_4px_6px_rgb(0_0_0/0.35)]"
             />
           </Link>
 
@@ -75,7 +82,7 @@ export default function Nav() {
               transition={{ duration: reduceMotion ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }}
               className="overflow-hidden lg:hidden"
             >
-              <ul className="grid grid-cols-2 gap-x-4 border-t border-paper/15 px-5 pb-5 pt-3">
+              <ul className="grid grid-cols-2 gap-x-4 border-t border-paper/15 px-5 pb-5 pt-14">
                 {links.map((link) => (
                   <li key={link.href}>
                     <Link
