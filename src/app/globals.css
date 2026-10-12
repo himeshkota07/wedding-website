@@ -19,7 +19,8 @@
   --teak-soft: #6d4331;
   --brass: #c49d6c; /* the dhoti's tan */
   --ink: #2b211c; /* the sketch's ink line */
-  --olive: #5c5835; /* olive velvet -- the nav bar (average of public/theme/nav-velvet.jpg) */
+  --olive: #5c5835; /* olive velvet (average of public/theme/nav-velvet.jpg) -- the previous nav bar */
+  --haldi: #f8c25a; /* the bride's dress in the Haldi illustration -- the nav bar; ink text on it is 9.6:1 */
   --ink-soft: #66544a;
 
   --background: var(--paper);
@@ -60,6 +61,7 @@
   --color-teak-soft: var(--teak-soft);
   --color-brass: var(--brass);
   --color-olive: var(--olive);
+  --color-haldi: var(--haldi);
   --font-sans: var(--font-body);
   --font-display: var(--font-heading);
   --font-script: var(--font-names);

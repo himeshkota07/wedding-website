@@ -32,14 +32,14 @@ export function Toran({ className = "", tone = "leaf" }: { className?: string; t
   );
 }
 
-/** Carved scallops hanging beneath the nav bar, in the bar's olive. */
+/** Carved scallops hanging beneath the nav bar, in the bar's haldi yellow. */
 export function BeamTrim({ className = "" }: { className?: string }) {
   const id = useId();
   return (
     <svg aria-hidden className={`block h-3 w-full ${className}`} preserveAspectRatio="none">
       <defs>
         <pattern id={id} width="18" height="12" patternUnits="userSpaceOnUse">
-          <path d="M0,0 H18 V3 Q9,13 0,3 Z" fill="var(--olive)" />
+          <path d="M0,0 H18 V3 Q9,13 0,3 Z" fill="var(--haldi)" />
           <circle cx="9" cy="6.5" r="1.3" fill="var(--brass)" />
         </pattern>
       </defs>

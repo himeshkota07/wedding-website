@@ -260,7 +260,7 @@ Painted umbrellas and jasmine hang over a scalloped arch, and the function is wr
 - **Focus:** the border turns kumkum and the native outline is dropped.
 
 ### Navigation (the canopy beam)
-- **Style:** a sticky olive-velvet bar 64px tall (`public/theme/nav-velvet.jpg`, darkened so paper text stays above 5.5:1, over the `olive` token), the couple's burgundy wax-seal logo (`public/theme/logo-seal.png`, 96px tall, hung from the bar: centred on its bottom edge, half on the bar and half over the page), and Anek links at 0.95rem in paper/85%. Hover turns a link turmeric with an 8px-offset underline. A brass rule and carved scallop trim hang beneath it.
+- **Style:** a sticky haldi-yellow bar 64px tall (`haldi` #f8c25a, the bride's dress in the Haldi illustration) with ink text (9.6:1; white would be 1.6:1) and kumkum-deep hovers, the couple's burgundy wax-seal logo (`public/theme/logo-seal.png`, 96px tall, hung from the bar: centred on its bottom edge, half on the bar and half over the page), and Anek links at 0.95rem in paper/85%. Hover turns a link turmeric with an 8px-offset underline. A brass rule and carved scallop trim hang beneath it.
 - **Mobile:** below lg, a menu button opens a two-column link grid inside the beam, with height animated at 0.28s.
 
 ### Thoranam

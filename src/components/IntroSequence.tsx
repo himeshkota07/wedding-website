@@ -114,8 +114,9 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
             transition={{ duration: FLY_DURATION_S, delay: FLY_AT_MS / 1000, ease: "easeInOut" }}
           />
 
-          {/* Centred by the wrapper so the seal's own transform is free for the flight. */}
-          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+          {/* Centred by the wrapper so the seal's own transform is free for the flight; the bottom padding
+              lifts it a little above centre, clear of the couple at the foot of the illustration. */}
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center pb-[18svh]">
             <motion.div
               ref={sealRef}
               initial={{ scale: 0.85, opacity: 0 }}
