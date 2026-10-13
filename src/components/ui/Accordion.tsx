@@ -6,31 +6,31 @@ import { Plus } from "lucide-react";
 
 type AccordionItem = { id: string; question: string; answer: string };
 
-/** Question rows ruled like a ledger, set on the leaf-green field. */
+/** Question rows ruled like a ledger, set on the FAQ's sage wash. */
 export default function Accordion({ items }: { items: AccordionItem[] }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const reduceMotion = useReducedMotion();
   const baseId = useId();
 
   return (
-    <div className="border-b border-paper/25">
+    <div className="border-b border-ink/15">
       {items.map((item) => {
         const open = openId === item.id;
         const panelId = `${baseId}-${item.id}`;
         return (
-          <div key={item.id} className="border-t border-paper/25">
+          <div key={item.id} className="border-t border-ink/15">
             <button
               type="button"
               onClick={() => setOpenId(open ? null : item.id)}
               aria-expanded={open}
               aria-controls={panelId}
-              className="flex min-h-14 w-full items-center justify-between gap-4 py-4 text-left font-display text-xl text-paper transition-colors hover:text-turmeric"
+              className="flex min-h-14 w-full items-center justify-between gap-4 py-4 text-left font-display text-xl text-ink transition-colors hover:text-kumkum-deep"
             >
               {item.question}
               <motion.span
                 animate={{ rotate: open ? 45 : 0 }}
                 transition={{ duration: reduceMotion ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
-                className="shrink-0 text-turmeric"
+                className="shrink-0 text-kumkum"
               >
                 <Plus size={22} />
               </motion.span>
@@ -43,7 +43,7 @@ export default function Accordion({ items }: { items: AccordionItem[] }) {
               className="grid"
             >
               <div className="overflow-hidden">
-                <p className="max-w-[60ch] pb-5 text-lg text-paper/85">{item.answer}</p>
+                <p className="max-w-[60ch] pb-5 text-lg text-ink-soft">{item.answer}</p>
               </div>
             </motion.div>
           </div>

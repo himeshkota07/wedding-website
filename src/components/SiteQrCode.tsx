@@ -12,7 +12,7 @@ export default async function SiteQrCode() {
   return (
     <figure className="flex items-center gap-5">
       <div className="shrink-0 bg-paper p-2 ring-1 ring-brass" dangerouslySetInnerHTML={{ __html: svg }} />
-      <figcaption className="max-w-[22ch] text-paper/85">
+      <figcaption className="max-w-[22ch] text-ink-soft">
         Scan to open this site on another phone, or print it on an invite.
       </figcaption>
     </figure>

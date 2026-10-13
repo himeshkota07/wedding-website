@@ -149,6 +149,8 @@ components:
 
 ## Overview
 
+> **2026-10-13 update: "Haldi".** The palette now follows the Haldi illustration that opens the site: an ivory nav and footer, `brass` is now gold (#c9a24a) for every line, `leaf` is sage (#5f6d3c) for the chat header, music button, icons and garland leaves, and the old solid green (FAQ) and maroon (Contact, footer) fields are replaced by light washes: `sage-tint` for FAQ and `blush-tint` for Contact, with ink text. Strong colour is kept for small accents: the burgundy seal and kumkum buttons. This supersedes the Committed Field Rule below.
+
 > **2026-10-12 update: "Watercolour".** At the user's direction the theme now comes from a watercolour of the couple's feet (`public/theme/couple-feet.jpg`): her henna'd feet in a red-and-saffron saree, his in a tan dhoti with a green border, orange petals scattered around. The palette tokens keep their old names (`teak` is now henna brown, `brass` the dhoti's tan, `kumkum` the saree red), so the rules below still read correctly by token. The hero is centred, with the painting standing at the foot of the page instead of the pillar and garland art. Functions are **Umbrella Cards** (`public/theme/event-card.jpg`), not slips. The chat is the site's front door: it opens by itself after the curtain. The umbrella card and the chat panel may carry one soft shadow; everything else stays flat.
 
 **Creative North Star: "Walk Through the Mandapam"**
@@ -260,7 +262,7 @@ Painted umbrellas and jasmine hang over a scalloped arch, and the function is wr
 - **Focus:** the border turns kumkum and the native outline is dropped.
 
 ### Navigation (the canopy beam)
-- **Style:** a sticky haldi-yellow bar 64px tall (`haldi` #f8c25a, the bride's dress in the Haldi illustration) with ink text (9.6:1; white would be 1.6:1) and kumkum-deep hovers, the couple's burgundy wax-seal logo (`public/theme/logo-seal.png`, 96px tall, hung from the bar: centred on its bottom edge, half on the bar and half over the page), and Anek links at 0.95rem in paper/85%. Hover turns a link turmeric with an 8px-offset underline. A brass rule and carved scallop trim hang beneath it.
+- **Style:** a sticky ivory bar 64px tall (`ivory` #f9f4e8, the Haldi illustration's paper) with ink text (14:1) and kumkum-deep hovers, edged below by gold-dotted ivory scallops and a gold rule, the couple's burgundy wax-seal logo (`public/theme/logo-seal.png`, 96px tall, hung from the bar: centred on its bottom edge, half on the bar and half over the page), and Anek links at 0.95rem in paper/85%. Hover turns a link turmeric with an 8px-offset underline. A brass rule and carved scallop trim hang beneath it.
 - **Mobile:** below lg, a menu button opens a two-column link grid inside the beam, with height animated at 0.28s.
 
 ### Thoranam

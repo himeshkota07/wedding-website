@@ -93,7 +93,7 @@ export default function FloatingChat() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.25 }}
-            className="fixed inset-0 z-40 bg-teak/20"
+            className="fixed inset-0 z-40 bg-ink/15"
           />
         )}
       </AnimatePresence>
@@ -114,7 +114,7 @@ export default function FloatingChat() {
         style={{ visibility: "hidden" }}
         className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 flex h-[60dvh] max-h-[calc(100dvh-1.5rem)] flex-col overflow-hidden rounded-3xl bg-paper shadow-2xl ring-1 ring-ink/10 sm:left-auto sm:right-5 sm:bottom-5 sm:h-[min(40rem,70dvh)] sm:w-[26rem]"
       >
-        <div className="flex items-center justify-between gap-3 bg-teak py-3 pl-5 pr-3 text-paper">
+        <div className="flex items-center justify-between gap-3 bg-leaf py-3 pl-5 pr-3 text-paper">
           <div className="min-w-0">
             <p className="font-display text-xl leading-tight">Ask us anything</p>
             <p className="text-base text-paper/80">

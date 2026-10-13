@@ -25,9 +25,8 @@ export default function Nav() {
 
   return (
     <header className="sticky top-0 z-30">
-      {/* Haldi yellow, from the bride's dress in the opening illustration. Text on it is ink (9.6:1);
-          paper/white would be unreadable (1.6:1), and hovers use kumkum-deep since plain kumkum is under 4.5:1. */}
-      <div className="bg-haldi text-ink">
+      {/* Ivory, the Haldi illustration's paper, edged in gold below. Ink text (14:1), kumkum-deep hovers. */}
+      <div className="bg-ivory text-ink">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
           {/* The couple's wax seal, hung from the beam: centred on the bar's bottom edge, half on the bar and
               half over the page. The link keeps the seal's width in the row; the seal itself is positioned

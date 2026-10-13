@@ -32,19 +32,20 @@ export function Toran({ className = "", tone = "leaf" }: { className?: string; t
   );
 }
 
-/** Carved scallops hanging beneath the nav bar, in the bar's haldi yellow. */
+/** Scallops hanging beneath the nav bar: the bar's ivory, dotted and ruled in gold. */
 export function BeamTrim({ className = "" }: { className?: string }) {
   const id = useId();
   return (
     <svg aria-hidden className={`block h-3 w-full ${className}`} preserveAspectRatio="none">
       <defs>
         <pattern id={id} width="18" height="12" patternUnits="userSpaceOnUse">
-          <path d="M0,0 H18 V3 Q9,13 0,3 Z" fill="var(--haldi)" />
+          <path d="M0,0 H18 V3 Q9,13 0,3 Z" fill="var(--ivory)" />
           <circle cx="9" cy="6.5" r="1.3" fill="var(--brass)" />
         </pattern>
       </defs>
       <rect width="100%" height="1.5" fill="var(--brass)" />
       <rect y="1.5" width="100%" height="10.5" fill={`url(#${id})`} />
+      <rect y="11.5" width="100%" height="0.5" fill="var(--brass)" opacity="0.6" />
     </svg>
   );
 }

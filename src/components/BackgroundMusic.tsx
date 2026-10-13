@@ -27,7 +27,7 @@ export default function BackgroundMusic() {
         type="button"
         onClick={toggle}
         aria-label={playing ? "Pause background music" : "Play background music"}
-        className="fixed bottom-4 left-4 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-teak text-turmeric ring-2 ring-paper outline outline-1 outline-offset-2 outline-brass transition-colors hover:text-paper sm:bottom-5 sm:left-5"
+        className="fixed bottom-4 left-4 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-leaf text-paper ring-2 ring-paper outline outline-1 outline-offset-2 outline-brass transition-colors hover:bg-kumkum sm:bottom-5 sm:left-5"
       >
         {playing ? <Volume2 size={18} /> : <VolumeX size={18} />}
       </button>
