@@ -15,7 +15,6 @@ const links = [
   { href: "/#family", label: "Family" },
   { href: "/#gallery", label: "Gallery" },
   { href: "/#wishes", label: "Wishes" },
-  { href: "/#faq", label: "FAQ & Chat" },
   { href: "/#contact", label: "Contact" },
 ];
 

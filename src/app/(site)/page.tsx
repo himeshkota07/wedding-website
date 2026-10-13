@@ -9,7 +9,6 @@ import VenueSection from "@/components/sections/VenueSection";
 import FamilySection from "@/components/sections/FamilySection";
 import GallerySection from "@/components/sections/GallerySection";
 import WishesSection from "@/components/sections/WishesSection";
-import FaqSection from "@/components/sections/FaqSection";
 import ContactSection from "@/components/sections/ContactSection";
 
 export const revalidate = 60;
@@ -36,7 +35,6 @@ export default async function Home() {
       <FamilySection />
       <GallerySection />
       <WishesSection />
-      <FaqSection />
       <ContactSection qrCode={<SiteQrCode />} />
     </>
   );

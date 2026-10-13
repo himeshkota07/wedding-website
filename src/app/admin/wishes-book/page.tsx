@@ -3,7 +3,7 @@ import Image from "next/image";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { getHomeHero } from "@/lib/site-settings";
-import { formatWishDate, type Wish } from "@/lib/wishes";
+import { WISH_COLUMNS, LEGACY_WISH_COLUMNS, formatWishDate, isMissingColumnError, withWishDefaults, type Wish } from "@/lib/wishes";
 import { Toran } from "@/components/ui/motifs";
 import PrintButton from "./PrintButton";
 
@@ -35,15 +35,11 @@ export default async function PelliPustakam() {
   await requireAdmin();
 
   const admin = createAdminSupabase();
-  const [{ data }, hero] = await Promise.all([
-    admin
-      .from("wishes")
-      .select("id, name, relation, message, created_at")
-      .eq("approved", true)
-      .order("created_at", { ascending: true }),
-    getHomeHero(admin),
-  ]);
-  const wishes = (data ?? []) as Wish[];
+  const read = (columns: string) =>
+    admin.from("wishes").select(columns).eq("approved", true).order("created_at", { ascending: true });
+  const [first, hero] = await Promise.all([read(WISH_COLUMNS), getHomeHero(admin)]);
+  const result = isMissingColumnError(first.error) ? await read(LEGACY_WISH_COLUMNS) : first;
+  const wishes = ((result.data ?? []) as unknown as Wish[]).map(withWishDefaults);
   const couple = `${hero.bride_name} & ${hero.groom_name}`;
 
   return (
@@ -101,9 +97,17 @@ export default async function PelliPustakam() {
               Leaf {i + 1} of {wishes.length}
             </p>
             <div className="flex flex-1 flex-col justify-center">
+              {wish.photo_url && (
+                // eslint-disable-next-line @next/next/no-img-element -- guest photo on Cloudinary
+                <img src={wish.photo_url} alt="" className="mb-[6mm] max-h-[62mm] w-full object-cover" />
+              )}
               <p
                 className={`whitespace-pre-line font-display leading-relaxed text-ink ${
-                  wish.message.length > 380 ? "text-[12pt]" : wish.message.length > 180 ? "text-[14pt]" : "text-[17pt]"
+                  wish.message.length > (wish.photo_url ? 200 : 380)
+                    ? "text-[12pt]"
+                    : wish.message.length > (wish.photo_url ? 90 : 180)
+                      ? "text-[14pt]"
+                      : "text-[17pt]"
                 }`}
               >
                 {wish.message}

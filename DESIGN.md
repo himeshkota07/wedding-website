@@ -277,6 +277,9 @@ On every visit, the couple's Haldi illustration (`public/theme/intro-haldi.jpg`;
 ### Chat (the front door)
 The marigold curtain plays on every visit, and the chat opens by itself once it parts. On a phone it is a sheet over the bottom ~60% of the screen, with the invitation still visible above and at the sides under a light wash; on desktop it is a panel at the bottom right. A "See invitation" button (or Escape, or a tap on the page behind) minimises it to a kumkum "Ask us anything" pill at the bottom right. Minimising lasts for that page view only; every load opens the chat again. The guest never picks a language: Gemini detects English, Telugu or Kannada from the voice, and the bot replies in the language and the mode the guest used: a typed question gets a text answer, and a spoken one is also read aloud automatically in the matching voice. Suggested-question pills sit under the greeting. Bubbles are paper-deep for incoming and kumkum for the guest's own, at 18px for elders.
 
+### Wishing Toran (wishes wall)
+Built on Himesh's Wishing Toran (PR #15). A marigold-and-mango-leaf toran (the `Toran` motif) runs across a strip that scrolls sideways; every wish hangs from it as a die-cut paper tag on its own gold thread, newest first, with thread lengths cycling (56–150px) so the tags hang staggered like hand-tied gift tags. The first place on the string is a dashed "Tie your wish" tag. Tags take the guest's chosen paper (haldi, blush, sage, ivory); a photo, if added, fills the tag behind a dark wash so the text stays paper-white. Each tag sways once as it scrolls into view (skipped under reduced motion); a newly tied wish drops onto the start of the string. Tap a tag to open it as a full slip with previous/next. The form takes name (required), relation, the wish (typed, or spoken through the mic in English/Telugu/Kannada), a tag colour and one optional photo. Arrows appear on laptops; phones swipe.
+
 ## Do's and Don'ts
 
 ### Do:
