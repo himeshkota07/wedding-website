@@ -22,43 +22,43 @@ colors:
   blush-soft: "#fbe9d8"
 typography:
   display:
-    fontFamily: "Courgette, cursive"
+    fontFamily: "Tangerine, cursive"
     fontSize: "clamp(3.25rem, 10vw, 6rem)"
     fontWeight: 400
     lineHeight: 1.05
   headline:
-    fontFamily: "Kurale, Georgia, serif"
+    fontFamily: "Cinzel, Georgia, serif"
     fontSize: "clamp(2.25rem, 5vw, 3rem)"
     fontWeight: 400
     lineHeight: 1.25
   title:
-    fontFamily: "Kurale, Georgia, serif"
+    fontFamily: "Cinzel, Georgia, serif"
     fontSize: "1.875rem"
     fontWeight: 400
     lineHeight: 1.2
   lead:
-    fontFamily: "Kurale, Georgia, serif"
+    fontFamily: "Cinzel, Georgia, serif"
     fontSize: "1.5rem"
     fontWeight: 400
     lineHeight: 1.375
   numeral:
-    fontFamily: "Kurale, Georgia, serif"
+    fontFamily: "Cinzel, Georgia, serif"
     fontSize: "clamp(2.25rem, 5vw, 3rem)"
     fontWeight: 400
     lineHeight: 1
     fontFeature: "tnum"
   body:
-    fontFamily: "Anek Latin, system-ui, sans-serif"
+    fontFamily: "Crimson Pro, Georgia, serif"
     fontSize: "1.0625rem"
     fontWeight: 400
     lineHeight: 1.6
   body-large:
-    fontFamily: "Anek Latin, system-ui, sans-serif"
+    fontFamily: "Crimson Pro, Georgia, serif"
     fontSize: "1.125rem"
     fontWeight: 400
     lineHeight: 1.6
   label:
-    fontFamily: "Anek Latin, system-ui, sans-serif"
+    fontFamily: "Crimson Pro, Georgia, serif"
     fontSize: "0.875rem"
     fontWeight: 600
     lineHeight: 1.4
@@ -148,6 +148,8 @@ components:
 # Design System: Tarunya & Ashish Wedding
 
 ## Overview
+
+> **2026-10-13 type: "Heritage letterpress".** Tangerine (bold at small sizes) for the couple's names and signatures, Cinzel for headings and labels, Crimson Pro for reading text, with Noto Serif Telugu / Kannada for those scripts. Tangerine draws small on its body, so script text runs about 1.4x the size it did in Courgette. The invitation line is Crimson Pro italic, not Cinzel. This supersedes the Courgette / Kurale / Anek descriptions below.
 
 > **2026-10-13 update: "Haldi".** The palette now follows the Haldi illustration that opens the site: an ivory nav and footer, `brass` is now gold (#c9a24a) for every line, `leaf` is sage (#5f6d3c) for the chat header, music button, icons and garland leaves, and the old solid green (FAQ) and maroon (Contact, footer) fields are replaced by light washes: `sage-tint` for FAQ and `blush-tint` for Contact, with ink text. Strong colour is kept for small accents: the burgundy seal and kumkum buttons. This supersedes the Committed Field Rule below.
 

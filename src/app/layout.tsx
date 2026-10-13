@@ -1,26 +1,41 @@
 import type { Metadata, Viewport } from "next";
-import { Anek_Latin, Courgette, Kurale } from "next/font/google";
+import { Cinzel, Crimson_Pro, Noto_Serif_Kannada, Noto_Serif_Telugu, Tangerine } from "next/font/google";
 import "./globals.css";
 
-// Body: Anek, from an Indian foundry, with Telugu and Kannada siblings for the
-// planned language toggle.
-const anek = Anek_Latin({
+// "Heritage letterpress": calligraphy for the couple's names, Roman capitals
+// for headings and a book serif for reading, like a printed patrika.
+
+// Body: a book serif, comfortable at phone size for elders.
+const crimson = Crimson_Pro({
   variable: "--font-body",
   subsets: ["latin"],
 });
 
-// Headings: a letterpress serif with the warmth of a printed patrika.
-const kurale = Kurale({
+// Headings: carved Roman capitals.
+const cinzel = Cinzel({
   variable: "--font-heading",
   subsets: ["latin"],
-  weight: "400",
 });
 
-// The couple's names, in the brush lettering of the printed invite.
-const courgette = Courgette({
+// The couple's names (and other signatures): pen calligraphy.
+const tangerine = Tangerine({
   variable: "--font-names",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "700"],
+});
+
+// Telugu and Kannada in the same serif spirit, used wherever those scripts
+// appear (the chat, wishes). Not preloaded: the browser only fetches them
+// when a page actually shows Telugu or Kannada text.
+const notoSerifTelugu = Noto_Serif_Telugu({
+  variable: "--font-telugu",
+  subsets: ["telugu"],
+  preload: false,
+});
+const notoSerifKannada = Noto_Serif_Kannada({
+  variable: "--font-kannada",
+  subsets: ["kannada"],
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -40,7 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${anek.variable} ${kurale.variable} ${courgette.variable} h-full antialiased`}
+      className={`${crimson.variable} ${cinzel.variable} ${tangerine.variable} ${notoSerifTelugu.variable} ${notoSerifKannada.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

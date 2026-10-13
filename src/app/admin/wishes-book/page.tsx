@@ -75,7 +75,7 @@ export default async function PelliPustakam() {
         <Image src="/invite/ganesha.jpg" alt="" width={100} height={115} className="h-[16mm] w-auto mix-blend-multiply" />
         <p className="mt-[10mm] font-display text-[13pt] uppercase tracking-[0.25em] text-ink-soft">Pelli Pustakam</p>
         <p className="mt-[3mm] font-display text-[14pt] text-ink-soft">Wishes for</p>
-        <h1 className="mt-[2mm] px-[12mm] font-script text-[34pt] leading-tight text-ink">{couple}</h1>
+        <h1 className="mt-[2mm] px-[12mm] font-script text-[46pt] font-bold leading-tight text-ink">{couple}</h1>
         <p className="mt-[8mm] max-w-[100mm] text-[11pt] leading-relaxed text-ink-soft">
           {wishes.length > 0 ? `${wishes.length} wish${wishes.length === 1 ? "" : "es"} tied to their toran by family and friends, ${dateSpan(wishes)}.` : "No wishes have been tied yet."}
         </p>
@@ -112,7 +112,7 @@ export default async function PelliPustakam() {
               >
                 {wish.message}
               </p>
-              <p className="mt-[8mm] font-script text-[22pt] leading-tight text-kumkum">{wish.name}</p>
+              <p className="mt-[8mm] font-script text-[30pt] font-bold leading-tight text-kumkum">{wish.name}</p>
               {wish.relation && <p className="text-[11pt] text-ink-soft">{wish.relation}</p>}
             </div>
             <p className="border-t border-brass/60 pt-[3mm] text-[9pt] text-ink-soft">{formatWishDate(wish.created_at)}</p>
@@ -122,7 +122,7 @@ export default async function PelliPustakam() {
 
       {/* Closing page */}
       <Sheet className="items-center justify-center bg-paper-deep text-center">
-        <p className="font-script text-[28pt] text-kumkum">With love</p>
+        <p className="font-script text-[38pt] font-bold text-kumkum">With love</p>
         <p className="mt-[4mm] font-display text-[13pt] text-ink-soft">to {couple}</p>
       </Sheet>
     </div>

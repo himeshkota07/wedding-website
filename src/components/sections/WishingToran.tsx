@@ -43,7 +43,7 @@ function WishSlip({ wish, className = "" }: { wish: Wish; className?: string }) 
           <img src={wish.photo_url} alt={`Photo from ${wish.name}`} className="mb-4 max-h-80 w-full object-cover" />
         )}
         <p className="whitespace-pre-line text-lg leading-relaxed text-ink">{wish.message}</p>
-        <p className="mt-4 font-script text-2xl leading-tight text-kumkum">{wish.name}</p>
+        <p className="mt-4 font-script text-4xl font-bold leading-tight text-kumkum">{wish.name}</p>
         <p className="text-ink-soft">
           {wish.relation && <span>{wish.relation} · </span>}
           {formatWishDate(wish.created_at)}
@@ -113,7 +113,7 @@ function WishTag({
           <p className={`relative line-clamp-6 whitespace-pre-line text-base leading-snug ${photo ? "text-paper" : "text-ink"}`}>
             {wish.message}
           </p>
-          <p className={`relative mt-3 font-script text-xl leading-tight ${photo ? "text-haldi" : "text-kumkum"}`}>{wish.name}</p>
+          <p className={`relative mt-3 font-script text-3xl font-bold leading-tight ${photo ? "text-haldi" : "text-kumkum"}`}>{wish.name}</p>
         </div>
       </motion.button>
     </li>

@@ -9,7 +9,7 @@ export default async function Footer() {
       <div className="flex items-end justify-center gap-4 sm:gap-10">
         <WeddingDancer variant="bride" size={112} />
         <div className="pb-3">
-          <p className="font-script text-4xl text-kumkum sm:text-5xl">
+          <p className="font-script text-5xl font-bold text-kumkum sm:text-6xl">
             {hero.bride_name} &amp; {hero.groom_name}
           </p>
           <p className="mt-2 text-ink-soft">With love, from both our families.</p>

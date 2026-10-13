@@ -68,9 +68,10 @@
   --color-ivory: var(--ivory);
   --color-sage-tint: var(--sage-tint);
   --color-blush-tint: var(--blush-tint);
-  --font-sans: var(--font-body);
-  --font-display: var(--font-heading);
-  --font-script: var(--font-names);
+  /* Latin first; Telugu and Kannada glyphs fall through to their Noto Serif siblings. */
+  --font-sans: var(--font-body), var(--font-telugu), var(--font-kannada), Georgia, serif;
+  --font-display: var(--font-heading), var(--font-telugu), var(--font-kannada), Georgia, serif;
+  --font-script: var(--font-names), var(--font-telugu), var(--font-kannada), cursive;
 }
 
 html {

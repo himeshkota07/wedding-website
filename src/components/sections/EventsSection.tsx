@@ -68,7 +68,7 @@ function UmbrellaCard(p: CardProps) {
         <p className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">
           {[p.weekday, p.month].filter(Boolean).join(" · ") || "\u00a0"}
         </p>
-        <span className="font-script text-6xl leading-tight text-kumkum">{p.day}</span>
+        <span className="font-script text-7xl font-bold leading-tight text-kumkum">{p.day}</span>
         <h3 className="mt-1 font-display text-3xl leading-tight text-ink">{p.name}</h3>
         {p.aside && <p className="mt-1 text-ink-soft">{p.aside}</p>}
         {p.description && <p className="mt-3 text-ink-soft">{p.description}</p>}
