@@ -12,9 +12,9 @@ const links = [
   { href: "/#our-story", label: "Our Story" },
   { href: "/#events", label: "Events" },
   { href: "/#venue", label: "Venue" },
+  { href: "/#wishes", label: "Wishes" },
   { href: "/#family", label: "Family" },
   { href: "/#gallery", label: "Gallery" },
-  { href: "/#wishes", label: "Wishes" },
   { href: "/#contact", label: "Contact" },
 ];
 

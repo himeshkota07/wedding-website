@@ -17,11 +17,11 @@ export default async function OurStorySection() {
         <div className="max-w-[65ch] space-y-5 text-lg">
           {paragraphs.map((p, i) =>
             i === 0 ? (
-              <p key={i} className="text-2xl italic leading-snug text-ink">
+              <p key={i} className="text-xl italic leading-relaxed text-ink">
                 {p}
               </p>
             ) : (
-              <p key={i} className="whitespace-pre-line text-ink-soft">
+              <p key={i} className="whitespace-pre-line leading-relaxed text-ink">
                 {p}
               </p>
             ),
