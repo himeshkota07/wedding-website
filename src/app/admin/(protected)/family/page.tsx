@@ -1,3 +1,4 @@
+import SubmitButton from "@/components/admin/SubmitButton";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { Field, TextAreaField, FormActions } from "@/components/admin/Field";
 import { createFamilyMember, updateFamilyMember, deleteFamilyMember } from "./actions";
@@ -51,7 +52,7 @@ export default async function AdminFamilyPage() {
           <TextAreaField label="Bio" name="bio" span2 />
           <Field label="Sort order" name="sort_order" type="number" defaultValue={0} />
         </div>
-        <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Add family member</button>
+        <SubmitButton pendingLabel="Adding…" doneLabel="Added" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Add family member</SubmitButton>
       </form>
     </div>
   );

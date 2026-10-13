@@ -1,3 +1,4 @@
+import SubmitButton from "@/components/admin/SubmitButton";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { Field, FormActions } from "@/components/admin/Field";
 import { createContact, updateContact, deleteContact } from "./actions";
@@ -38,7 +39,7 @@ export default async function AdminContactsPage() {
           <Field label="WhatsApp link" name="whatsapp_link" />
           <Field label="Sort order" name="sort_order" type="number" defaultValue={0} />
         </div>
-        <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Add contact</button>
+        <SubmitButton pendingLabel="Adding…" doneLabel="Added" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Add contact</SubmitButton>
       </form>
     </div>
   );
