@@ -12,7 +12,7 @@ export default async function OurStorySection() {
   const signOff = paragraphs.length > 1 && paragraphs[paragraphs.length - 1].length <= 40 ? paragraphs.pop() : null;
 
   return (
-    <PageSection id="our-story" title="Our Story" subtitle="How we met, and how two families became one.">
+    <PageSection id="our-story" title="Our Story">
       {paragraphs.length > 0 ? (
         <div className="max-w-[65ch] space-y-5 text-lg">
           {paragraphs.map((p, i) =>
