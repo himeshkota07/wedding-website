@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { FAST_MODELS, generateWithFallback } from "@/lib/gemini";
 import { buildKnowledgeBase } from "@/lib/knowledge-base";
-import { SCRIPT_LANGUAGE, dominantScript, strayScriptLetters, type Script } from "@/lib/scripts";
+import { SCRIPT_LANGUAGE, dominantScript, dropBracketedEnglish, strayScriptLetters, type Script } from "@/lib/scripts";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 
 // Give retries room within Vercel's function budget, but the individual
@@ -44,6 +44,10 @@ function stripMarkdown(text: string) {
     .trim();
 }
 
+// Names written twice ("तरुण्या (Tarunya)") were also read aloud twice.
+const ONE_NAME_RULE =
+  "Write each name of a person or place once: either in this script or in English letters as in the Context, never both, and never add the other spelling in brackets.";
+
 /** Tells the model exactly which language and script to answer in, decided from the guest's own message. */
 function replyLanguageRule(target: Script) {
   if (target === "latin") {
@@ -54,7 +58,7 @@ function replyLanguageRule(target: Script) {
     .filter((s) => s !== target)
     .map((s) => SCRIPT_LANGUAGE[s].script)
     .join(" or ");
-  return `Reply language: ${language}. Write the entire reply in ${language}, in ${script} only. Do not use any ${others} letters anywhere in the reply. Names of people and places may stay in English letters.`;
+  return `Reply language: ${language}. Write the entire reply in ${language}, in ${script} only. Do not use any ${others} letters anywhere in the reply. ${ONE_NAME_RULE}`;
 }
 
 /**
@@ -74,7 +78,7 @@ async function enforceScript(reply: string, target: Script) {
             role: "user",
             parts: [
               {
-                text: `Rewrite this reply entirely in ${language}, using only ${script}. Keep the meaning, facts, dates, times and numbers exactly the same. Names of people and places may stay in English letters. Plain text, no Markdown. Reply with the rewritten text only.\n\n${reply}`,
+                text: `Rewrite this reply entirely in ${language}, using only ${script}. Keep the meaning, facts, dates, times and numbers exactly the same. ${ONE_NAME_RULE} Plain text, no Markdown. Reply with the rewritten text only.\n\n${reply}`,
               },
             ],
           },
@@ -83,7 +87,7 @@ async function enforceScript(reply: string, target: Script) {
       },
       FAST_MODELS,
     );
-    const fixed = stripMarkdown(rewrite.text?.trim() ?? "");
+    const fixed = dropBracketedEnglish(stripMarkdown(rewrite.text?.trim() ?? ""));
     return fixed && strayScriptLetters(fixed, target) < strayScriptLetters(reply, target) ? fixed : reply;
   } catch (error) {
     console.warn("[chat] script rewrite failed; sending the original reply:", error);
@@ -169,7 +173,7 @@ export async function POST(request: NextRequest) {
       config: { systemInstruction: SYSTEM_INSTRUCTION, temperature: 0.3 },
     });
 
-    const draft = stripMarkdown(response.text?.trim() ?? "");
+    const draft = dropBracketedEnglish(stripMarkdown(response.text?.trim() ?? ""));
     const reply =
       (draft && (await enforceScript(draft, target))) || "Sorry, I couldn't come up with an answer to that.";
     return NextResponse.json({ reply, escalate: false });
