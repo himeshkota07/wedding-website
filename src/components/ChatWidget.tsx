@@ -13,13 +13,13 @@ const SILENT_WAV = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAE
 
 // Starter questions for guests who don't know what to ask. Sent as typed, so
 // the bot answers in English unless the guest switches language themselves.
-const SUGGESTIONS = ["When is the muhurtham?", "Which functions are there?", "Where is the venue?", "Whom can I call for help?"];
+const SUGGESTIONS = ["When is the muhurtham?", "Which events are there?", "Where is the venue?", "Whom can I call for help?"];
 
 export default function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "model",
-      text: "Namaskaram! Ask me anything about the functions, venues or travel. Type or tap the mic and just speak, in English, Telugu or Kannada.",
+      text: "Namaskaram! Ask me anything about the events, venues or travel. Type or tap the mic and just speak, in English, Telugu, Kannada or Hindi.",
     },
   ]);
   const [input, setInput] = useState("");

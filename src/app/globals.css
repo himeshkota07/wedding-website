@@ -68,10 +68,13 @@
   --color-ivory: var(--ivory);
   --color-sage-tint: var(--sage-tint);
   --color-blush-tint: var(--blush-tint);
-  /* Latin first; Telugu and Kannada glyphs fall through to their Noto Serif siblings. */
-  --font-sans: var(--font-body), var(--font-telugu), var(--font-kannada), Georgia, serif;
-  --font-display: var(--font-heading), var(--font-telugu), var(--font-kannada), Georgia, serif;
-  --font-script: var(--font-names), var(--font-telugu), var(--font-kannada), cursive;
+  /* One job per face: Cinzel for headings and numerals (display), Crimson Pro
+     for all reading text (sans), Tangerine only for the couple's names and
+     signatures (script).
+     Latin first; Telugu, Kannada and Hindi glyphs fall through to their Noto Serif siblings. */
+  --font-sans: var(--font-body), var(--font-telugu), var(--font-kannada), var(--font-devanagari), Georgia, serif;
+  --font-display: var(--font-heading), var(--font-telugu), var(--font-kannada), var(--font-devanagari), Georgia, serif;
+  --font-script: var(--font-names), var(--font-telugu), var(--font-kannada), var(--font-devanagari), cursive;
 }
 
 html {

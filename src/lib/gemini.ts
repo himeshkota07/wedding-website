@@ -88,15 +88,20 @@ export async function generateWithFallback(params: Omit<GenerateContentParameter
   throw lastError;
 }
 
-export type SpokenLanguage = "en" | "te" | "kn";
+const SPOKEN_LANGUAGES = ["en", "te", "kn", "hi"] as const;
+export type SpokenLanguage = (typeof SPOKEN_LANGUAGES)[number];
+
+function isSpokenLanguage(value: unknown): value is SpokenLanguage {
+  return typeof value === "string" && (SPOKEN_LANGUAGES as readonly string[]).includes(value);
+}
 
 // Asking for the language *before* the transcript matters: free-form
 // transcription wrote Kannada speech in Telugu script (the two sound alike),
 // while naming the language first got all three right -- confirmed against
 // TTS-generated English/Telugu/Kannada clips. Google Speech-to-Text's own
 // multi-language detection did worse still (Telugu came back as English).
-const TRANSCRIBE_PROMPT = `A wedding guest recorded this voice question. Identify the main spoken language (English, Telugu, or Kannada), then transcribe the speech word for word.
-Telugu and Kannada sound similar; listen carefully to vocabulary and endings before deciding. Write the transcript in the script of the identified language (Kannada in Kannada script, Telugu in Telugu script); keep any English words in English. Transcribe the complete utterance to the end. If there is no intelligible speech, use language "none" and an empty transcript.`;
+const TRANSCRIBE_PROMPT = `A wedding guest recorded this voice question. Identify the main spoken language (English, Telugu, Kannada, or Hindi), then transcribe the speech word for word.
+Telugu and Kannada sound similar; listen carefully to vocabulary and endings before deciding. Write the transcript in the script of the identified language (Kannada in Kannada script, Telugu in Telugu script, Hindi in Devanagari); keep any English words in English. Transcribe the complete utterance to the end. If there is no intelligible speech, use language "none" and an empty transcript.`;
 
 export async function transcribeWithGemini(
   base64Audio: string,
@@ -114,7 +119,7 @@ export async function transcribeWithGemini(
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          language: { type: Type.STRING, enum: ["en", "te", "kn", "none"] },
+          language: { type: Type.STRING, enum: [...SPOKEN_LANGUAGES, "none"] },
           transcript: { type: Type.STRING },
         },
         required: ["language", "transcript"],
@@ -123,6 +128,6 @@ export async function transcribeWithGemini(
     },
   });
   const parsed = JSON.parse(response.text ?? "{}") as { language?: string; transcript?: string };
-  const language = parsed.language === "en" || parsed.language === "te" || parsed.language === "kn" ? parsed.language : null;
+  const language = isSpokenLanguage(parsed.language) ? parsed.language : null;
   return { text: (parsed.transcript ?? "").trim(), language };
 }

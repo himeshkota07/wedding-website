@@ -6,6 +6,13 @@ import { ChevronDown, MessageCircle } from "lucide-react";
 import ChatWidget from "@/components/ChatWidget";
 import { INTRO_DONE_EVENT, isIntroDone } from "@/components/IntroSequence";
 
+const CHAT_LANGUAGES = [
+  ["en", "English"],
+  ["te", "తెలుగు"],
+  ["kn", "ಕನ್ನಡ"],
+  ["hi", "हिन्दी"],
+] as const;
+
 /**
  * The chat is the site's front door: it opens by itself as soon as the
  * opening curtain has parted, as a sheet over the bottom ~60% of a phone
@@ -118,7 +125,13 @@ export default function FloatingChat() {
           <div className="min-w-0">
             <p className="font-display text-xl leading-tight">Ask us anything</p>
             <p className="text-base text-paper/80">
-              English · <span lang="te">తెలుగు</span> · <span lang="kn">ಕನ್ನಡ</span>
+              {/* Each name keeps its separator, so a narrow screen wraps between languages, never before a dot. */}
+              {CHAT_LANGUAGES.map(([lang, label], i) => (
+                <span key={lang} lang={lang} className="whitespace-nowrap">
+                  {label}
+                  {i < CHAT_LANGUAGES.length - 1 && " · "}
+                </span>
+              ))}
             </p>
           </div>
           <button

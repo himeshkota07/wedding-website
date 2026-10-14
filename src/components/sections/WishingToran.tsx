@@ -334,7 +334,7 @@ export default function WishingToran({ initialWishes }: { initialWishes: Wish[] 
         <div aria-hidden className="absolute inset-0 -z-10 translate-x-2 translate-y-2.5 -rotate-[0.6deg] bg-leaf-soft/40" />
         <form ref={formRef} action={submit} className="relative bg-paper p-6 ring-1 ring-brass/60 sm:p-8">
           <h3 className="font-display text-3xl text-ink">Tie your wish</h3>
-          <p className="mt-1 text-lg text-ink-soft">In English, Telugu or Kannada: type it, or tap the mic and say it. It stays here for the couple to keep.</p>
+          <p className="mt-1 text-lg text-ink-soft">In English, Telugu, Kannada or Hindi: type it, or tap the mic and say it. It stays here for the couple to keep.</p>
 
           <div className="mt-6 grid gap-5 sm:grid-cols-2">
             <label className="block">

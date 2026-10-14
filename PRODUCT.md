@@ -34,7 +34,7 @@ It's the family's own invitation brought to life. It extends the printed card's 
 - Events: per-event countdown, add-to-calendar, theme color, and special instructions.
 - Venue: map embed, parking, accessibility, landmarks, and a weather widget.
 - Also: family introductions, gallery with guest uploads, a Wishing Toran where guests (mostly friends) leave wishes that are kept for the couple and printed as the Pelli Pustakam keepsake book, and contacts (phone and WhatsApp). The FAQ section was removed from the page on 2026-10-13; FAQs remain in /admin and feed the chatbot, which answers those questions.
-- A persistent "Ask us anything" chatbot, with voice, in English, Telugu, and Kannada.
+- A persistent "Ask us anything" chatbot, with voice, in English, Telugu, Kannada, and Hindi (Hindi added 2026-10-14).
 - Undecided: a site-wide multi-language UI toggle and guest-code protection (planned, not built).
 
 ## Brand Commitments

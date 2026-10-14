@@ -31,7 +31,7 @@ type Options = {
 
 /**
  * Tap-to-record, tap-to-stop voice input, transcribed by /api/voice/transcribe
- * (English, Telugu or Kannada, auto-detected). Shared by the chat and the
+ * (English, Telugu, Kannada or Hindi, auto-detected). Shared by the chat and the
  * wishes form. The callbacks are read through a ref, so the transcript always
  * reaches the latest render's handlers rather than the ones from when
  * recording began.

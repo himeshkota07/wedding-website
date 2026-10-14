@@ -48,13 +48,13 @@ type CardProps = {
 };
 
 /**
- * Every function gets the same card: painted umbrellas and jasmine hanging
+ * Every event gets the same card: painted umbrellas and jasmine hanging
  * over a scalloped arch, with the details written inside the arch. The same
  * fields sit in the same places on every card, so a guest who has read one
  * knows where to look on the rest.
  *
  * The art is a background pinned to the top at full width; the card keeps
- * the art's proportions but grows past them when a function has a lot to
+ * the art's proportions but grows past them when an event has a lot to
  * say. Behind the art, a 67px strip of its lower body (exactly two lace
  * scallops, and the art ends on a strip boundary) repeats down, so the lace
  * edge carries on seamlessly. The top padding (a % of the card's width)
@@ -68,7 +68,7 @@ function UmbrellaCard(p: CardProps) {
         <p className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">
           {[p.weekday, p.month].filter(Boolean).join(" · ") || "\u00a0"}
         </p>
-        <span className="font-script text-7xl font-bold leading-tight text-kumkum">{p.day}</span>
+        <span className="font-display text-6xl leading-tight tabular-nums text-kumkum">{p.day}</span>
         <h3 className="mt-1 font-display text-3xl leading-tight text-ink">{p.name}</h3>
         {p.aside && <p className="mt-1 text-ink-soft">{p.aside}</p>}
         {p.description && <p className="mt-3 text-ink-soft">{p.description}</p>}
@@ -98,9 +98,9 @@ export default async function EventsSection() {
   return (
     <PageSection
       id="events"
-      tone="deep"
-      title="The Functions"
-      subtitle="Every function, when and where, with anything you should know before you come."
+      tone="paper"
+      title="The Events"
+      subtitle="Every event, when and where, with anything you should know before you come."
     >
       <ol className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {normalized.length === 0 && (
@@ -112,7 +112,7 @@ export default async function EventsSection() {
               </span>
             }
             name="The schedule is being finalised"
-            description="Each function will be set out here, like this, as soon as its date is fixed."
+            description="Each event will be set out here, like this, as soon as its date is fixed."
             when={TBA}
             where={TBA}
             colour={TBA}
@@ -150,7 +150,7 @@ export default async function EventsSection() {
                       className="h-5 w-5 rounded-full ring-1 ring-ink/20"
                       style={{ background: event.theme_color }}
                     />
-                    The colour for this function
+                    The colour for this event
                   </span>
                 ) : (
                   "Any festive colour"

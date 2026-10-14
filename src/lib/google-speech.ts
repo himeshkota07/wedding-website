@@ -2,10 +2,10 @@ import "server-only";
 
 const API_KEY = process.env.GOOGLE_CLOUD_API_KEY!;
 
-type SpeechLanguageCode = "en-IN" | "te-IN" | "kn-IN";
+type SpeechLanguageCode = "en-IN" | "te-IN" | "kn-IN" | "hi-IN";
 
 /**
- * Backup transcription for when Gemini is unavailable. Its 3-way language
+ * Backup transcription for when Gemini is unavailable. Its language
  * auto-detection is noticeably weaker than Gemini's (Kannada and Telugu are
  * often heard as English), but a rough transcript beats a failed question.
  * Only understands WebM/Opus, not the MP4 some Safari versions record.
@@ -23,7 +23,8 @@ export async function transcribeAudio(base64Audio: string): Promise<string> {
         // container (confirmed directly against the live API).
         sampleRateHertz: 48000,
         languageCode: "en-IN",
-        alternativeLanguageCodes: ["te-IN", "kn-IN"],
+        // At most three alternatives are allowed, and these are all of them.
+        alternativeLanguageCodes: ["te-IN", "kn-IN", "hi-IN"],
         model: "default",
       },
       audio: { content: base64Audio },
@@ -39,11 +40,14 @@ export async function transcribeAudio(base64Audio: string): Promise<string> {
   return (transcript ?? "").trim();
 }
 
-// Telugu and Kannada script Unicode blocks -- used to pick a TTS voice
-// language since the API needs an explicit languageCode, not auto-detect.
+// Telugu, Kannada and Devanagari script Unicode blocks -- used to pick a TTS
+// voice language since the API needs an explicit languageCode, not auto-detect.
+// Hindi typed in English letters has no Devanagari, so it's read in the
+// Indian English voice, which pronounces it reasonably.
 function detectSpeechLanguage(text: string): SpeechLanguageCode {
   if (/[ఀ-౿]/.test(text)) return "te-IN";
   if (/[ಀ-೿]/.test(text)) return "kn-IN";
+  if (/[ऀ-ॿ]/.test(text)) return "hi-IN";
   return "en-IN";
 }
 

@@ -34,7 +34,7 @@ export default function Hero({ hero }: { hero: HomeHero }) {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
           {when ? (
             <div className="flex items-center gap-4 text-left">
-              <span className="font-script text-7xl font-bold leading-none text-ink sm:text-8xl">{when.day}</span>
+              <span className="font-display text-6xl leading-none tabular-nums text-ink sm:text-7xl">{when.day}</span>
               <span className="h-16 w-px bg-brass" aria-hidden />
               <span className="font-display text-lg leading-snug text-ink-soft">
                 {when.weekday && <span className="block">{when.weekday}</span>}
