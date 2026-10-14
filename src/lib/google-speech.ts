@@ -52,14 +52,71 @@ function detectSpeechLanguage(text: string): SpeechLanguageCode {
   return VOICE_FOR_SCRIPT[dominantScript(text)];
 }
 
+// "Half past" the way people say it: 7:30 is "ఏడున్నర", not "7 గంటల 30 నిమిషాలు".
+const TELUGU_HALF_PAST = [
+  "పన్నెండున్నర",
+  "ఒకటిన్నర",
+  "రెండున్నర",
+  "మూడున్నర",
+  "నాలుగున్నర",
+  "ఐదున్నర",
+  "ఆరున్నర",
+  "ఏడున్నర",
+  "ఎనిమిదిన్నర",
+  "తొమ్మిదిన్నర",
+  "పదిన్నర",
+  "పదకొండున్నర",
+];
+
+function teluguHalfPast(hour: string) {
+  return TELUGU_HALF_PAST[Number(hour) % 12];
+}
+
+/** Telugu period-of-day word for an "x pm" hour, so "6:00 PM" can become "సాయంత్రం 6 గంటలు". */
+function teluguPmWord(hour: number) {
+  if (hour === 12 || hour < 4) return "మధ్యాహ్నం";
+  if (hour < 8) return "సాయంత్రం";
+  return "రాత్రి";
+}
+
+/**
+ * The Telugu voice reads any clock time ("7:30", "6:00") as a morning time,
+ * saying "ఉదయం" itself. So "ఉదయం 7:30 గంటలకు" came out as "ఉదయం ఉదయం
+ * ఏడున్నర గంటలకు", the evening "సాయంత్రం 6:00" as "సాయంత్రం ఉదయం 6", and
+ * "గంటలకు" was said twice. Spelling the time out in words leaves it nothing to
+ * reinterpret (verified 2026-10-14: the rewritten text takes exactly as long to
+ * say as the time written fully in Telugu words, so nothing is added). Only what is read
+ * aloud changes; the chat still shows "7:30". Kannada and Hindi voices don't
+ * add a period word, so they're left as written.
+ */
+export function speakableTelugu(text: string) {
+  return (
+    text
+      // An English am/pm after a time becomes the Telugu period word before it.
+      .replace(/(\d{1,2}):(\d{2})\s*([AaPp])\.?\s*[Mm]\b\.?/g, (_, h: string, m: string, ap: string) =>
+        `${ap.toLowerCase() === "a" ? "ఉదయం" : teluguPmWord(Number(h))} ${h}:${m}`,
+      )
+      // "ఉదయం ఉదయం" if the model already wrote the period word before the time.
+      .replace(/(ఉదయం|మధ్యాహ్నం|సాయంత్రం|రాత్రి)\s+\1/g, "$1")
+      // "at" a time: "7:30 గంటలకు" or "7:30 కి".
+      .replace(/(\d{1,2}):30\s*(?:గంటలకు|కి)/g, (_, h: string) => `${teluguHalfPast(h)} గంటలకు`)
+      .replace(/(\d{1,2}):30(?!\d)/g, (_, h: string) => `${teluguHalfPast(h)} గంటలు`)
+      .replace(/(\d{1,2}):00\s*(?:గంటలకు|కి)/g, "$1 గంటలకు")
+      .replace(/(\d{1,2}):(\d{2})\s*(?:గంటలకు|కి)/g, "$1 గంటల $2 నిమిషాలకు")
+      .replace(/(\d{1,2}):00(?!\d)/g, "$1 గంటలు")
+      .replace(/(\d{1,2}):(\d{2})(?!\d)/g, "$1 గంటల $2 నిమిషాలు")
+  );
+}
+
 export async function synthesizeSpeech(text: string): Promise<{ audioBase64: string; languageCode: string }> {
   const languageCode = detectSpeechLanguage(text);
+  const spoken = languageCode === "te-IN" ? speakableTelugu(text) : text;
 
   const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${API_KEY}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      input: { text },
+      input: { text: spoken },
       voice: { languageCode, ssmlGender: "FEMALE" },
       audioConfig: { audioEncoding: "MP3" },
     }),
