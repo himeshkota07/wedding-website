@@ -33,7 +33,26 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+/**
+ * Where card i of n sits, so every row is either full or centred and no card
+ * is left alone at the left edge (adding a fourth event left "Reception" by
+ * itself on a second row). Tablets use a 4-track grid with cards two tracks
+ * wide; desktops a 6-track grid with cards two tracks wide (three a row), or
+ * three tracks wide for exactly four events, which reads better as 2 x 2 than
+ * as 3 + 1. A short last row is pushed in by one track to centre it. Each
+ * branch returns literal class names so Tailwind can see them.
+ */
+function cardPlacement(i: number, n: number) {
+  const tablet = n % 2 === 1 && i === n - 1 ? "sm:col-span-2 sm:col-start-2" : "sm:col-span-2";
+  if (n === 4) return `${tablet} lg:col-span-3 lg:col-start-auto`;
+  const lastRow = n % 3;
+  if (lastRow === 1 && i === n - 1) return `${tablet} lg:col-span-2 lg:col-start-3`;
+  if (lastRow === 2 && i === n - 2) return `${tablet} lg:col-span-2 lg:col-start-2`;
+  return `${tablet} lg:col-span-2 lg:col-start-auto`;
+}
+
 type CardProps = {
+  className?: string;
   day: React.ReactNode;
   month?: string;
   weekday?: string;
@@ -59,11 +78,16 @@ type CardProps = {
  * scallops, and the art ends on a strip boundary) repeats down, so the lace
  * edge carries on seamlessly. The top padding (a % of the card's width)
  * drops the text to just inside the arch's crown. min-w-0 matters: in a grid,
- * a tall card would otherwise widen itself to keep its aspect ratio.
+ * a tall card would otherwise widen itself to keep its aspect ratio. And
+ * self-stretch: a grid item with an aspect ratio doesn't stretch by default,
+ * so cards in a row ended at different heights; now each row matches its
+ * tallest card (the lace strip keeps repeating to fill the extra height).
+ * w-full pins the width to the column: with a stretched height alone, the
+ * aspect ratio widened each card into its neighbour.
  */
 function UmbrellaCard(p: CardProps) {
   return (
-    <li className="aspect-[816/1273] min-w-0 rounded-[1.75rem] bg-[#fbfef7] bg-[url(/theme/event-card.jpg),url(/theme/event-card-body.jpg)] bg-[length:100%_auto] bg-top [background-repeat:no-repeat,repeat-y] shadow-[0_10px_30px_-12px_rgb(74_42_29/0.35)] ring-1 ring-ink/10">
+    <li className={`${p.className ?? ""} aspect-[816/1273] w-full min-w-0 self-stretch rounded-[1.75rem] bg-[#fbfef7] bg-[url(/theme/event-card.jpg),url(/theme/event-card-body.jpg)] bg-[length:100%_auto] bg-top [background-repeat:no-repeat,repeat-y] shadow-[0_10px_30px_-12px_rgb(74_42_29/0.35)] ring-1 ring-ink/10`}>
       <div className="flex flex-col items-center px-[11%] pb-8 pt-[58%] text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">
           {[p.weekday, p.month].filter(Boolean).join(" · ") || "\u00a0"}
@@ -102,9 +126,10 @@ export default async function EventsSection() {
       title="The Events"
       subtitle="Every event, when and where, with anything you should know before you come."
     >
-      <ol className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <ol className="grid gap-8 sm:grid-cols-4 lg:grid-cols-6">
         {normalized.length === 0 && (
           <UmbrellaCard
+            className={cardPlacement(0, 1)}
             day={
               <span className="flex items-center gap-2 text-4xl">
                 <Marigold size={28} />
@@ -119,12 +144,13 @@ export default async function EventsSection() {
             note={TBA}
           />
         )}
-        {normalized.map((event) => {
+        {normalized.map((event, i) => {
           const when = partsFromIso(event.event_date);
           const v = event.venue;
           return (
             <UmbrellaCard
               key={event.id}
+              className={cardPlacement(i, normalized.length)}
               day={when?.day ?? "—"}
               month={when?.month}
               weekday={when?.weekday}
