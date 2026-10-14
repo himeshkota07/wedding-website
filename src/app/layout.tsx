@@ -1,17 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Cinzel, Crimson_Pro, Noto_Serif_Kannada, Noto_Serif_Telugu, Tangerine } from "next/font/google";
+import { Cinzel, Crimson_Pro, Noto_Serif_Devanagari, Noto_Serif_Kannada, Noto_Serif_Telugu, Tangerine } from "next/font/google";
 import "./globals.css";
 
-// "Heritage letterpress": calligraphy for the couple's names, Roman capitals
-// for headings and a book serif for reading, like a printed patrika.
+// "Heritage letterpress", one job per face: carved Roman capitals for
+// headings and numerals, a book serif for reading, and calligraphy only for
+// the couple's names and signatures.
 
-// Body: a book serif, comfortable at phone size for elders.
+// Text: a book serif, comfortable at phone size for elders. Real italics are
+// loaded so italic lines aren't slanted by the browser.
 const crimson = Crimson_Pro({
   variable: "--font-body",
   subsets: ["latin"],
+  style: ["normal", "italic"],
 });
 
-// Headings: carved Roman capitals.
+// Headings and date numerals: carved Roman capitals.
 const cinzel = Cinzel({
   variable: "--font-heading",
   subsets: ["latin"],
@@ -24,9 +27,9 @@ const tangerine = Tangerine({
   weight: ["400", "700"],
 });
 
-// Telugu and Kannada in the same serif spirit, used wherever those scripts
-// appear (the chat, wishes). Not preloaded: the browser only fetches them
-// when a page actually shows Telugu or Kannada text.
+// Telugu, Kannada and Hindi (Devanagari) in the same serif spirit, used
+// wherever those scripts appear (the chat, wishes). Not preloaded: the
+// browser only fetches one when a page actually shows that script.
 const notoSerifTelugu = Noto_Serif_Telugu({
   variable: "--font-telugu",
   subsets: ["telugu"],
@@ -35,6 +38,11 @@ const notoSerifTelugu = Noto_Serif_Telugu({
 const notoSerifKannada = Noto_Serif_Kannada({
   variable: "--font-kannada",
   subsets: ["kannada"],
+  preload: false,
+});
+const notoSerifDevanagari = Noto_Serif_Devanagari({
+  variable: "--font-devanagari",
+  subsets: ["devanagari"],
   preload: false,
 });
 
@@ -55,7 +63,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${crimson.variable} ${cinzel.variable} ${tangerine.variable} ${notoSerifTelugu.variable} ${notoSerifKannada.variable} h-full antialiased`}
+      className={`${crimson.variable} ${cinzel.variable} ${tangerine.variable} ${notoSerifTelugu.variable} ${notoSerifKannada.variable} ${notoSerifDevanagari.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

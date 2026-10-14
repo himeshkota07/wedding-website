@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
   const requestedType = typeof body.mimeType === "string" ? body.mimeType.split(";")[0].trim() : "";
   const mimeType = ACCEPTED_MIME_TYPES.includes(requestedType) ? requestedType : "audio/webm";
 
-  // The guest just speaks; the language (English, Telugu or Kannada) is
+  // The guest just speaks; the language (English, Telugu, Kannada or Hindi) is
   // detected from the audio rather than picked in the UI.
   let text = "";
   try {

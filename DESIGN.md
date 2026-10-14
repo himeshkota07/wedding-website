@@ -149,6 +149,8 @@ components:
 
 ## Overview
 
+> **2026-10-14 type: one job per face.** Cinzel for headings and date numerals (hero, event cards), Crimson Pro for all reading text, Tangerine only for the couple's names, wish signatures and sign-offs. Date numerals moved off Tangerine onto Cinzel. A trial of Crimson Pro for headings was rejected by the user, so keep Cinzel there. Crimson Pro now loads real italics.
+
 > **2026-10-13 type: "Heritage letterpress".** Tangerine (bold at small sizes) for the couple's names and signatures, Cinzel for headings and labels, Crimson Pro for reading text, with Noto Serif Telugu / Kannada for those scripts. Tangerine draws small on its body, so script text runs about 1.4x the size it did in Courgette. The invitation line is Crimson Pro italic, not Cinzel. This supersedes the Courgette / Kurale / Anek descriptions below.
 
 > **2026-10-13 update: "Haldi".** The palette now follows the Haldi illustration that opens the site: an ivory nav and footer, `brass` is now gold (#c9a24a) for every line, `leaf` is sage (#5f6d3c) for the chat header, music button, icons and garland leaves, and the old solid green (FAQ) and maroon (Contact, footer) fields are replaced by light washes: `sage-tint` for FAQ and `blush-tint` for Contact, with ink text. Strong colour is kept for small accents: the burgundy seal and kumkum buttons. This supersedes the Committed Field Rule below.

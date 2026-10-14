@@ -31,8 +31,8 @@ export default async function Home() {
 
       <OurStorySection />
       <EventsSection />
-      <VenueSection />
       <WishesSection />
+      <VenueSection />
       <FamilySection />
       <GallerySection />
       <ContactSection qrCode={<SiteQrCode />} />

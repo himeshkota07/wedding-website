@@ -10,7 +10,7 @@ export default function HeroActions() {
           href="#events"
           className="inline-flex h-12 items-center gap-2 rounded-full bg-kumkum px-6 text-base font-semibold text-paper transition-colors hover:bg-kumkum-deep"
         >
-          See the functions
+          See the events
           <ArrowDown size={18} />
         </a>
         <button
