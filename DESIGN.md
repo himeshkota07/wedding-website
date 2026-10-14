@@ -22,43 +22,43 @@ colors:
   blush-soft: "#fbe9d8"
 typography:
   display:
-    fontFamily: "Courgette, cursive"
+    fontFamily: "Tangerine, cursive"
     fontSize: "clamp(3.25rem, 10vw, 6rem)"
     fontWeight: 400
     lineHeight: 1.05
   headline:
-    fontFamily: "Kurale, Georgia, serif"
+    fontFamily: "Cinzel, Georgia, serif"
     fontSize: "clamp(2.25rem, 5vw, 3rem)"
     fontWeight: 400
     lineHeight: 1.25
   title:
-    fontFamily: "Kurale, Georgia, serif"
+    fontFamily: "Cinzel, Georgia, serif"
     fontSize: "1.875rem"
     fontWeight: 400
     lineHeight: 1.2
   lead:
-    fontFamily: "Kurale, Georgia, serif"
+    fontFamily: "Cinzel, Georgia, serif"
     fontSize: "1.5rem"
     fontWeight: 400
     lineHeight: 1.375
   numeral:
-    fontFamily: "Kurale, Georgia, serif"
+    fontFamily: "Cinzel, Georgia, serif"
     fontSize: "clamp(2.25rem, 5vw, 3rem)"
     fontWeight: 400
     lineHeight: 1
     fontFeature: "tnum"
   body:
-    fontFamily: "Anek Latin, system-ui, sans-serif"
+    fontFamily: "Crimson Pro, Georgia, serif"
     fontSize: "1.0625rem"
     fontWeight: 400
     lineHeight: 1.6
   body-large:
-    fontFamily: "Anek Latin, system-ui, sans-serif"
+    fontFamily: "Crimson Pro, Georgia, serif"
     fontSize: "1.125rem"
     fontWeight: 400
     lineHeight: 1.6
   label:
-    fontFamily: "Anek Latin, system-ui, sans-serif"
+    fontFamily: "Crimson Pro, Georgia, serif"
     fontSize: "0.875rem"
     fontWeight: 600
     lineHeight: 1.4
@@ -148,6 +148,10 @@ components:
 # Design System: Tarunya & Ashish Wedding
 
 ## Overview
+
+> **2026-10-13 type: "Heritage letterpress".** Tangerine (bold at small sizes) for the couple's names and signatures, Cinzel for headings and labels, Crimson Pro for reading text, with Noto Serif Telugu / Kannada for those scripts. Tangerine draws small on its body, so script text runs about 1.4x the size it did in Courgette. The invitation line is Crimson Pro italic, not Cinzel. This supersedes the Courgette / Kurale / Anek descriptions below.
+
+> **2026-10-13 update: "Haldi".** The palette now follows the Haldi illustration that opens the site: an ivory nav and footer, `brass` is now gold (#c9a24a) for every line, `leaf` is sage (#5f6d3c) for the chat header, music button, icons and garland leaves, and the old solid green (FAQ) and maroon (Contact, footer) fields are replaced by light washes: `sage-tint` for FAQ and `blush-tint` for Contact, with ink text. Strong colour is kept for small accents: the burgundy seal and kumkum buttons. This supersedes the Committed Field Rule below.
 
 > **2026-10-12 update: "Watercolour".** At the user's direction the theme now comes from a watercolour of the couple's feet (`public/theme/couple-feet.jpg`): her henna'd feet in a red-and-saffron saree, his in a tan dhoti with a green border, orange petals scattered around. The palette tokens keep their old names (`teak` is now henna brown, `brass` the dhoti's tan, `kumkum` the saree red), so the rules below still read correctly by token. The hero is centred, with the painting standing at the foot of the page instead of the pillar and garland art. Functions are **Umbrella Cards** (`public/theme/event-card.jpg`), not slips. The chat is the site's front door: it opens by itself after the curtain. The umbrella card and the chat panel may carry one soft shadow; everything else stays flat.
 
@@ -260,7 +264,7 @@ Painted umbrellas and jasmine hang over a scalloped arch, and the function is wr
 - **Focus:** the border turns kumkum and the native outline is dropped.
 
 ### Navigation (the canopy beam)
-- **Style:** a sticky teak bar 64px tall, a Courgette monogram in turmeric, and Anek links at 0.95rem in paper/85%. Hover turns a link turmeric with an 8px-offset underline. A brass rule and carved scallop trim hang beneath it.
+- **Style:** a sticky ivory bar 64px tall (`ivory` #f9f4e8, the Haldi illustration's paper) with ink text (14:1) and kumkum-deep hovers, edged below by gold-dotted ivory scallops and a gold rule, the couple's burgundy wax-seal logo (`public/theme/logo-seal.png`, 96px tall, hung from the bar: centred on its bottom edge, half on the bar and half over the page), and Anek links at 0.95rem in paper/85%. Hover turns a link turmeric with an 8px-offset underline. A brass rule and carved scallop trim hang beneath it.
 - **Mobile:** below lg, a menu button opens a two-column link grid inside the beam, with height animated at 0.28s.
 
 ### Thoranam
@@ -269,11 +273,14 @@ An SVG strip 44px tall at the top of every bay: a brass string, almond leaves in
 ### Ledger Rows
 FAQ rows, contacts, family members and venue details are rows ruled by hairlines (paper/20–25% on dark fields). They are not cards. The Accordion uses Kurale 1.25rem questions and a turmeric plus that rotates 45deg when open.
 
-### Marigold Curtain (signature motion)
-On first visit, strings of marigolds cover the screen. A paper medallion ringed in 6px brass shows the names, then the two halves part (1.1s, `cubic-bezier(0.65,0,0.35,1)`, starting at 1.3s) over a teak backdrop that fades out. The curtain can be skipped and replayed, and is omitted entirely under reduced motion. The hero garland swings once on load (3.6s) and then stays still.
+### Haldi Dissolve (signature motion)
+On every visit, the couple's Haldi illustration (`public/theme/intro-haldi.jpg`; cover and bottom-anchored on portrait screens, whole on its cream `#f9f4e8` on landscape ones) fills the screen with their wax seal resting at the centre. At 2.4s the scene dissolves into the page (0.8s, no split or slide) while the seal shrinks and flies (0.8s) into the nav logo's measured position, and the chat opens as the curtain hands over. The nav's own logo stays hidden while the curtain plays, so only one seal is ever on screen. The curtain can be skipped and replayed, and is omitted entirely under reduced motion. The hero garland swings once on load (3.6s) and then stays still.
 
 ### Chat (the front door)
 The marigold curtain plays on every visit, and the chat opens by itself once it parts. On a phone it is a sheet over the bottom ~60% of the screen, with the invitation still visible above and at the sides under a light wash; on desktop it is a panel at the bottom right. A "See invitation" button (or Escape, or a tap on the page behind) minimises it to a kumkum "Ask us anything" pill at the bottom right. Minimising lasts for that page view only; every load opens the chat again. The guest never picks a language: Gemini detects English, Telugu or Kannada from the voice, and the bot replies in the language and the mode the guest used: a typed question gets a text answer, and a spoken one is also read aloud automatically in the matching voice. Suggested-question pills sit under the greeting. Bubbles are paper-deep for incoming and kumkum for the guest's own, at 18px for elders.
+
+### Wishing Toran (wishes wall)
+Built on Himesh's Wishing Toran (PR #15). A marigold-and-mango-leaf toran (the `Toran` motif) runs across a strip that scrolls sideways; every wish hangs from it as a die-cut paper tag on its own gold thread, newest first, with thread lengths cycling (56–150px) so the tags hang staggered like hand-tied gift tags. The first place on the string is a dashed "Tie your wish" tag. Tags take the guest's chosen paper (haldi, blush, sage, ivory); a photo, if added, fills the tag behind a dark wash so the text stays paper-white. Each tag sways once as it scrolls into view (skipped under reduced motion); a newly tied wish drops onto the start of the string. Tap a tag to open it as a full slip with previous/next. The form takes name (required), relation, the wish (typed, or spoken through the mic in English/Telugu/Kannada), a tag colour and one optional photo. Arrows appear on laptops; phones swipe.
 
 ## Do's and Don'ts
 

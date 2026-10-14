@@ -1,3 +1,4 @@
+import SubmitButton from "@/components/admin/SubmitButton";
 import { getHomeHero, getOurStory, getKnowledgeBaseNotes } from "@/lib/site-settings";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { toIstDatetimeLocal } from "@/lib/ist-datetime";
@@ -51,7 +52,7 @@ export default async function AdminSiteSettingsPage() {
           </label>
           <TextAreaField label="Welcome note" name="welcome_note" defaultValue={hero.welcome_note} span2 />
         </div>
-        <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Save Home</button>
+        <SubmitButton pendingLabel="Saving…" doneLabel="Saved" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Save Home</SubmitButton>
       </form>
 
       <h2 className="mt-8 text-lg font-semibold text-zinc-900">Our Story</h2>
@@ -65,7 +66,7 @@ export default async function AdminSiteSettingsPage() {
             className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
           />
         </label>
-        <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Save Our Story</button>
+        <SubmitButton pendingLabel="Saving…" doneLabel="Saved" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Save Our Story</SubmitButton>
       </form>
 
       <h2 className="mt-8 text-lg font-semibold text-zinc-900">Chatbot Knowledge Base &mdash; Extra Notes</h2>
@@ -90,9 +91,7 @@ export default async function AdminSiteSettingsPage() {
             className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
           />
         </label>
-        <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">
-          Save Notes
-        </button>
+        <SubmitButton className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Save Notes</SubmitButton>
       </form>
     </div>
   );

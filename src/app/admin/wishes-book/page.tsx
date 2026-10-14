@@ -3,7 +3,7 @@ import Image from "next/image";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { getHomeHero } from "@/lib/site-settings";
-import { formatWishDate, type Wish } from "@/lib/wishes";
+import { WISH_COLUMNS, LEGACY_WISH_COLUMNS, formatWishDate, isMissingColumnError, withWishDefaults, type Wish } from "@/lib/wishes";
 import { Toran } from "@/components/ui/motifs";
 import PrintButton from "./PrintButton";
 
@@ -35,15 +35,11 @@ export default async function PelliPustakam() {
   await requireAdmin();
 
   const admin = createAdminSupabase();
-  const [{ data }, hero] = await Promise.all([
-    admin
-      .from("wishes")
-      .select("id, name, relation, message, created_at")
-      .eq("approved", true)
-      .order("created_at", { ascending: true }),
-    getHomeHero(admin),
-  ]);
-  const wishes = (data ?? []) as Wish[];
+  const read = (columns: string) =>
+    admin.from("wishes").select(columns).eq("approved", true).order("created_at", { ascending: true });
+  const [first, hero] = await Promise.all([read(WISH_COLUMNS), getHomeHero(admin)]);
+  const result = isMissingColumnError(first.error) ? await read(LEGACY_WISH_COLUMNS) : first;
+  const wishes = ((result.data ?? []) as unknown as Wish[]).map(withWishDefaults);
   const couple = `${hero.bride_name} & ${hero.groom_name}`;
 
   return (
@@ -79,7 +75,7 @@ export default async function PelliPustakam() {
         <Image src="/invite/ganesha.jpg" alt="" width={100} height={115} className="h-[16mm] w-auto mix-blend-multiply" />
         <p className="mt-[10mm] font-display text-[13pt] uppercase tracking-[0.25em] text-ink-soft">Pelli Pustakam</p>
         <p className="mt-[3mm] font-display text-[14pt] text-ink-soft">Wishes for</p>
-        <h1 className="mt-[2mm] px-[12mm] font-script text-[34pt] leading-tight text-ink">{couple}</h1>
+        <h1 className="mt-[2mm] px-[12mm] font-script text-[46pt] font-bold leading-tight text-ink">{couple}</h1>
         <p className="mt-[8mm] max-w-[100mm] text-[11pt] leading-relaxed text-ink-soft">
           {wishes.length > 0 ? `${wishes.length} wish${wishes.length === 1 ? "" : "es"} tied to their toran by family and friends, ${dateSpan(wishes)}.` : "No wishes have been tied yet."}
         </p>
@@ -101,14 +97,22 @@ export default async function PelliPustakam() {
               Leaf {i + 1} of {wishes.length}
             </p>
             <div className="flex flex-1 flex-col justify-center">
+              {wish.photo_url && (
+                // eslint-disable-next-line @next/next/no-img-element -- guest photo on Cloudinary
+                <img src={wish.photo_url} alt="" className="mb-[6mm] max-h-[62mm] w-full object-cover" />
+              )}
               <p
                 className={`whitespace-pre-line font-display leading-relaxed text-ink ${
-                  wish.message.length > 380 ? "text-[12pt]" : wish.message.length > 180 ? "text-[14pt]" : "text-[17pt]"
+                  wish.message.length > (wish.photo_url ? 200 : 380)
+                    ? "text-[12pt]"
+                    : wish.message.length > (wish.photo_url ? 90 : 180)
+                      ? "text-[14pt]"
+                      : "text-[17pt]"
                 }`}
               >
                 {wish.message}
               </p>
-              <p className="mt-[8mm] font-script text-[22pt] leading-tight text-kumkum">{wish.name}</p>
+              <p className="mt-[8mm] font-script text-[30pt] font-bold leading-tight text-kumkum">{wish.name}</p>
               {wish.relation && <p className="text-[11pt] text-ink-soft">{wish.relation}</p>}
             </div>
             <p className="border-t border-brass/60 pt-[3mm] text-[9pt] text-ink-soft">{formatWishDate(wish.created_at)}</p>
@@ -118,7 +122,7 @@ export default async function PelliPustakam() {
 
       {/* Closing page */}
       <Sheet className="items-center justify-center bg-paper-deep text-center">
-        <p className="font-script text-[28pt] text-kumkum">With love</p>
+        <p className="font-script text-[38pt] font-bold text-kumkum">With love</p>
         <p className="mt-[4mm] font-display text-[13pt] text-ink-soft">to {couple}</p>
       </Sheet>
     </div>

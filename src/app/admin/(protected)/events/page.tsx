@@ -1,3 +1,4 @@
+import SubmitButton from "@/components/admin/SubmitButton";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { toIstDatetimeLocal } from "@/lib/ist-datetime";
 import { createEvent, updateEvent, deleteEvent } from "./actions";
@@ -68,8 +69,8 @@ export default async function AdminEventsPage() {
               </label>
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Save</button>
-              <button type="submit" formAction={deleteEvent} className="rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600">Delete</button>
+              <SubmitButton>Save</SubmitButton>
+              <SubmitButton formAction={deleteEvent} pendingLabel="Deleting…" doneLabel="Deleted" className="rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600">Delete</SubmitButton>
             </div>
           </form>
         ))}
@@ -112,7 +113,7 @@ export default async function AdminEventsPage() {
             <input name="special_instructions" className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
           </label>
         </div>
-        <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Add event</button>
+        <SubmitButton pendingLabel="Adding…" doneLabel="Added" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Add event</SubmitButton>
       </form>
     </div>
   );

@@ -1,3 +1,4 @@
+import SubmitButton from "@/components/admin/SubmitButton";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { Field, FormActions } from "@/components/admin/Field";
 import { createVenue, updateVenue, deleteVenue } from "./actions";
@@ -38,7 +39,7 @@ export default async function AdminVenuesPage() {
           <Field label="Accessibility" name="accessibility_info" span2 />
           <Field label="Nearby landmarks" name="nearby_landmarks" span2 />
         </div>
-        <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Add venue</button>
+        <SubmitButton pendingLabel="Adding…" doneLabel="Added" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Add venue</SubmitButton>
       </form>
     </div>
   );

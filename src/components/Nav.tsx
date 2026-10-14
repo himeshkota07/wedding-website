@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Menu, X } from "lucide-react";
@@ -11,10 +12,9 @@ const links = [
   { href: "/#our-story", label: "Our Story" },
   { href: "/#events", label: "Events" },
   { href: "/#venue", label: "Venue" },
+  { href: "/#wishes", label: "Wishes" },
   { href: "/#family", label: "Family" },
   { href: "/#gallery", label: "Gallery" },
-  { href: "/#wishes", label: "Wishes" },
-  { href: "/#faq", label: "FAQ & Chat" },
   { href: "/#contact", label: "Contact" },
 ];
 
@@ -25,14 +25,28 @@ export default function Nav() {
 
   return (
     <header className="sticky top-0 z-30">
-      <div className="bg-teak text-paper">
+      {/* Ivory, the Haldi illustration's paper, edged in gold below. Ink text (14:1), kumkum-deep hovers. */}
+      <div className="bg-ivory text-ink">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+          {/* The couple's wax seal, hung from the beam: centred on the bar's bottom edge, half on the bar and
+              half over the page. The link keeps the seal's width in the row; the seal itself is positioned
+              absolutely so it can overhang. id="site-logo" is where the intro's seal flies to. */}
           <Link
             href="/#top"
             onClick={() => setOpen(false)}
-            className="font-script text-2xl text-turmeric transition-colors hover:text-paper"
+            aria-label="Tarunya & Ashish, back to top"
+            className="relative h-full w-[4.75rem] shrink-0"
           >
-            T &amp; A
+            <Image
+              id="site-logo"
+              src="/theme/logo-seal.png"
+              alt=""
+              width={508}
+              height={640}
+              preload
+              sizes="80px"
+              className="absolute left-0 top-4 z-10 h-24 w-auto drop-shadow-[0_4px_6px_rgb(0_0_0/0.35)]"
+            />
           </Link>
 
           <nav aria-label="Sections" className="hidden items-center gap-7 lg:flex">
@@ -40,7 +54,7 @@ export default function Nav() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[0.95rem] font-medium text-paper/85 underline-offset-8 transition-colors hover:text-turmeric hover:underline"
+                className="text-[0.95rem] font-medium text-ink underline-offset-8 transition-colors hover:text-kumkum-deep hover:underline"
               >
                 {link.label}
               </Link>
@@ -52,7 +66,7 @@ export default function Nav() {
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            className="-mr-2 flex h-11 w-11 items-center justify-center text-paper lg:hidden"
+            className="-mr-2 flex h-11 w-11 items-center justify-center text-ink lg:hidden"
           >
             {open ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -69,13 +83,13 @@ export default function Nav() {
               transition={{ duration: reduceMotion ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }}
               className="overflow-hidden lg:hidden"
             >
-              <ul className="grid grid-cols-2 gap-x-4 border-t border-paper/15 px-5 pb-5 pt-3">
+              <ul className="grid grid-cols-2 gap-x-4 border-t border-ink/15 px-5 pb-5 pt-14">
                 {links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
                       onClick={() => setOpen(false)}
-                      className="block py-2.5 text-lg text-paper/90 transition-colors hover:text-turmeric"
+                      className="block py-2.5 text-lg text-ink transition-colors hover:text-kumkum-deep"
                     >
                       {link.label}
                     </Link>

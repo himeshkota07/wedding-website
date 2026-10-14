@@ -1,10 +1,12 @@
 import { Toran } from "@/components/ui/motifs";
 
-type Tone = "paper" | "deep" | "turmeric" | "leaf" | "teak";
+type Tone = "paper" | "deep" | "sage" | "blush" | "turmeric" | "leaf" | "teak";
 
 const toneClasses: Record<Tone, { section: string; intro: string }> = {
   paper: { section: "bg-paper text-ink", intro: "text-ink-soft" },
   deep: { section: "bg-paper-deep text-ink", intro: "text-ink-soft" },
+  sage: { section: "bg-sage-tint text-ink", intro: "text-ink-soft" },
+  blush: { section: "bg-blush-tint text-ink", intro: "text-ink-soft" },
   turmeric: { section: "bg-turmeric text-ink", intro: "text-teak-soft" },
   leaf: { section: "bg-leaf text-paper", intro: "text-paper/85" },
   teak: { section: "bg-teak text-paper", intro: "text-paper/80" },

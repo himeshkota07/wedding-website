@@ -13,12 +13,17 @@
   --marigold: #e2812e; /* the scattered petals */
   --kumkum: #b3262c; /* the saree's red -- primary actions, the "&" */
   --kumkum-deep: #8b1b21;
-  --leaf: #587626; /* the dhoti's green border */
-  --leaf-soft: #9db35c;
+  --leaf: #5f6d3c; /* sage, from the Haldi umbrella and leaves -- 5.4:1 with paper either way round */
+  --leaf-soft: #a8ae74;
   --teak: #4a2a1d; /* henna -- nav, footer, the chat header */
   --teak-soft: #6d4331;
-  --brass: #c49d6c; /* the dhoti's tan */
+  --brass: #c9a24a; /* gold, from the Haldi illustration's arch line -- every structural line */
   --ink: #2b211c; /* the sketch's ink line */
+  --olive: #5c5835; /* olive velvet (average of public/theme/nav-velvet.jpg) -- the previous nav bar */
+  --haldi: #f8c25a; /* the bride's dress in the Haldi illustration (tried for the nav) */
+  --ivory: #f9f4e8; /* the Haldi illustration's paper -- nav bar and footer */
+  --sage-tint: #eef0e2; /* a wash of sage -- the FAQ bay */
+  --blush-tint: #f9ebe4; /* a wash of the cushions' pink -- the contact bay */
   --ink-soft: #66544a;
 
   --background: var(--paper);
@@ -58,9 +63,15 @@
   --color-teak: var(--teak);
   --color-teak-soft: var(--teak-soft);
   --color-brass: var(--brass);
-  --font-sans: var(--font-body);
-  --font-display: var(--font-heading);
-  --font-script: var(--font-names);
+  --color-olive: var(--olive);
+  --color-haldi: var(--haldi);
+  --color-ivory: var(--ivory);
+  --color-sage-tint: var(--sage-tint);
+  --color-blush-tint: var(--blush-tint);
+  /* Latin first; Telugu and Kannada glyphs fall through to their Noto Serif siblings. */
+  --font-sans: var(--font-body), var(--font-telugu), var(--font-kannada), Georgia, serif;
+  --font-display: var(--font-heading), var(--font-telugu), var(--font-kannada), Georgia, serif;
+  --font-script: var(--font-names), var(--font-telugu), var(--font-kannada), cursive;
 }
 
 html {
@@ -107,6 +118,12 @@ h3 {
 
 p {
   text-wrap: pretty;
+}
+
+/* While the intro plays, its seal stands in for the nav logo and flies into
+   this exact spot; showing both would put two seals on screen. */
+html[data-intro-playing] #site-logo {
+  visibility: hidden;
 }
 
 /* Marigold strings swing a little when they're first hung, then settle. */

@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { Mic, Square, Volume2, Pause, Send } from "lucide-react";
+import { useVoiceRecorder } from "@/lib/use-voice-recorder";
 
 type Message = { role: "user" | "model"; text: string };
 // Answer in the mode the question was asked in: typed in, text out; spoken in, spoken out.
@@ -10,29 +11,9 @@ type AskMode = "text" | "voice";
 // A zero-length WAV, played on the mic tap purely to unlock audio (see unlockAudio).
 const SILENT_WAV = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 
-// WebM/Opus almost everywhere; MP4 for older Safari, which can't record WebM.
-const RECORDING_MIME_TYPES = ["audio/webm;codecs=opus", "audio/mp4"];
-
 // Starter questions for guests who don't know what to ask. Sent as typed, so
 // the bot answers in English unless the guest switches language themselves.
 const SUGGESTIONS = ["When is the muhurtham?", "Which functions are there?", "Where is the venue?", "Whom can I call for help?"];
-
-function pickRecordingMimeType() {
-  if (typeof MediaRecorder === "undefined") return null;
-  return RECORDING_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported?.(type)) ?? null;
-}
-
-function blobToBase64(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const result = reader.result as string;
-      resolve(result.slice(result.indexOf(",") + 1));
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
 
 export default function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([
@@ -43,14 +24,24 @@ export default function ChatWidget() {
   ]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
-  const [recording, setRecording] = useState(false);
-  const [transcribing, setTranscribing] = useState(false);
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
+  // A spoken question is answered aloud (see send). Starting a recording also
+  // unlocks the audio player inside that tap and stops any answer still playing.
+  const {
+    recording,
+    transcribing,
+    error: recorderError,
+    toggle: toggleRecording,
+  } = useVoiceRecorder({
+    onStart: () => {
+      setVoiceError(null);
+      unlockAudio();
+    },
+    onText: (text) => send(text, "voice"),
+  });
 
   const listRef = useRef<HTMLDivElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -101,65 +92,6 @@ export default function ChatWidget() {
     }
   }
 
-  async function toggleRecording() {
-    setVoiceError(null);
-
-    if (recording) {
-      mediaRecorderRef.current?.stop();
-      setRecording(false);
-      return;
-    }
-
-    // Also silences any answer still playing, so the mic doesn't record it.
-    unlockAudio();
-
-    const mimeType = pickRecordingMimeType();
-    if (!mimeType) {
-      setVoiceError("Voice input isn't supported in this browser — please type your question instead.");
-      return;
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream, { mimeType });
-      audioChunksRef.current = [];
-
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunksRef.current.push(e.data);
-      };
-
-      recorder.onstop = async () => {
-        stream.getTracks().forEach((track) => track.stop());
-        const blob = new Blob(audioChunksRef.current, { type: mimeType });
-        setTranscribing(true);
-        try {
-          const base64 = await blobToBase64(blob);
-          const res = await fetch("/api/voice/transcribe", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ audio: base64, mimeType }),
-          });
-          const data = await res.json();
-          if (res.ok && data.text) {
-            send(data.text, "voice");
-          } else {
-            setVoiceError(data.error ?? "Couldn't make out what you said, please try again.");
-          }
-        } catch {
-          setVoiceError("Voice transcription failed. Please try again or type instead.");
-        } finally {
-          setTranscribing(false);
-        }
-      };
-
-      mediaRecorderRef.current = recorder;
-      recorder.start();
-      setRecording(true);
-    } catch {
-      setVoiceError("Couldn't access your microphone. Please check permissions, or type instead.");
-    }
-  }
-
   async function playMessage(index: number, text: string) {
     const player = getPlayer();
     if (speakingIndex === index) {
@@ -196,6 +128,7 @@ export default function ChatWidget() {
   }
 
   const micBusy = transcribing;
+  const shownError = recorderError ?? voiceError;
   const showSuggestions = messages.length === 1 && !pending;
 
   return (
@@ -245,9 +178,9 @@ export default function ChatWidget() {
       </div>
 
       <div className="border-t border-hairline">
-        {(recording || transcribing || voiceError) && (
-          <p role={voiceError ? "alert" : "status"} className={`px-4 pt-3 text-base ${voiceError ? "text-kumkum" : "text-ink-soft"}`}>
-            {voiceError ?? (recording ? "Listening… tap the square when you're done." : "Understanding what you said…")}
+        {(recording || transcribing || shownError) && (
+          <p role={shownError ? "alert" : "status"} className={`px-4 pt-3 text-base ${shownError ? "text-kumkum" : "text-ink-soft"}`}>
+            {shownError ?? (recording ? "Listening… tap the square when you're done." : "Understanding what you said…")}
           </p>
         )}
         <form

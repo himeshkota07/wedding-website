@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { createAdminSupabase } from "@/lib/supabase-admin";
-import { formatWishDate } from "@/lib/wishes";
+import { formatWishDate, isMissingColumnError } from "@/lib/wishes";
 import { SelectAllCheckbox } from "../gallery/SelectAllCheckbox";
 import { showSelectedWishes, hideSelectedWishes, deleteSelectedWishes } from "./actions";
 
@@ -9,10 +9,13 @@ export default async function AdminWishesPage() {
   // Service-role client: the public policy only returns visible wishes, and
   // hidden ones must stay listed here so they can be shown again.
   const admin = createAdminSupabase();
-  const { data: wishes, error } = await admin
-    .from("wishes")
-    .select("id, name, relation, message, approved, created_at")
-    .order("created_at", { ascending: false });
+  const read = (columns: string) => admin.from("wishes").select(columns).order("created_at", { ascending: false });
+  let result = await read("id, name, relation, message, approved, created_at, photo_url");
+  if (isMissingColumnError(result.error)) result = await read("id, name, relation, message, approved, created_at");
+  const { error } = result;
+  const wishes = result.data as unknown as
+    | { id: string; name: string; relation: string | null; message: string; approved: boolean; created_at: string; photo_url?: string | null }[]
+    | null;
 
   const visible = wishes?.filter((w) => w.approved).length ?? 0;
 
@@ -68,6 +71,10 @@ export default async function AdminWishesPage() {
                 className={`flex gap-3 rounded-lg border border-black/10 bg-white p-4 ${wish.approved ? "" : "opacity-50"}`}
               >
                 <input type="checkbox" name="ids" value={wish.id} className="mt-1 h-5 w-5 shrink-0 accent-[var(--color-accent)]" />
+                {wish.photo_url && (
+                  // eslint-disable-next-line @next/next/no-img-element -- guest photo on Cloudinary
+                  <img src={wish.photo_url} alt="" className="h-20 w-20 shrink-0 rounded-md object-cover" />
+                )}
                 <div className="min-w-0">
                   <p className="whitespace-pre-line text-zinc-800">{wish.message}</p>
                   <p className="mt-2 text-sm text-zinc-500">

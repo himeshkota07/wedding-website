@@ -1,3 +1,4 @@
+import SubmitButton from "@/components/admin/SubmitButton";
 export function Field({
   label,
   name,
@@ -54,17 +55,16 @@ export function TextAreaField({
 export function FormActions({ deleteAction }: { deleteAction?: (formData: FormData) => void }) {
   return (
     <div className="flex gap-2">
-      <button type="submit" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">
-        Save
-      </button>
+      <SubmitButton>Save</SubmitButton>
       {deleteAction && (
-        <button
-          type="submit"
+        <SubmitButton
           formAction={deleteAction}
+          pendingLabel="Deleting…"
+          doneLabel="Deleted"
           className="rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600"
         >
           Delete
-        </button>
+        </SubmitButton>
       )}
     </div>
   );

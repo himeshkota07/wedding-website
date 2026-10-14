@@ -23,18 +23,18 @@ export default function Hero({ hero }: { hero: HomeHero }) {
       <div className="mx-auto flex max-w-3xl flex-col items-center px-5 pt-14 text-center sm:pt-20">
         <Image src="/invite/ganesha.jpg" alt="" width={100} height={115} className="mb-6 h-12 w-auto mix-blend-multiply sm:h-14" />
 
-        <p className="font-display text-xl text-ink-soft sm:text-2xl">You are warmly invited to the wedding of</p>
+        <p className="text-xl italic text-ink-soft sm:text-2xl">You are warmly invited to the wedding of</p>
 
         <h1 className="mt-4 font-script leading-[1.05] text-ink">
-          <span className="block text-[clamp(3.25rem,10vw,6rem)]">{hero.bride_name}</span>
-          <span className="block text-[clamp(2.25rem,6vw,3.75rem)] text-kumkum">&amp;</span>
-          <span className="block text-[clamp(3.25rem,10vw,6rem)]">{hero.groom_name}</span>
+          <span className="block text-[clamp(4.5rem,15vw,8rem)]">{hero.bride_name}</span>
+          <span className="block text-[clamp(3rem,8vw,4.5rem)] text-kumkum">&amp;</span>
+          <span className="block text-[clamp(4.5rem,15vw,8rem)]">{hero.groom_name}</span>
         </h1>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
           {when ? (
             <div className="flex items-center gap-4 text-left">
-              <span className="font-script text-6xl leading-none text-ink sm:text-7xl">{when.day}</span>
+              <span className="font-script text-7xl font-bold leading-none text-ink sm:text-8xl">{when.day}</span>
               <span className="h-16 w-px bg-brass" aria-hidden />
               <span className="font-display text-lg leading-snug text-ink-soft">
                 {when.weekday && <span className="block">{when.weekday}</span>}

@@ -1,10 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
-const AUTO_DISMISS_MS = 2600;
-const STRINGS_PER_SIDE = 18;
+// The seal fades in over the Haldi scene (0-0.5s) and rests there; then the
+// scene dissolves into the page while the seal flies to the nav
+// (2.4-3.2s), and the overlay hands over.
+const FLY_AT_MS = 2400;
+const FLY_DURATION_S = 0.8;
+const AUTO_DISMISS_MS = 3300;
 
 /** Fired once the curtain has parted (or was skipped), so the chat can open without hiding behind it. */
 export const INTRO_DONE_EVENT = "intro-done";
@@ -19,54 +24,31 @@ function signalIntroDone() {
   window.dispatchEvent(new Event(INTRO_DONE_EVENT));
 }
 
-/** One hanging string of marigolds, alternating orange and yellow heads with a leaf between. */
-function MarigoldString({ index }: { index: number }) {
-  const id = useId();
-  const shift = (index * 23) % 68;
-  const first = index % 3 === 1 ? "var(--turmeric)" : "var(--marigold)";
-  const second = index % 3 === 1 ? "var(--marigold)" : index % 3 === 2 ? "var(--kumkum)" : "var(--turmeric)";
-  return (
-    <svg aria-hidden className="h-full w-11 shrink-0" preserveAspectRatio="none">
-      <defs>
-        <pattern id={id} width="44" height="68" patternUnits="userSpaceOnUse" patternTransform={`translate(0 ${shift})`}>
-          <line x1="22" y1="0" x2="22" y2="68" stroke="var(--brass)" strokeWidth="1" />
-          <circle cx="22" cy="17" r="14" fill={first} />
-          <circle cx="22" cy="17" r="8.5" fill="#f7cf57" />
-          <circle cx="22" cy="17" r="3.5" fill="var(--turmeric-deep)" />
-          <path d="M22,33 C28,31 33,34 35,39 C29,40 24,38 22,33 Z" fill="var(--leaf)" />
-          <circle cx="22" cy="51" r="13" fill={second} />
-          <circle cx="22" cy="51" r="7.5" fill="var(--marigold)" />
-          <circle cx="22" cy="51" r="3" fill="var(--turmeric)" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill={`url(#${id})`} />
-    </svg>
-  );
-}
+type Flight = { x: number; y: number; scale: number };
 
-function CurtainHalf({ side }: { side: "left" | "right" }) {
-  return (
-    <motion.div
-      className={`absolute inset-y-0 flex w-1/2 overflow-hidden ${side === "left" ? "left-0 justify-end" : "right-0 justify-start"}`}
-      initial={{ x: 0 }}
-      animate={{ x: side === "left" ? "-102%" : "102%" }}
-      transition={{ duration: 1.1, delay: 1.3, ease: [0.65, 0, 0.35, 1] }}
-    >
-      {Array.from({ length: STRINGS_PER_SIDE }, (_, i) => (
-        <MarigoldString key={i} index={side === "left" ? i : i + STRINGS_PER_SIDE} />
-      ))}
-    </motion.div>
-  );
+/** Where the seal must travel to sit exactly on the nav's logo, or null if there's no nav logo to land on. */
+function flightToNavLogo(seal: HTMLElement): Flight | null {
+  const target = document.getElementById("site-logo")?.getBoundingClientRect();
+  if (!target || target.height === 0) return null;
+  const from = seal.getBoundingClientRect();
+  return {
+    x: target.left + target.width / 2 - (from.left + from.width / 2),
+    y: target.top + target.height / 2 - (from.top + from.height / 2),
+    scale: target.height / from.height,
+  };
 }
 
 /**
- * The opening: a curtain of marigold strings across the mandapam's entrance,
- * with the couple's names at its centre, parting to let the guest in.
+ * The opening: the couple's Haldi illustration with their wax seal resting at
+ * the centre. The scene dissolves into the page as the seal flies up into its
+ * place at the top left of the nav, and the page (and the chat) take over.
  */
 export default function IntroSequence({ brideName, groomName }: { brideName: string; groomName: string }) {
   // Plays on every visit, as the lead-in to the chat that opens after it.
   // Rendered from the server too, so the page never flashes before the curtain.
   const [visible, setVisible] = useState(true);
+  const [flight, setFlight] = useState<Flight | null>(null);
+  const sealRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
   const dismiss = useCallback(() => {
@@ -85,6 +67,9 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
   // The Hero's "Watch the opening again" button re-triggers this.
   useEffect(() => {
     function onReplay() {
+      // Reset here, not when the intro ends: clearing it then would pull the
+      // seal back to the centre while the overlay fades out.
+      setFlight(null);
       setVisible(true);
     }
     window.addEventListener("replay-intro", onReplay);
@@ -93,8 +78,18 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
 
   useEffect(() => {
     if (!visible) return;
-    const timer = setTimeout(dismiss, AUTO_DISMISS_MS);
-    return () => clearTimeout(timer);
+    // The nav's own logo hides while the intro plays (see globals.css), so the
+    // flying seal is the only one on screen until it lands.
+    document.documentElement.dataset.introPlaying = "1";
+    const flyTimer = setTimeout(() => {
+      if (sealRef.current) setFlight(flightToNavLogo(sealRef.current));
+    }, FLY_AT_MS);
+    const dismissTimer = setTimeout(dismiss, AUTO_DISMISS_MS);
+    return () => {
+      clearTimeout(flyTimer);
+      clearTimeout(dismissTimer);
+      delete document.documentElement.dataset.introPlaying;
+    };
   }, [visible, dismiss]);
 
   if (reduceMotion) return null;
@@ -108,31 +103,43 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
+          {/* The Haldi scene. Portrait screens fill with it, anchored at the bottom so the couple always
+              shows; landscape ones show the whole picture on its own cream. It dissolves, rather than
+              parting, at the same moment the seal takes flight. */}
           <motion.div
             aria-hidden
-            className="absolute inset-0 bg-teak"
+            className="absolute inset-0 bg-[#f9f4e8] bg-[url(/theme/intro-haldi.jpg)] bg-cover bg-bottom bg-no-repeat landscape:bg-contain landscape:bg-center"
             initial={{ opacity: 1 }}
             animate={{ opacity: 0 }}
-            transition={{ duration: 0.8, delay: 1.5, ease: "easeOut" }}
+            transition={{ duration: FLY_DURATION_S, delay: FLY_AT_MS / 1000, ease: "easeInOut" }}
           />
-          <CurtainHalf side="left" />
-          <CurtainHalf side="right" />
 
-          <motion.div
-            className="absolute left-1/2 top-1/2 z-10 flex h-64 w-64 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-paper text-center ring-[6px] ring-brass sm:h-72 sm:w-72"
-            initial={{ scale: 0.85, opacity: 0 }}
-            animate={{ scale: [0.85, 1, 1, 1.04], opacity: [0, 1, 1, 0] }}
-            transition={{ duration: 1.6, times: [0, 0.3, 0.8, 1], ease: "easeOut" }}
-          >
-            <span className="font-script text-4xl leading-tight text-ink sm:text-5xl">{brideName}</span>
-            <span className="font-script text-2xl text-kumkum">&amp;</span>
-            <span className="font-script text-4xl leading-tight text-ink sm:text-5xl">{groomName}</span>
-          </motion.div>
+          {/* Centred by the wrapper so the seal's own transform is free for the flight; the bottom padding
+              lifts it a little above centre, clear of the couple at the foot of the illustration. */}
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center pb-[18svh]">
+            <motion.div
+              ref={sealRef}
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={flight ? { x: flight.x, y: flight.y, scale: flight.scale, opacity: 1 } : { x: 0, y: 0, scale: 1, opacity: 1 }}
+              transition={flight ? { duration: FLY_DURATION_S, ease: [0.65, 0, 0.35, 1] } : { duration: 0.5, ease: "easeOut" }}
+              style={{ transformOrigin: "center" }}
+            >
+              <Image
+                src="/theme/logo-seal.png"
+                alt={`${brideName} & ${groomName}`}
+                width={508}
+                height={640}
+                preload
+                sizes="(min-width: 640px) 320px, 240px"
+                className="h-[min(50svh,18rem)] w-auto drop-shadow-[0_12px_24px_rgb(0_0_0/0.45)] sm:h-[min(55svh,22rem)]"
+              />
+            </motion.div>
+          </div>
 
           <button
             type="button"
             onClick={dismiss}
-            className="absolute right-4 top-4 rounded-full bg-teak/80 px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-teak"
+            className="absolute right-4 top-4 rounded-full bg-olive/85 px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-olive"
           >
             Skip
           </button>
