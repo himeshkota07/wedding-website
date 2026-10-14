@@ -1,6 +1,6 @@
 import "server-only";
-import { GoogleGenAI, Type } from "@google/genai";
-import type { GenerateContentParameters } from "@google/genai";
+import { GoogleGenAI, ThinkingLevel, Type } from "@google/genai";
+import type { GenerateContentParameters, ThinkingConfig } from "@google/genai";
 
 const apiKey = process.env.GEMINI_API_KEY!;
 
@@ -14,11 +14,45 @@ export const gemini = new GoogleGenAI({ apiKey, httpOptions: { timeout: 12_000 }
 export const EMBEDDING_MODEL = "gemini-embedding-001";
 export const EMBEDDING_DIMENSIONS = 768;
 
-// Pinned Flash first: the "-latest" aliases point at whatever model is
-// newest, and those have been returning 503 UNAVAILABLE ("high demand") on
-// every call for sustained periods while the pinned model kept answering.
-// The aliases stay as fallbacks rather than letting the whole request fail.
-const GENERATION_MODELS = ["gemini-2.5-flash", "gemini-flash-latest", "gemini-flash-lite-latest"] as const;
+/**
+ * Every model is pinned by name; no "-latest" aliases, which silently move to
+ * whatever is newest (the busiest model, and a different voice in answers).
+ * Each step down the chain is a different model with its own capacity, so an
+ * overload on one doesn't take the chatbot down. Thinking is set per model
+ * because the generations take different settings (Gemini 3.x uses levels and
+ * some reject MINIMAL; 2.5 uses a token budget).
+ */
+type ModelStep = { model: string; thinking: ThinkingConfig };
+
+/**
+ * Guest answers. Gemini 3.6 Flash: current, no shutdown announced, strong in
+ * Telugu, Kannada and Hindi, and not the newest-and-busiest model (3.8 Flash
+ * kept returning "high demand"). Low thinking keeps answers careful without
+ * the cost and wait of more. Measured 2026-10-14: ~1,850 tokens in, ~180 out
+ * plus ~590 thinking, ~5-6 s.
+ */
+export const CHAT_MODELS: ModelStep[] = [
+  { model: "gemini-3.6-flash", thinking: { thinkingLevel: ThinkingLevel.LOW } },
+  {
+    model: "gemini-3.5-flash-lite",
+    thinking: { thinkingLevel: ThinkingLevel.MINIMAL },
+  },
+  { model: "gemini-2.5-flash", thinking: { thinkingBudget: 0 } },
+];
+
+/**
+ * Quick jobs where speed matters more than depth: voice transcription and
+ * rewriting a reply into the right script. 2.5 Flash first because the
+ * transcription prompt was tuned and verified on it (Telugu vs Kannada).
+ */
+export const FAST_MODELS: ModelStep[] = [
+  { model: "gemini-2.5-flash", thinking: { thinkingBudget: 0 } },
+  {
+    model: "gemini-3.5-flash-lite",
+    thinking: { thinkingLevel: ThinkingLevel.MINIMAL },
+  },
+  { model: "gemini-3.6-flash", thinking: { thinkingLevel: ThinkingLevel.LOW } },
+];
 
 // The embedding endpoint's per-minute quota counts each text in a batch
 // separately, so a knowledge-base resync (a few dozen chunks) can trip a
@@ -66,7 +100,14 @@ export async function embedTexts(texts: string[], taskType: "RETRIEVAL_DOCUMENT"
 // most requests while staying well inside a route's 30s budget.
 const RETRY_ROUND_DELAY_MS = 1500;
 
-export async function generateWithFallback(params: Omit<GenerateContentParameters, "model">) {
+/**
+ * Runs the request on the first model in `chain` that answers. The chain owns
+ * the thinking setting for each model; callers pass everything else.
+ */
+export async function generateWithFallback(
+  params: Omit<GenerateContentParameters, "model">,
+  chain: ModelStep[] = CHAT_MODELS,
+) {
   const startedAt = Date.now();
   let lastError: unknown;
   for (let round = 0; round < 2; round++) {
@@ -76,9 +117,13 @@ export async function generateWithFallback(params: Omit<GenerateContentParameter
       if (!isRetryableError(lastError) || Date.now() - startedAt > 8_000) break;
       await sleep(RETRY_ROUND_DELAY_MS);
     }
-    for (const model of GENERATION_MODELS) {
+    for (const { model, thinking } of chain) {
       try {
-        return await gemini.models.generateContent({ ...params, model });
+        return await gemini.models.generateContent({
+          ...params,
+          model,
+          config: { ...params.config, thinkingConfig: thinking },
+        });
       } catch (error) {
         console.warn(`[gemini] ${model} failed:`, error instanceof Error ? error.message.slice(0, 120) : error);
         lastError = error;
@@ -107,27 +152,40 @@ export async function transcribeWithGemini(
   base64Audio: string,
   mimeType: string,
 ): Promise<{ text: string; language: SpokenLanguage | null }> {
-  const response = await generateWithFallback({
-    contents: [{ role: "user", parts: [{ inlineData: { mimeType, data: base64Audio } }, { text: TRANSCRIBE_PROMPT }] }],
-    config: {
-      // No reasoning needed to transcribe; skipping it keeps a voice question to ~3s.
-      thinkingConfig: { thinkingBudget: 0 },
-      // Transcription wants no creativity: at the default temperature a clean
-      // Telugu clip once came back as an invented, unrelated English question.
-      temperature: 0,
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.OBJECT,
-        properties: {
-          language: { type: Type.STRING, enum: [...SPOKEN_LANGUAGES, "none"] },
-          transcript: { type: Type.STRING },
+  // FAST_MODELS: no reasoning needed to transcribe, which keeps a voice question to ~3s.
+  const response = await generateWithFallback(
+    {
+      contents: [
+        {
+          role: "user",
+          parts: [{ inlineData: { mimeType, data: base64Audio } }, { text: TRANSCRIBE_PROMPT }],
         },
-        required: ["language", "transcript"],
-        propertyOrdering: ["language", "transcript"],
+      ],
+      config: {
+        // Transcription wants no creativity: at the default temperature a clean
+        // Telugu clip once came back as an invented, unrelated English question.
+        temperature: 0,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            language: {
+              type: Type.STRING,
+              enum: [...SPOKEN_LANGUAGES, "none"],
+            },
+            transcript: { type: Type.STRING },
+          },
+          required: ["language", "transcript"],
+          propertyOrdering: ["language", "transcript"],
+        },
       },
     },
-  });
-  const parsed = JSON.parse(response.text ?? "{}") as { language?: string; transcript?: string };
+    FAST_MODELS,
+  );
+  const parsed = JSON.parse(response.text ?? "{}") as {
+    language?: string;
+    transcript?: string;
+  };
   const language = isSpokenLanguage(parsed.language) ? parsed.language : null;
   return { text: (parsed.transcript ?? "").trim(), language };
 }

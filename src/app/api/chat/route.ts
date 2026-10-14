@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { generateWithFallback } from "@/lib/gemini";
+import { FAST_MODELS, generateWithFallback } from "@/lib/gemini";
 import { buildKnowledgeBase } from "@/lib/knowledge-base";
+import { SCRIPT_LANGUAGE, dominantScript, strayScriptLetters, type Script } from "@/lib/scripts";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 
 // Give retries room within Vercel's function budget, but the individual
@@ -26,13 +27,68 @@ How to answer, in this order:
 - In English, call the wedding's programme items "events", never "functions", even where the context says "function".
 - Write plain text only: no Markdown, no asterisks, no headings. The chat shows text exactly as written and may read it aloud. For several items, put each on its own short line.`;
 
-/** Belt and braces for the plain-text rule: strip Markdown emphasis the model slips in anyway. */
+/**
+ * Belt and braces for the plain-text rule: strip the Markdown the model slips
+ * in anyway. Bullets become "•" first; after that no asterisk has any use in
+ * a guest-facing reply, so every remaining one is removed (pairs next to ":"
+ * or ")", unclosed "**", "***" all used to slip through).
+ */
 function stripMarkdown(text: string) {
   return text
-    .replace(/\*\*(.+?)\*\*/g, "$1")
-    .replace(/(^|\s)\*(\S[^*]*?)\*(?=\s|$|[.,!?])/g, "$1$2")
     .replace(/^#{1,6}\s+/gm, "")
-    .replace(/^[ \t]*[-*][ \t]+/gm, "• ");
+    .replace(/^[ \t]*[-*+][ \t]+/gm, "• ")
+    .replace(/__(.+?)__/g, "$1")
+    .replace(/`+/g, "")
+    .replace(/\*/g, "")
+    .replace(/[ \t]+\n/g, "\n")
+    .trim();
+}
+
+/** Tells the model exactly which language and script to answer in, decided from the guest's own message. */
+function replyLanguageRule(target: Script) {
+  if (target === "latin") {
+    return 'Reply language: the guest wrote in English letters. Reply only in English letters: in English, or, if they wrote Hindi, Telugu or Kannada in English letters (e.g. "shaadi kab hai?"), in that language in English letters. Do not use Telugu, Kannada or Devanagari script unless they explicitly ask how to write something in it.';
+  }
+  const { language, script } = SCRIPT_LANGUAGE[target];
+  const others = (["telugu", "kannada", "devanagari"] as const)
+    .filter((s) => s !== target)
+    .map((s) => SCRIPT_LANGUAGE[s].script)
+    .join(" or ");
+  return `Reply language: ${language}. Write the entire reply in ${language}, in ${script} only. Do not use any ${others} letters anywhere in the reply. Names of people and places may stay in English letters.`;
+}
+
+/**
+ * If a reply still mixes in another Indian script (the model drifts between
+ * Telugu and Kannada, which look alike to it), ask once for a clean rewrite in
+ * the guest's script, and keep whichever version is cleaner.
+ */
+async function enforceScript(reply: string, target: Script) {
+  if (strayScriptLetters(reply, target) === 0) return reply;
+  const { language, script } = SCRIPT_LANGUAGE[target];
+  console.warn(`[chat] reply mixed scripts (target ${target}); rewriting`);
+  try {
+    const rewrite = await generateWithFallback(
+      {
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `Rewrite this reply entirely in ${language}, using only ${script}. Keep the meaning, facts, dates, times and numbers exactly the same. Names of people and places may stay in English letters. Plain text, no Markdown. Reply with the rewritten text only.\n\n${reply}`,
+              },
+            ],
+          },
+        ],
+        config: { temperature: 0.2 },
+      },
+      FAST_MODELS,
+    );
+    const fixed = stripMarkdown(rewrite.text?.trim() ?? "");
+    return fixed && strayScriptLetters(fixed, target) < strayScriptLetters(reply, target) ? fixed : reply;
+  } catch (error) {
+    console.warn("[chat] script rewrite failed; sending the original reply:", error);
+    return reply;
+  }
 }
 
 /** So general answers ("how many days until…", "is it monsoon season?") are anchored to the real date. */
@@ -93,20 +149,29 @@ export async function POST(request: NextRequest) {
     // searched subset (see buildKnowledgeBase). The system instruction makes
     // it admit when the answer isn't there.
     const context = buildContext(await buildKnowledgeBase(admin));
+    // Decided from the guest's own letters, not left to the model.
+    const target = dominantScript(message);
     const contents = [
       ...history.map((turn) => ({ role: turn.role, parts: [{ text: turn.text }] })),
       {
         role: "user" as const,
-        parts: [{ text: `Today (India): ${todayInIndia()}\n\nContext (this wedding's knowledge base):\n${context}\n\nGuest question: ${message}` }],
+        parts: [
+          {
+            text: `Today (India): ${todayInIndia()}\n\nContext (this wedding's knowledge base):\n${context}\n\n${replyLanguageRule(target)}\n\nGuest question: ${message}`,
+          },
+        ],
       },
     ];
 
     const response = await generateWithFallback({
       contents,
-      config: { systemInstruction: SYSTEM_INSTRUCTION },
+      // Low temperature: the same question gets the same facts, worded much the same, every time.
+      config: { systemInstruction: SYSTEM_INSTRUCTION, temperature: 0.3 },
     });
 
-    const reply = stripMarkdown(response.text?.trim() ?? "") || "Sorry, I couldn't come up with an answer to that.";
+    const draft = stripMarkdown(response.text?.trim() ?? "");
+    const reply =
+      (draft && (await enforceScript(draft, target))) || "Sorry, I couldn't come up with an answer to that.";
     return NextResponse.json({ reply, escalate: false });
   } catch (error) {
     console.error("[chat] failed:", error);
