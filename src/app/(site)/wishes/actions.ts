@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminSupabase } from "@/lib/supabase-admin";
+import { isOwnCloudinaryUpload } from "@/lib/cloudinary";
 import {
   WISH_COLUMNS,
   LEGACY_WISH_COLUMNS,
@@ -14,15 +15,13 @@ import {
 
 export type TieWishResult = { ok: true; wish: Wish } | { ok: false; message: string };
 
-const cloudinaryPrefix = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/`;
-
 /**
  * Public action: any guest can tie a wish, no sign-in. Wishes go live
  * immediately (admins can hide one afterwards from /admin/wishes), so the
  * guards here are lengths, a honeypot field bots fill in and people never
  * see, and ignoring an exact double-submit. A photo, if any, was uploaded by
- * the guest's browser straight to Cloudinary; only URLs from our own
- * Cloudinary account are accepted, as with gallery uploads.
+ * the guest's browser straight to Cloudinary; it's accepted only when the URL
+ * is in our own Cloudinary account and belongs to the public id sent with it.
  */
 export async function tieWish(formData: FormData): Promise<TieWishResult> {
   if (String(formData.get("website") ?? "") !== "") {
@@ -37,7 +36,7 @@ export async function tieWish(formData: FormData): Promise<TieWishResult> {
   const color = isWishColor(colorInput) ? colorInput : "haldi";
   const photoUrl = String(formData.get("photo_url") ?? "");
   const photoPublicId = String(formData.get("photo_public_id") ?? "");
-  const hasPhoto = photoUrl !== "" && photoUrl.startsWith(cloudinaryPrefix) && photoPublicId !== "";
+  const hasPhoto = photoUrl !== "" && isOwnCloudinaryUpload(photoUrl, photoPublicId);
 
   if (!name) return { ok: false, message: "Please add your name so they know who it's from." };
   if (!message) return { ok: false, message: "Please write your wish." };
