@@ -1,4 +1,5 @@
 import "server-only";
+import { dominantScript } from "@/lib/scripts";
 
 const API_KEY = process.env.GOOGLE_CLOUD_API_KEY!;
 
@@ -40,15 +41,15 @@ export async function transcribeAudio(base64Audio: string): Promise<string> {
   return (transcript ?? "").trim();
 }
 
-// Telugu, Kannada and Devanagari script Unicode blocks -- used to pick a TTS
-// voice language since the API needs an explicit languageCode, not auto-detect.
-// Hindi typed in English letters has no Devanagari, so it's read in the
-// Indian English voice, which pronounces it reasonably.
+const VOICE_FOR_SCRIPT = { telugu: "te-IN", kannada: "kn-IN", devanagari: "hi-IN", latin: "en-IN" } as const;
+
+// The API needs an explicit languageCode, not auto-detect, so the voice
+// follows the script with the most letters (one stray Telugu letter in a
+// Kannada answer no longer switches to the Telugu voice). Hindi typed in
+// English letters has no Devanagari, so it's read in the Indian English
+// voice, which pronounces it reasonably.
 function detectSpeechLanguage(text: string): SpeechLanguageCode {
-  if (/[ఀ-౿]/.test(text)) return "te-IN";
-  if (/[ಀ-೿]/.test(text)) return "kn-IN";
-  if (/[ऀ-ॿ]/.test(text)) return "hi-IN";
-  return "en-IN";
+  return VOICE_FOR_SCRIPT[dominantScript(text)];
 }
 
 export async function synthesizeSpeech(text: string): Promise<{ audioBase64: string; languageCode: string }> {
