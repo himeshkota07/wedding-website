@@ -43,6 +43,16 @@ export function dominantScript(text: string): Script {
 }
 
 /**
+ * Drops an English spelling given in brackets right after a Telugu, Kannada
+ * or Hindi word: "तरुण्या (Tarunya) और आशीष (Ashish)" -> "तरुण्या और आशीष".
+ * The model adds these despite being asked not to, and read aloud every such
+ * name was said twice. Brackets with anything else in them are left alone.
+ */
+export function dropBracketedEnglish(text: string) {
+  return text.replace(/([ऀ-ॿఀ-೿]+)\s*\(\s*[A-Za-z][A-Za-z .,'&-]*\)/g, "$1");
+}
+
+/**
  * How many letters of `text` are in an Indian script that doesn't belong in a
  * reply written in `target`. For an English-letters reply, only a mix of two
  * or more Indian scripts counts, so quoting one word in its own script
