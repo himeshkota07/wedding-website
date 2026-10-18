@@ -29,7 +29,9 @@ export type LinkScope = {
 };
 
 const LINK_COLUMNS = "id, label, code, is_default, shows_all_events, sort_order";
-const CODE_PATTERN = /^[a-z0-9]{8,32}$/;
+// "family-k7m2q" (a name chosen in /admin/links plus a random suffix), or an
+// older random code like "k7m2q9x4p1ab". Mirrors the check in migration 0009.
+const CODE_PATTERN = /^(?=.{3,40}$)[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /** Before migration 0008 has run there are no links: behave as the site always did (everything visible). */
 const LEGACY_LINK: InviteLink = {
@@ -40,6 +42,11 @@ const LEGACY_LINK: InviteLink = {
   shows_all_events: true,
   sort_order: 0,
 };
+
+/** The readable name part of a code: "family" for "family-k7m2q", "" for an older random code. */
+export function linkNameFromCode(code: string | null) {
+  return code?.match(/^(.+)-[a-z0-9]{5}$/)?.[1] ?? "";
+}
 
 export function isPlausibleCode(code: string) {
   return CODE_PATTERN.test(code);

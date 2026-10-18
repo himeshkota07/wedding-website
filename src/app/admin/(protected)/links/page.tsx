@@ -2,9 +2,16 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import SubmitButton from "@/components/admin/SubmitButton";
 import { createAdminSupabase } from "@/lib/supabase-admin";
-import { getAllLinks, linkUrl, type InviteLink } from "@/lib/invite-links";
+import { getAllLinks, linkNameFromCode, linkUrl, type InviteLink } from "@/lib/invite-links";
 import CopyButton from "./CopyButton";
-import { issueNewCode, renameLink, saveEventVisibility, saveFaqVisibility, saveNoteVisibility } from "./actions";
+import {
+  issueNewCode,
+  renameLink,
+  saveEventVisibility,
+  saveFaqVisibility,
+  saveNoteVisibility,
+  setLinkName,
+} from "./actions";
 
 const card = "rounded-lg border border-black/10 bg-white p-4 shadow-sm";
 const saveButton = "rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white";
@@ -139,6 +146,30 @@ export default async function AdminLinksPage() {
                     : "Shows only the events ticked for it below."}
               </p>
               {!link.is_default && (
+                <form action={setLinkName} className="flex flex-wrap items-end gap-2">
+                  <input type="hidden" name="id" value={link.id} />
+                  <label className="min-w-0 flex-1 text-sm">
+                    Link name (guests see this in the address)
+                    <input
+                      name="name"
+                      defaultValue={linkNameFromCode(link.code)}
+                      placeholder="e.g. family or friends"
+                      required
+                      minLength={2}
+                      maxLength={30}
+                      className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                    />
+                    <span className="mt-1 block text-xs text-amber-700">
+                      Saving makes a new link ending in a short code, like …/i/family-k7m2q. The current link stops
+                      working, so share the new one.
+                    </span>
+                  </label>
+                  <SubmitButton pendingLabel="Saving…" doneLabel="New link ready" className={saveButton}>
+                    Save link name
+                  </SubmitButton>
+                </form>
+              )}
+              {!link.is_default && (
                 <form action={issueNewCode}>
                   <input type="hidden" name="id" value={link.id} />
                   <SubmitButton
@@ -146,7 +177,7 @@ export default async function AdminLinksPage() {
                     doneLabel="New link issued"
                     className="rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600"
                   >
-                    Issue a new link (the current one stops working)
+                    Issue a new code (same name; the current link stops working)
                   </SubmitButton>
                 </form>
               )}
