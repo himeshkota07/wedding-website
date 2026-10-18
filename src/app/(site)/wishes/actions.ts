@@ -70,7 +70,7 @@ export async function tieWish(formData: FormData): Promise<TieWishResult> {
     return { ok: false, message: "Your wish couldn't be tied just now. Please try again in a moment." };
   }
 
-  revalidatePath("/");
+  revalidatePath("/", "layout"); // every invitation link's page, not just the plain address
   revalidatePath("/admin/wishes");
   return { ok: true, wish: withWishDefaults(inserted.data as unknown as Wish) };
 }

@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { toIstTimestamp } from "@/lib/ist-datetime";
 import { scheduleKnowledgeBaseSync } from "@/lib/knowledge-base";
-import type { HomeHero, OurStory, KnowledgeBaseNotes } from "@/lib/site-settings";
+import type { HomeHero, OurStory } from "@/lib/site-settings";
 
 export async function updateHomeHero(formData: FormData) {
   await requireAdmin();
@@ -24,7 +24,7 @@ export async function updateHomeHero(formData: FormData) {
   const admin = createAdminSupabase();
   await admin.from("site_settings").upsert({ key: "home_hero", value });
 
-  revalidatePath("/");
+  revalidatePath("/", "layout"); // every invitation link's page, not just the plain address
   revalidatePath("/admin/site-settings");
   scheduleKnowledgeBaseSync();
 }
@@ -38,20 +38,7 @@ export async function updateOurStory(formData: FormData) {
   const admin = createAdminSupabase();
   await admin.from("site_settings").upsert({ key: "our_story", value });
 
-  revalidatePath("/");
-  revalidatePath("/admin/site-settings");
-  scheduleKnowledgeBaseSync();
-}
-
-export async function updateKnowledgeBaseNotes(formData: FormData) {
-  await requireAdmin();
-  const value: KnowledgeBaseNotes = {
-    content: String(formData.get("content") ?? "").trim(),
-  };
-
-  const admin = createAdminSupabase();
-  await admin.from("site_settings").upsert({ key: "knowledge_base_notes", value });
-
+  revalidatePath("/", "layout"); // every invitation link's page, not just the plain address
   revalidatePath("/admin/site-settings");
   scheduleKnowledgeBaseSync();
 }

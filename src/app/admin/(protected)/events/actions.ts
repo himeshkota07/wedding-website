@@ -19,7 +19,7 @@ function eventFields(formData: FormData) {
 }
 
 async function revalidateEvents() {
-  revalidatePath("/");
+  revalidatePath("/", "layout"); // every invitation link's page, not just the plain address
   revalidatePath("/admin/events");
   scheduleKnowledgeBaseSync();
 }

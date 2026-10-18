@@ -16,7 +16,7 @@ function memberFields(formData: FormData) {
 }
 
 async function revalidateFamily() {
-  revalidatePath("/");
+  revalidatePath("/", "layout"); // every invitation link's page, not just the plain address
   revalidatePath("/admin/family");
   scheduleKnowledgeBaseSync();
 }

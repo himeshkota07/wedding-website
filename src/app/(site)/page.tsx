@@ -1,15 +1,7 @@
 import type { Metadata } from "next";
 import { getHomeHero } from "@/lib/site-settings";
-import SiteQrCode from "@/components/SiteQrCode";
-import IntroSequence from "@/components/IntroSequence";
-import Hero from "@/components/sections/Hero";
-import OurStorySection from "@/components/sections/OurStorySection";
-import EventsSection from "@/components/sections/EventsSection";
-import VenueSection from "@/components/sections/VenueSection";
-import FamilySection from "@/components/sections/FamilySection";
-import GallerySection from "@/components/sections/GallerySection";
-import WishesSection from "@/components/sections/WishesSection";
-import ContactSection from "@/components/sections/ContactSection";
+import { resolveLink } from "@/lib/invite-links";
+import InvitationPage from "@/components/InvitationPage";
 
 export const revalidate = 60;
 
@@ -21,21 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+/** The plain address: the invitation link with the smallest set of events. */
 export default async function Home() {
-  const hero = await getHomeHero();
-
-  return (
-    <>
-      <IntroSequence brideName={hero.bride_name} groomName={hero.groom_name} />
-      <Hero hero={hero} />
-
-      <OurStorySection />
-      <EventsSection />
-      <WishesSection />
-      <VenueSection />
-      <FamilySection />
-      <GallerySection />
-      <ContactSection qrCode={<SiteQrCode />} />
-    </>
-  );
+  return <InvitationPage link={await resolveLink(null)} />;
 }

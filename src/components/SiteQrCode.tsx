@@ -1,7 +1,7 @@
 import QRCode from "qrcode";
 
-export default async function SiteQrCode() {
-  const url = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+/** A QR code for the invitation link being viewed, so a guest who shares it shares their own guest list's link. */
+export default async function SiteQrCode({ url }: { url: string }) {
   const svg = await QRCode.toString(url, {
     type: "svg",
     margin: 1,

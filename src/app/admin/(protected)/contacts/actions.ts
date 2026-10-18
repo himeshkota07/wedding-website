@@ -16,7 +16,7 @@ function contactFields(formData: FormData) {
 }
 
 async function revalidateContacts() {
-  revalidatePath("/");
+  revalidatePath("/", "layout"); // every invitation link's page, not just the plain address
   revalidatePath("/admin/contacts");
   scheduleKnowledgeBaseSync();
 }

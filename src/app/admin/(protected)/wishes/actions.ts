@@ -7,7 +7,7 @@ import { destroyCloudinaryImage } from "@/lib/cloudinary";
 import { isMissingColumnError } from "@/lib/wishes";
 
 function revalidateWishes() {
-  revalidatePath("/");
+  revalidatePath("/", "layout"); // every invitation link's page, not just the plain address
   revalidatePath("/admin/wishes");
 }
 

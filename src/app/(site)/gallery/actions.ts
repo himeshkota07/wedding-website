@@ -33,7 +33,7 @@ export async function recordGalleryUpload(formData: FormData) {
     approved: true,
   });
 
-  revalidatePath("/");
+  revalidatePath("/", "layout"); // every invitation link's page, not just the plain address
   revalidatePath("/admin/gallery");
   return { ok: true, message: "Thanks! Your photo is now live in the gallery." };
 }
