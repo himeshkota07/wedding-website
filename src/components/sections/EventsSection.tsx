@@ -13,7 +13,6 @@ type EventRow = {
   name: string;
   description: string | null;
   event_date: string;
-  theme_color: string | null;
   special_instructions: string | null;
   venue: Venue | Venue[] | null;
 };
@@ -62,7 +61,6 @@ type CardProps = {
   description?: string | null;
   when: React.ReactNode;
   where: React.ReactNode;
-  colour: React.ReactNode;
   note: React.ReactNode;
   footer?: React.ReactNode;
 };
@@ -101,7 +99,6 @@ function UmbrellaCard(p: CardProps) {
         <dl className="mt-5 grid w-full gap-y-3">
           <Field label="When">{p.when}</Field>
           <Field label="Where">{p.where}</Field>
-          <Field label="Colour">{p.colour}</Field>
           <Field label="Please note">{p.note}</Field>
         </dl>
 
@@ -119,7 +116,7 @@ function UmbrellaCard(p: CardProps) {
 export default async function EventsSection({ scope }: { scope: LinkScope }) {
   const { data: events } = await createAdminSupabase()
     .from("events")
-    .select("id, name, description, event_date, theme_color, special_instructions, venue:venues(name, address)")
+    .select("id, name, description, event_date, special_instructions, venue:venues(name, address)")
     .order("sort_order", { ascending: true })
     .returns<EventRow[]>();
 
@@ -148,7 +145,6 @@ export default async function EventsSection({ scope }: { scope: LinkScope }) {
             description="Each event will be set out here, like this, as soon as its date is fixed."
             when={TBA}
             where={TBA}
-            colour={TBA}
             note={TBA}
           />
         )}
@@ -174,20 +170,6 @@ export default async function EventsSection({ scope }: { scope: LinkScope }) {
                   </>
                 ) : (
                   TBA
-                )
-              }
-              colour={
-                event.theme_color ? (
-                  <span className="inline-flex items-center gap-2">
-                    <span
-                      aria-hidden
-                      className="h-5 w-5 rounded-full ring-1 ring-ink/20"
-                      style={{ background: event.theme_color }}
-                    />
-                    The colour for this event
-                  </span>
-                ) : (
-                  "Any festive colour"
                 )
               }
               note={event.special_instructions ?? "Nothing special"}
