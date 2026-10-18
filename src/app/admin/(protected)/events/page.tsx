@@ -9,7 +9,7 @@ export default async function AdminEventsPage() {
   const [{ data: events }, { data: venues }] = await Promise.all([
     admin
       .from("events")
-      .select("id, name, description, event_date, venue_id, theme_color, special_instructions, sort_order")
+      .select("id, name, description, event_date, venue_id, special_instructions, sort_order")
       .order("sort_order", { ascending: true }),
     admin.from("venues").select("id, name").order("name", { ascending: true }),
   ]);
@@ -64,10 +64,6 @@ export default async function AdminEventsPage() {
                 </select>
               </label>
               <label className="text-sm">
-                Theme color (hex)
-                <input name="theme_color" defaultValue={event.theme_color ?? ""} className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
-              </label>
-              <label className="text-sm">
                 Sort order
                 <input type="number" name="sort_order" defaultValue={event.sort_order} className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
               </label>
@@ -107,10 +103,6 @@ export default async function AdminEventsPage() {
                 <option key={v.id} value={v.id}>{v.name}</option>
               ))}
             </select>
-          </label>
-          <label className="text-sm">
-            Theme color (hex)
-            <input name="theme_color" placeholder="#3e6690" className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
           </label>
           <label className="text-sm">
             Sort order
