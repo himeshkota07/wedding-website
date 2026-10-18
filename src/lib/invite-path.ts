@@ -4,7 +4,7 @@
  * may see (src/lib/invite-links.ts).
  */
 export function inviteCodeFromPath(pathname: string): string | null {
-  return pathname.match(/^\/i\/([a-z0-9]{8,32})(?:\/|$)/)?.[1] ?? null;
+  return pathname.match(/^\/i\/([a-z0-9]+(?:-[a-z0-9]+)*)(?:\/|$)/)?.[1] ?? null;
 }
 
 /** The home page of the invitation link the visitor is on: "/i/<code>" or "/". */
