@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { FAST_MODELS, generateWithFallback } from "@/lib/gemini";
 import { buildKnowledgeBase } from "@/lib/knowledge-base";
+import { getLinkScope, resolveLink } from "@/lib/invite-links";
 import { SCRIPT_LANGUAGE, dominantScript, dropBracketedEnglish, strayScriptLetters, type Script } from "@/lib/scripts";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 
@@ -20,8 +21,9 @@ const SYSTEM_INSTRUCTION = `You are a friendly assistant for a wedding website, 
 How to answer, in this order:
 1. The wedding's own knowledge base comes first. The "Context" below is everything the family has written about THIS wedding. If it answers the question, answer from it, and let it overrule anything you think you know.
 2. If the Context doesn't cover it, you may answer from your own general knowledge: what a ceremony like Haldi, Sangeet or Muhurtham usually involves, Telugu and Kannada wedding customs, getting around Bangalore, travel from the airport, typical weather, what to pack, etiquette, and similar. Make it clear this is general guidance, e.g. "Generally…" or "Usually…", not something the family has confirmed.
-3. Never invent facts about THIS wedding that aren't in the Context: its dates, times, venues, addresses, people, phone numbers, dress code, menu, gifts, accommodation or arrangements. If the guest asks about one of these and the Context doesn't have it, say you don't have that detail yet and suggest the WhatsApp link or the Contact section. You can still add useful general advice alongside.
-4. If the Context seems to contradict itself (for example two different dates for the same thing), give what the Context says and suggest confirming with the family.
+3. The events in the Context are the only events this guest is invited to. If they ask about any other event or ceremony of this wedding, say you don't have details about that and suggest the Contact section; never guess whether it exists, when or where it is.
+4. Never invent facts about THIS wedding that aren't in the Context: its dates, times, venues, addresses, people, phone numbers, dress code, menu, gifts, accommodation or arrangements. If the guest asks about one of these and the Context doesn't have it, say you don't have that detail yet and suggest the WhatsApp link or the Contact section. You can still add useful general advice alongside.
+5. If the Context seems to contradict itself (for example two different dates for the same thing), give what the Context says and suggest confirming with the family.
 - Reply in the same language the guest wrote in (English, Telugu, Kannada, or Hindi). Match their language even if the context is in English. Write Hindi in Devanagari; if a guest writes Hindi in English letters (e.g. "shaadi kab hai?"), reply the same way, in English letters.
 - Keep answers short and warm, like a helpful friend, not a formal document.
 - In English, call the wedding's programme items "events", never "functions", even where the context says "function".
@@ -122,7 +124,7 @@ async function getWhatsappLink(admin: ReturnType<typeof createAdminSupabase>) {
 }
 
 export async function POST(request: NextRequest) {
-  let body: { message?: unknown; history?: unknown };
+  let body: { message?: unknown; history?: unknown; invite?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -152,7 +154,9 @@ export async function POST(request: NextRequest) {
     // The model reads the whole, current knowledge base rather than a
     // searched subset (see buildKnowledgeBase). The system instruction makes
     // it admit when the answer isn't there.
-    const context = buildContext(await buildKnowledgeBase(admin));
+    // Only what this guest's invitation link shows: events it can't see never reach the model.
+    const link = await resolveLink(typeof body.invite === "string" ? body.invite : null);
+    const context = buildContext(await buildKnowledgeBase(admin, await getLinkScope(link)));
     // Decided from the guest's own letters, not left to the model.
     const target = dominantScript(message);
     const contents = [

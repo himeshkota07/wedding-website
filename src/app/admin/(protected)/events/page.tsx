@@ -1,3 +1,4 @@
+import Link from "next/link";
 import SubmitButton from "@/components/admin/SubmitButton";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { toIstDatetimeLocal } from "@/lib/ist-datetime";
@@ -18,6 +19,13 @@ export default async function AdminEventsPage() {
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
       <h1 className="text-2xl font-semibold text-zinc-900">Events</h1>
+      <p className="mt-1 text-zinc-600">
+        A new event shows only on the &ldquo;all events&rdquo; invitation link until you choose its guest lists on the{" "}
+        <Link href="/admin/links" className="text-accent underline">
+          Links
+        </Link>{" "}
+        page.
+      </p>
 
       <div className="mt-6 space-y-6">
         {events?.map((event) => (

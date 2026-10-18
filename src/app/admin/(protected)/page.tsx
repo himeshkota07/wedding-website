@@ -4,12 +4,14 @@ import { resyncKnowledgeBase } from "./actions";
 
 const sections = [
   { href: "/admin/site-settings", label: "Site Content", blurb: "Home hero & Our Story" },
+  { href: "/admin/links", label: "Invitation links", blurb: "Guest-list links, QR codes, who sees which event" },
   { href: "/admin/events", label: "Events", blurb: "Names, dates, venues" },
   { href: "/admin/venues", label: "Venues", blurb: "Addresses, parking, accessibility" },
   { href: "/admin/family", label: "Family", blurb: "Bride & groom bios" },
   { href: "/admin/gallery", label: "Gallery", blurb: "Hide or delete photos" },
   { href: "/admin/wishes", label: "Wishes", blurb: "Guest wishes & the Pelli Pustakam book" },
   { href: "/admin/faqs", label: "FAQs", blurb: "Static FAQ entries" },
+  { href: "/admin/notes", label: "Chatbot notes", blurb: "Extra facts the chatbot can use" },
   { href: "/admin/contacts", label: "Contacts", blurb: "Coordinators & WhatsApp link" },
 ];
 

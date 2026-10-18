@@ -6,7 +6,7 @@ import { createAdminSupabase } from "@/lib/supabase-admin";
 import { destroyCloudinaryImage } from "@/lib/cloudinary";
 
 function revalidateGallery() {
-  revalidatePath("/");
+  revalidatePath("/", "layout"); // every invitation link's page, not just the plain address
   revalidatePath("/admin/gallery");
 }
 

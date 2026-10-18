@@ -1,5 +1,6 @@
 import PageSection from "@/components/PageSection";
-import { supabase } from "@/lib/supabase";
+import { createAdminSupabase } from "@/lib/supabase-admin";
+import type { LinkScope } from "@/lib/invite-links";
 import { partsFromIso } from "@/lib/date-display";
 import Countdown from "@/components/Countdown";
 import AddToCalendar from "@/components/AddToCalendar";
@@ -110,14 +111,21 @@ function UmbrellaCard(p: CardProps) {
   );
 }
 
-export default async function EventsSection() {
-  const { data: events } = await supabase
+/**
+ * Only the events this invitation link shows. Read with the server's key:
+ * events aren't publicly readable, so a guest can't list the ones their link
+ * leaves out.
+ */
+export default async function EventsSection({ scope }: { scope: LinkScope }) {
+  const { data: events } = await createAdminSupabase()
     .from("events")
     .select("id, name, description, event_date, theme_color, special_instructions, venue:venues(name, address)")
     .order("sort_order", { ascending: true })
     .returns<EventRow[]>();
 
-  const normalized = (events ?? []).map((event) => ({ ...event, venue: venue(event.venue) }));
+  const normalized = (events ?? [])
+    .filter((event) => scope.eventIds.has(event.id))
+    .map((event) => ({ ...event, venue: venue(event.venue) }));
 
   return (
     <PageSection

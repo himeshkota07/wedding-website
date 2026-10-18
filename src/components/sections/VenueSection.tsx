@@ -2,6 +2,7 @@ import { Accessibility, Car, ExternalLink, Landmark } from "lucide-react";
 import PageSection from "@/components/PageSection";
 import { supabase } from "@/lib/supabase";
 import { getHomeHero } from "@/lib/site-settings";
+import type { LinkScope } from "@/lib/invite-links";
 import WeatherWidget from "@/components/WeatherWidget";
 
 function Detail({ icon: Icon, label, children }: { icon: typeof Car; label: string; children: React.ReactNode }) {
@@ -16,14 +17,16 @@ function Detail({ icon: Icon, label, children }: { icon: typeof Car; label: stri
   );
 }
 
-export default async function VenueSection() {
-  const [{ data: venues }, hero] = await Promise.all([
+/** Only venues where this link's events are held (plus any no event uses), never a venue only a hidden event uses. */
+export default async function VenueSection({ scope }: { scope: LinkScope }) {
+  const [{ data: allVenues }, hero] = await Promise.all([
     supabase
       .from("venues")
       .select("id, name, address, parking_info, accessibility_info, nearby_landmarks")
       .order("created_at", { ascending: true }),
     getHomeHero(),
   ]);
+  const venues = (allVenues ?? []).filter((v) => scope.venueIds.has(v.id));
 
   // Until a venue is saved in the admin panel, show the location from the home settings.
   const [place, ...area] = hero.location.split(",").map((s) => s.trim());

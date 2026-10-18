@@ -1,27 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { BeamTrim } from "@/components/ui/motifs";
+import { invitationHome } from "@/lib/invite-path";
 
 const links = [
-  { href: "/#top", label: "Home" },
-  { href: "/#our-story", label: "Our Story" },
-  { href: "/#events", label: "Events" },
-  { href: "/#wishes", label: "Wishes" },
-  { href: "/#venue", label: "Venue" },
-  { href: "/#family", label: "Family" },
-  { href: "/#gallery", label: "Gallery" },
-  { href: "/#contact", label: "Contact" },
+  { href: "#top", label: "Home" },
+  { href: "#our-story", label: "Our Story" },
+  { href: "#events", label: "Events" },
+  { href: "#wishes", label: "Wishes" },
+  { href: "#venue", label: "Venue" },
+  { href: "#family", label: "Family" },
+  { href: "#gallery", label: "Gallery" },
+  { href: "#contact", label: "Contact" },
 ];
 
 /** The mandapam's carved teak canopy beam, carrying the navigation. */
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const reduceMotion = useReducedMotion();
+  // Stay on the guest's own invitation link: "/i/<code>#events", never the plain address.
+  const home = invitationHome(usePathname());
 
   return (
     <header className="sticky top-0 z-30">
@@ -32,7 +36,7 @@ export default function Nav() {
               half over the page. The link keeps the seal's width in the row; the seal itself is positioned
               absolutely so it can overhang. id="site-logo" is where the intro's seal flies to. */}
           <Link
-            href="/#top"
+            href={`${home}#top`}
             onClick={() => setOpen(false)}
             aria-label="Tarunya & Ashish, back to top"
             className="relative h-full w-[4.75rem] shrink-0"
@@ -53,7 +57,7 @@ export default function Nav() {
             {links.map((link) => (
               <Link
                 key={link.href}
-                href={link.href}
+                href={`${home}${link.href}`}
                 className="text-[0.95rem] font-medium text-ink underline-offset-8 transition-colors hover:text-kumkum-deep hover:underline"
               >
                 {link.label}
@@ -87,7 +91,7 @@ export default function Nav() {
                 {links.map((link) => (
                   <li key={link.href}>
                     <Link
-                      href={link.href}
+                      href={`${home}${link.href}`}
                       onClick={() => setOpen(false)}
                       className="block py-2.5 text-lg text-ink transition-colors hover:text-kumkum-deep"
                     >

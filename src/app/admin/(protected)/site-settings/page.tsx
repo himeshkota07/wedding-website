@@ -1,13 +1,14 @@
 import SubmitButton from "@/components/admin/SubmitButton";
-import { getHomeHero, getOurStory, getKnowledgeBaseNotes } from "@/lib/site-settings";
+import Link from "next/link";
+import { getHomeHero, getOurStory } from "@/lib/site-settings";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { toIstDatetimeLocal } from "@/lib/ist-datetime";
 import { Field, TextAreaField } from "@/components/admin/Field";
-import { updateHomeHero, updateOurStory, updateKnowledgeBaseNotes } from "./actions";
+import { updateHomeHero, updateOurStory } from "./actions";
 
 export default async function AdminSiteSettingsPage() {
   const admin = createAdminSupabase();
-  const [hero, story, notes] = await Promise.all([getHomeHero(admin), getOurStory(admin), getKnowledgeBaseNotes(admin)]);
+  const [hero, story] = await Promise.all([getHomeHero(admin), getOurStory(admin)]);
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
@@ -69,30 +70,14 @@ export default async function AdminSiteSettingsPage() {
         <SubmitButton pendingLabel="Saving…" doneLabel="Saved" className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Save Our Story</SubmitButton>
       </form>
 
-      <h2 className="mt-8 text-lg font-semibold text-zinc-900">Chatbot Knowledge Base &mdash; Extra Notes</h2>
+      <h2 className="mt-8 text-lg font-semibold text-zinc-900">Chatbot notes</h2>
       <p className="mt-1 text-sm text-zinc-600">
-        Anything else guests might ask that isn&apos;t covered by Events, Venues, Family, FAQs, or Contacts &mdash;
-        the chatbot will use this alongside all the other content. Separate distinct facts with a blank line so
-        each one is retrieved on its own.
+        Extra facts for the chatbot now live on their own page, one per note, so each can be kept away from guest
+        lists whose invitation link doesn&apos;t include it.{" "}
+        <Link href="/admin/notes" className="text-accent underline">
+          Edit chatbot notes
+        </Link>
       </p>
-      <form
-        action={updateKnowledgeBaseNotes}
-        className="mt-3 space-y-3 rounded-lg border border-black/10 bg-white p-4 shadow-sm"
-      >
-        <label className="text-sm">
-          Notes
-          <textarea
-            name="content"
-            defaultValue={notes.content}
-            rows={14}
-            placeholder={
-              "Example:\n\nGuests flying in should land at RGIA (Hyderabad) rather than Bengaluru; it's a shorter drive to the venue.\n\nThe mehendi event is women-only until 6pm, after which everyone is welcome."
-            }
-            className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
-          />
-        </label>
-        <SubmitButton className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white">Save Notes</SubmitButton>
-      </form>
     </div>
   );
 }

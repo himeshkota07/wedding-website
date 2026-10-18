@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Mic, Square, Volume2, Pause, Send } from "lucide-react";
 import { useVoiceRecorder } from "@/lib/use-voice-recorder";
+import { inviteCodeFromPath } from "@/lib/invite-path";
 
 type Message = { role: "user" | "model"; text: string };
 // Answer in the mode the question was asked in: typed in, text out; spoken in, spoken out.
@@ -79,6 +80,8 @@ export default function ChatWidget() {
         body: JSON.stringify({
           message: text,
           history: nextMessages.slice(0, -1).slice(-6),
+          // The chatbot only knows the events this invitation link shows.
+          invite: inviteCodeFromPath(window.location.pathname),
         }),
       });
       const data = await res.json();

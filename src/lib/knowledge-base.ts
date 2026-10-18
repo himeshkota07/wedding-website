@@ -3,6 +3,20 @@ import { after } from "next/server";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { embedTexts } from "@/lib/gemini";
 import { getHomeHero, getOurStory, getKnowledgeBaseNotes } from "@/lib/site-settings";
+import type { LinkScope } from "@/lib/invite-links";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+/** Chatbot notes, one per row (migration 0008); before that, paragraphs of the old single notes setting. */
+async function readNotes(admin: SupabaseClient): Promise<{ id: string; content: string }[]> {
+  const { data, error } = await admin.from("chatbot_notes").select("id, content").order("sort_order");
+  if (!error) return data ?? [];
+  const legacy = await getKnowledgeBaseNotes(admin);
+  return legacy.content
+    .split(/\r?\n\s*\r?\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((content, i) => ({ id: `notes-${i}`, content }));
+}
 
 export type Chunk = { source_type: string; source_id: string; content: string };
 
@@ -24,8 +38,13 @@ function formatEventDate(iso: string) {
  * site is a few dozen short facts, so there's no need to embed and search
  * (which ran into Gemini's free embedding quota and served stale content
  * whenever a rebuild failed). Admin edits reach the chatbot immediately.
+ *
+ * With a `scope`, only what that invitation link may see is included: its
+ * events, the venues they use, and the FAQs and notes not hidden from it. A
+ * guest can't be told about an event their link doesn't show, because the
+ * model never receives it.
  */
-export async function buildKnowledgeBase(admin = createAdminSupabase()): Promise<Chunk[]> {
+export async function buildKnowledgeBase(admin = createAdminSupabase(), scope?: LinkScope): Promise<Chunk[]> {
   const [{ data: events }, { data: venues }, { data: family }, { data: faqs }, { data: contacts }, hero, ourStory, notes] =
     await Promise.all([
       admin
@@ -47,8 +66,13 @@ export async function buildKnowledgeBase(admin = createAdminSupabase()): Promise
       admin.from("contacts").select("id, name, role, phone, whatsapp_link"),
       getHomeHero(admin),
       getOurStory(admin),
-      getKnowledgeBaseNotes(admin),
+      readNotes(admin),
     ]);
+
+  const visibleEvents = scope ? (events ?? []).filter((e) => scope.eventIds.has(e.id)) : (events ?? []);
+  const visibleVenues = scope ? (venues ?? []).filter((v) => scope.venueIds.has(v.id)) : (venues ?? []);
+  const visibleFaqs = scope ? (faqs ?? []).filter((f) => !scope.hiddenFaqIds.has(f.id)) : (faqs ?? []);
+  const visibleNotes = scope ? notes.filter((n) => !scope.hiddenNoteIds.has(n.id)) : notes;
 
   const chunks: Chunk[] = [];
 
@@ -62,7 +86,7 @@ export async function buildKnowledgeBase(admin = createAdminSupabase()): Promise
     chunks.push({ source_type: "our_story", source_id: "our_story", content: `Our story: ${ourStory.content}` });
   }
 
-  for (const event of events ?? []) {
+  for (const event of visibleEvents) {
     const venue = Array.isArray(event.venue) ? event.venue[0] : event.venue;
     chunks.push({
       source_type: "event",
@@ -79,7 +103,7 @@ export async function buildKnowledgeBase(admin = createAdminSupabase()): Promise
     });
   }
 
-  for (const venue of venues ?? []) {
+  for (const venue of visibleVenues) {
     chunks.push({
       source_type: "venue",
       source_id: venue.id,
@@ -102,17 +126,13 @@ export async function buildKnowledgeBase(admin = createAdminSupabase()): Promise
     });
   }
 
-  for (const faq of faqs ?? []) {
+  for (const faq of visibleFaqs) {
     chunks.push({ source_type: "faq", source_id: faq.id, content: `Q: ${faq.question} A: ${faq.answer}` });
   }
 
-  const noteParagraphs = notes.content
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-  noteParagraphs.forEach((paragraph, i) => {
-    chunks.push({ source_type: "notes", source_id: `notes-${i}`, content: paragraph });
-  });
+  for (const note of visibleNotes) {
+    chunks.push({ source_type: "notes", source_id: note.id, content: note.content });
+  }
 
   for (const contact of contacts ?? []) {
     chunks.push({

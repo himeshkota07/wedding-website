@@ -14,7 +14,7 @@ function faqFields(formData: FormData) {
 }
 
 async function revalidateFaqs() {
-  revalidatePath("/");
+  revalidatePath("/", "layout"); // every invitation link's page, not just the plain address
   revalidatePath("/admin/faqs");
   scheduleKnowledgeBaseSync();
 }
