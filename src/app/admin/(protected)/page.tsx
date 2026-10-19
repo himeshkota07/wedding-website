@@ -7,7 +7,6 @@ const sections = [
   { href: "/admin/links", label: "Invitation links", blurb: "Guest-list links, QR codes, who sees which event" },
   { href: "/admin/events", label: "Events", blurb: "Names, dates, venues" },
   { href: "/admin/venues", label: "Venues", blurb: "Addresses, parking, accessibility" },
-  { href: "/admin/family", label: "Family", blurb: "Bride & groom bios" },
   { href: "/admin/gallery", label: "Gallery", blurb: "Hide or delete photos" },
   { href: "/admin/wishes", label: "Wishes", blurb: "Guest wishes & the Pelli Pustakam book" },
   { href: "/admin/faqs", label: "FAQs", blurb: "Static FAQ entries" },

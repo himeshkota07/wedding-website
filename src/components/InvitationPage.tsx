@@ -6,7 +6,6 @@ import Hero from "@/components/sections/Hero";
 import OurStorySection from "@/components/sections/OurStorySection";
 import EventsSection from "@/components/sections/EventsSection";
 import VenueSection from "@/components/sections/VenueSection";
-import FamilySection from "@/components/sections/FamilySection";
 import GallerySection from "@/components/sections/GallerySection";
 import WishesSection from "@/components/sections/WishesSection";
 import ContactSection from "@/components/sections/ContactSection";
@@ -28,7 +27,6 @@ export default async function InvitationPage({ link }: { link: InviteLink }) {
       <EventsSection scope={scope} />
       <WishesSection />
       <VenueSection scope={scope} />
-      <FamilySection />
       <GallerySection />
       <ContactSection qrCode={<SiteQrCode url={linkUrl(link)} />} />
     </>
