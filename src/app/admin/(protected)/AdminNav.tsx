@@ -11,6 +11,7 @@ const sections = [
   { href: "/admin/events", label: "Events" },
   { href: "/admin/venues", label: "Venues" },
   { href: "/admin/gallery", label: "Gallery" },
+  { href: "/admin/music", label: "Music" },
   { href: "/admin/wishes", label: "Wishes" },
   { href: "/admin/faqs", label: "FAQs" },
   { href: "/admin/contacts", label: "Contacts" },

@@ -8,6 +8,7 @@ const sections = [
   { href: "/admin/events", label: "Events", blurb: "Names, dates, venues" },
   { href: "/admin/venues", label: "Venues", blurb: "Addresses, parking, accessibility" },
   { href: "/admin/gallery", label: "Gallery", blurb: "Hide or delete photos" },
+  { href: "/admin/music", label: "Music", blurb: "Background song, Events song, a song per event" },
   { href: "/admin/wishes", label: "Wishes", blurb: "Guest wishes & the Pelli Pustakam book" },
   { href: "/admin/faqs", label: "FAQs", blurb: "Static FAQ entries" },
   { href: "/admin/notes", label: "Chatbot notes", blurb: "Extra facts the chatbot can use" },

@@ -5,6 +5,7 @@ import { partsFromIso } from "@/lib/date-display";
 import Countdown from "@/components/Countdown";
 import AddToCalendar from "@/components/AddToCalendar";
 import { Marigold } from "@/components/ui/motifs";
+import { getMusic } from "@/lib/music";
 
 type Venue = { name: string; address: string };
 
@@ -64,6 +65,8 @@ type CardProps = {
   where: React.ReactNode;
   note: React.ReactNode;
   footer?: React.ReactNode;
+  /** This event's song on phones ("" for none: the Events song plays). See BackgroundMusic. */
+  song?: string;
 };
 
 /**
@@ -87,7 +90,10 @@ type CardProps = {
  */
 function UmbrellaCard(p: CardProps) {
   return (
-    <li className={`${p.className ?? ""} aspect-[816/1273] w-full min-w-0 self-stretch rounded-[1.75rem] bg-[#fbfef7] bg-[url(/theme/event-card.jpg),url(/theme/event-card-body.jpg)] bg-[length:100%_auto] bg-top [background-repeat:no-repeat,repeat-y] shadow-[0_10px_30px_-12px_rgb(74_42_29/0.35)] ring-1 ring-ink/10`}>
+    <li
+      data-event-song={p.song}
+      className={`${p.className ?? ""} aspect-[816/1273] w-full min-w-0 self-stretch rounded-[1.75rem] bg-[#fbfef7] bg-[url(/theme/event-card.jpg),url(/theme/event-card-body.jpg)] bg-[length:100%_auto] bg-top [background-repeat:no-repeat,repeat-y] shadow-[0_10px_30px_-12px_rgb(74_42_29/0.35)] ring-1 ring-ink/10`}
+    >
       <div className="flex flex-col items-center px-[11%] pb-8 pt-[58%] text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.14em] text-ink-soft">
           {[p.weekday, p.month].filter(Boolean).join(" · ") || "\u00a0"}
@@ -115,79 +121,86 @@ function UmbrellaCard(p: CardProps) {
  * leaves out.
  */
 export default async function EventsSection({ scope }: { scope: LinkScope }) {
-  const { data: events } = await createAdminSupabase()
-    .from("events")
-    .select("id, name, description, event_date, event_end, special_instructions, venue:venues(name, address)")
-    .order("sort_order", { ascending: true })
-    .returns<EventRow[]>();
+  const [{ data: events }, music] = await Promise.all([
+    createAdminSupabase()
+      .from("events")
+      .select("id, name, description, event_date, event_end, special_instructions, venue:venues(name, address)")
+      .order("sort_order", { ascending: true })
+      .returns<EventRow[]>(),
+    getMusic(),
+  ]);
 
   const normalized = (events ?? [])
     .filter((event) => scope.eventIds.has(event.id))
     .map((event) => ({ ...event, venue: venue(event.venue) }));
 
   return (
-    <PageSection
-      id="events"
-      tone="paper"
-      title="The Events"
-      subtitle="Every event, when and where, with anything you should know before you come."
-    >
-      <ol className="grid gap-8 sm:grid-cols-4 lg:grid-cols-6">
-        {normalized.length === 0 && (
-          <UmbrellaCard
-            className={cardPlacement(0, 1)}
-            day={
-              <span className="flex items-center gap-2 text-4xl">
-                <Marigold size={28} />
-                Soon
-              </span>
-            }
-            name="The schedule is being finalised"
-            description="Each event will be set out here, like this, as soon as its date is fixed."
-            when={TBA}
-            where={TBA}
-            note={TBA}
-          />
-        )}
-        {normalized.map((event, i) => {
-          const when = partsFromIso(event.event_date);
-          const endTime = event.event_end ? partsFromIso(event.event_end)?.time : undefined;
-          const v = event.venue;
-          return (
+    // The Events section's song takes over from the background song while it's on screen.
+    <div data-music-section data-song={music.events_section?.url}>
+      <PageSection
+        id="events"
+        tone="paper"
+        title="The Events"
+        subtitle="Every event, when and where, with anything you should know before you come."
+      >
+        <ol className="grid gap-8 sm:grid-cols-4 lg:grid-cols-6">
+          {normalized.length === 0 && (
             <UmbrellaCard
-              key={event.id}
-              className={cardPlacement(i, normalized.length)}
-              day={when?.day ?? "—"}
-              month={when?.month}
-              weekday={when?.weekday}
-              name={event.name}
-              aside={<Countdown targetIso={event.event_date} compact />}
-              description={event.description}
-              when={when?.time ? (endTime ? `${when.time} – ${endTime}` : when.time) : TBA}
-              where={
-                v ? (
-                  <>
-                    {v.name}
-                    <span className="block text-sm text-ink-soft">{v.address}</span>
-                  </>
-                ) : (
-                  TBA
-                )
+              className={cardPlacement(0, 1)}
+              day={
+                <span className="flex items-center gap-2 text-4xl">
+                  <Marigold size={28} />
+                  Soon
+                </span>
               }
-              note={event.special_instructions ?? "Nothing special"}
-              footer={
-                <AddToCalendar
-                  title={event.name}
-                  description={event.description}
-                  location={v?.address}
-                  startIso={event.event_date}
-                  endIso={event.event_end}
-                />
-              }
+              name="The schedule is being finalised"
+              description="Each event will be set out here, like this, as soon as its date is fixed."
+              when={TBA}
+              where={TBA}
+              note={TBA}
             />
-          );
-        })}
-      </ol>
-    </PageSection>
+          )}
+          {normalized.map((event, i) => {
+            const when = partsFromIso(event.event_date);
+            const endTime = event.event_end ? partsFromIso(event.event_end)?.time : undefined;
+            const v = event.venue;
+            return (
+              <UmbrellaCard
+                key={event.id}
+                className={cardPlacement(i, normalized.length)}
+                day={when?.day ?? "—"}
+                month={when?.month}
+                weekday={when?.weekday}
+                name={event.name}
+                song={music.events[event.id]?.url ?? ""}
+                aside={<Countdown targetIso={event.event_date} compact />}
+                description={event.description}
+                when={when?.time ? (endTime ? `${when.time} – ${endTime}` : when.time) : TBA}
+                where={
+                  v ? (
+                    <>
+                      {v.name}
+                      <span className="block text-sm text-ink-soft">{v.address}</span>
+                    </>
+                  ) : (
+                    TBA
+                  )
+                }
+                note={event.special_instructions ?? "Nothing special"}
+                footer={
+                  <AddToCalendar
+                    title={event.name}
+                    description={event.description}
+                    location={v?.address}
+                    startIso={event.event_date}
+                    endIso={event.event_end}
+                  />
+                }
+              />
+            );
+          })}
+        </ol>
+      </PageSection>
+    </div>
   );
 }
