@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
+import { INTRO_DONE_EVENT, isIntroDone } from "@/components/IntroSequence";
+import { CHAT_AUDIO_EVENT } from "@/lib/audio-events";
 
 const FADE_MS = 700;
 // How long the guest has to stay on a part of the page before its song
@@ -11,6 +13,26 @@ const VOLUME = 1;
 // Phones show the event cards one under another (the grid's single column),
 // so each card can have its own song there.
 const PHONE_QUERY = "(max-width: 639px)";
+
+// Remembered in this browser when the guest turns the music off.
+const OFF_KEY = "wedding-music-off";
+
+function turnedOffBefore() {
+  try {
+    return localStorage.getItem(OFF_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function rememberTurnedOff(off: boolean) {
+  try {
+    if (off) localStorage.setItem(OFF_KEY, "1");
+    else localStorage.removeItem(OFF_KEY);
+  } catch {
+    // Private browsing and the like: nothing to remember it in.
+  }
+}
 
 /**
  * The song the page calls for right now, judged at the middle of the screen.
@@ -52,6 +74,11 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
   const current = useRef(masterSrc);
   const positions = useRef(new Map<string, number>());
   const switchId = useRef(0);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  /** Set once the guest has used the music button themselves. */
+  const chosen = useRef(false);
+  /** True while the chat is reading aloud or listening: the music waits. */
+  const held = useRef(false);
 
   const fade = useCallback((audio: HTMLAudioElement, to: number, id: number) => {
     return new Promise<void>((resolve) => {
@@ -91,8 +118,8 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
       const audio = audioRef.current;
       if (!audio || src === current.current) return;
       const id = ++switchId.current;
-      if (!playingRef.current) {
-        load(audio, src); // ready for when the guest turns the music on
+      if (!playingRef.current || held.current) {
+        load(audio, src); // ready for when the music (re)starts
         return;
       }
       await fade(audio, 0, id);
@@ -129,28 +156,112 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
     };
   }, [masterSrc, switchTo]);
 
+  /** Plays the song for where the guest is. False when the browser won't allow sound yet. */
+  const start = useCallback(async () => {
+    const audio = audioRef.current;
+    if (!audio) return false;
+    const wanted = songAtMiddle(masterSrc);
+    if (wanted !== current.current || !audio.getAttribute("src")) load(audio, wanted);
+    switchId.current++; // stop any fade in progress
+    audio.volume = VOLUME;
+    try {
+      await audio.play();
+    } catch {
+      return false;
+    }
+    // Started (which unlocks the player on iPhones), but the chat is talking: wait for it.
+    if (held.current) audio.pause();
+    playingRef.current = true;
+    return true;
+  }, [masterSrc, load]);
+
+  // Pause while the chat reads an answer aloud or records a question, and
+  // carry on (with the song for wherever the guest now is) once it's done.
+  useEffect(() => {
+    function onChatAudio(e: Event) {
+      const audio = audioRef.current;
+      held.current = (e as CustomEvent<boolean>).detail;
+      if (!audio || !playingRef.current) return;
+      switchId.current++; // stop any fade in progress
+      if (held.current) {
+        audio.pause();
+      } else {
+        const wanted = songAtMiddle(masterSrc);
+        if (wanted !== current.current) load(audio, wanted);
+        audio.volume = VOLUME;
+        audio.play().catch(() => {});
+      }
+    }
+    window.addEventListener(CHAT_AUDIO_EVENT, onChatAudio);
+    return () => window.removeEventListener(CHAT_AUDIO_EVENT, onChatAudio);
+  }, [masterSrc, load]);
+
+  // Music is on by default, from the moment the opening animation ends or is
+  // skipped. Browsers (iPhones above all) only allow sound once the guest has
+  // interacted with the page, so try then, and otherwise start on their first
+  // tap, click or key press anywhere. A guest who turns the music off is
+  // remembered and left in peace.
+  useEffect(() => {
+    if (turnedOffBefore()) return;
+    let done = false;
+    const triggers = ["pointerdown", "pointerup", "touchend", "keydown", "click"];
+    const stopListening = () => triggers.forEach((t) => document.removeEventListener(t, onInteract, true));
+    function onInteract(e: Event) {
+      // The music button handles its own taps; and once the guest has used it, it's their choice.
+      if (done || chosen.current || buttonRef.current?.contains(e.target as Node)) return;
+      start().then((ok) => {
+        if (ok) {
+          done = true;
+          setPlaying(true);
+          stopListening();
+        }
+      });
+    }
+    function begin() {
+      if (done || chosen.current) return;
+      start().then((ok) => {
+        if (ok) {
+          done = true;
+          setPlaying(true);
+        } else if (!done) triggers.forEach((t) => document.addEventListener(t, onInteract, true));
+      });
+    }
+    // Checked once every component has mounted: the opening (on invitation
+    // pages only) marks <html> while it plays.
+    const wait = setTimeout(() => {
+      const introPlaying = document.documentElement.dataset.introPlaying === "1" && !isIntroDone();
+      if (introPlaying) window.addEventListener(INTRO_DONE_EVENT, begin, { once: true });
+      else begin();
+    }, 0);
+    return () => {
+      done = true;
+      clearTimeout(wait);
+      window.removeEventListener(INTRO_DONE_EVENT, begin);
+      stopListening();
+    };
+  }, [start]);
+
   function toggle() {
     const audio = audioRef.current;
     if (!audio) return;
+    chosen.current = true;
     if (playing) {
       switchId.current++; // stop any fade in progress
       audio.pause();
+      playingRef.current = false;
+      setPlaying(false);
+      rememberTurnedOff(true);
     } else {
-      const wanted = songAtMiddle(masterSrc);
-      if (wanted !== current.current || !audio.getAttribute("src")) load(audio, wanted);
-      audio.volume = VOLUME;
-      audio.play().catch(() => {
-        // Autoplay/interaction restrictions -- ignore, button just stays "paused".
-      });
+      rememberTurnedOff(false);
+      start().then((ok) => ok && setPlaying(true));
     }
-    playingRef.current = !playing;
-    setPlaying(!playing);
   }
 
   return (
     <>
       <audio ref={audioRef} loop preload="none" />
       <button
+        ref={buttonRef}
         type="button"
         onClick={toggle}
         aria-label={playing ? "Pause background music" : "Play background music"}
