@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { HomeHero } from "@/lib/site-settings";
-import { dateParts } from "@/lib/date-display";
+import { dateParts, partsFromIso } from "@/lib/date-display";
 import Countdown from "@/components/Countdown";
 import HeroActions from "@/components/sections/HeroActions";
 
@@ -14,9 +14,25 @@ function splitLocation(location: string) {
  * tiptoe beside his, petals scattered around them -- with the invitation
  * written above them like the words on a card.
  */
-export default function Hero({ hero }: { hero: HomeHero }) {
+export default function Hero({ hero, eventDates = [] }: { hero: HomeHero; eventDates?: string[] }) {
   const when = dateParts(hero.wedding_datetime, hero.wedding_date_label);
   const { place, area } = splitLocation(hero.location);
+  const welcomeParagraphs = (hero.welcome_note ?? "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  // When this link's events span more than one day, the date reads as a
+  // range ("12 | 13", "Sat & Sun") from its first event's day to its last.
+  const first = eventDates.length ? partsFromIso(eventDates[0]) : null;
+  const last = eventDates.length ? partsFromIso(eventDates[eventDates.length - 1]) : null;
+  const span =
+    first && last && (first.day !== last.day || first.month !== last.month)
+      ? {
+          weekday: `${first.weekday?.slice(0, 3)} & ${last.weekday?.slice(0, 3)}`,
+          month: first.month === last.month ? first.month : `${first.month?.slice(0, 3)} – ${last.month?.slice(0, 3)}`,
+        }
+      : null;
 
   return (
     <div id="top" className="relative isolate -mt-3 overflow-hidden bg-paper">
@@ -32,7 +48,21 @@ export default function Hero({ hero }: { hero: HomeHero }) {
         </h1>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
-          {when ? (
+          {span && first && last ? (
+            <div className="flex items-center gap-3 text-left sm:gap-4">
+              <span className="font-display text-[2.75rem] leading-none tabular-nums text-ink sm:text-[3.25rem]">
+                {first.day}
+                <span className="text-brass">,</span>
+                {last.day}
+              </span>
+              <span className="h-16 w-px bg-brass" aria-hidden />
+              <span className="font-display text-lg leading-snug text-ink-soft">
+                <span className="block">{span.weekday}</span>
+                {span.month && <span className="block">{span.month}</span>}
+                {when?.time && <span className="block">{when.time}</span>}
+              </span>
+            </div>
+          ) : when ? (
             <div className="flex items-center gap-4 text-left">
               <span className="font-display text-6xl leading-none tabular-nums text-ink sm:text-7xl">{when.day}</span>
               <span className="h-16 w-px bg-brass" aria-hidden />
@@ -53,7 +83,14 @@ export default function Hero({ hero }: { hero: HomeHero }) {
           )}
         </div>
 
-        {hero.welcome_note && <p className="mt-8 max-w-xl text-lg text-ink-soft">{hero.welcome_note}</p>}
+        {/* Each line of the note, as typed in admin, is its own paragraph. */}
+        {welcomeParagraphs.length > 0 && (
+          <div className="mt-8 max-w-xl space-y-3 text-lg text-ink-soft">
+            {welcomeParagraphs.map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
+            ))}
+          </div>
+        )}
 
         {hero.wedding_datetime && (
           <div className="mt-10">

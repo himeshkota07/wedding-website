@@ -21,7 +21,7 @@ export default async function InvitationPage({ link }: { link: InviteLink }) {
   return (
     <>
       <IntroSequence brideName={hero.bride_name} groomName={hero.groom_name} />
-      <Hero hero={hero} />
+      <Hero hero={hero} eventDates={scope.eventDates} />
 
       <OurStorySection />
       <EventsSection scope={scope} />
