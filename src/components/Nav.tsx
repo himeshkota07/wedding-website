@@ -15,7 +15,6 @@ const links = [
   { href: "#events", label: "Events" },
   { href: "#wishes", label: "Wishes" },
   { href: "#venue", label: "Venue" },
-  { href: "#family", label: "Family" },
   { href: "#gallery", label: "Gallery" },
   { href: "#contact", label: "Contact" },
 ];

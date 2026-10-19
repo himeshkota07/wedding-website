@@ -10,7 +10,6 @@ const sections = [
   { href: "/admin/links", label: "Links" },
   { href: "/admin/events", label: "Events" },
   { href: "/admin/venues", label: "Venues" },
-  { href: "/admin/family", label: "Family" },
   { href: "/admin/gallery", label: "Gallery" },
   { href: "/admin/wishes", label: "Wishes" },
   { href: "/admin/faqs", label: "FAQs" },

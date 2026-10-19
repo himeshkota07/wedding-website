@@ -49,7 +49,7 @@ function formatEventEnd(iso: string) {
  * model never receives it.
  */
 export async function buildKnowledgeBase(admin = createAdminSupabase(), scope?: LinkScope): Promise<Chunk[]> {
-  const [{ data: events }, { data: venues }, { data: family }, { data: faqs }, { data: contacts }, hero, ourStory, notes] =
+  const [{ data: events }, { data: venues }, { data: faqs }, { data: contacts }, hero, ourStory, notes] =
     await Promise.all([
       admin
         .from("events")
@@ -66,7 +66,6 @@ export async function buildKnowledgeBase(admin = createAdminSupabase(), scope?: 
           }[]
         >(),
       admin.from("venues").select("id, name, address, parking_info, accessibility_info, nearby_landmarks"),
-      admin.from("family_members").select("id, side, role, name, bio"),
       admin.from("faqs").select("id, question, answer"),
       admin.from("contacts").select("id, name, role, phone, whatsapp_link"),
       getHomeHero(admin),
@@ -122,14 +121,6 @@ export async function buildKnowledgeBase(admin = createAdminSupabase(), scope?: 
       ]
         .filter(Boolean)
         .join(" "),
-    });
-  }
-
-  for (const member of family ?? []) {
-    chunks.push({
-      source_type: "family",
-      source_id: member.id,
-      content: `${member.name} is the ${member.role} on the ${member.side}'s side. ${member.bio ?? ""}`.trim(),
     });
   }
 
