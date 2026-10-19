@@ -23,6 +23,8 @@ export type InviteLink = {
 export type LinkScope = {
   link: InviteLink;
   eventIds: Set<string>;
+  /** Start times of this link's events, earliest first. */
+  eventDates: string[];
   venueIds: Set<string>;
   hiddenFaqIds: Set<string>;
   hiddenNoteIds: Set<string>;
@@ -94,7 +96,7 @@ export const getLinkScope = cache(async (link: InviteLink): Promise<LinkScope> =
   const admin = createAdminSupabase();
   const legacy = link.id === LEGACY_LINK.id;
   const [{ data: events }, { data: venues }, ticked, hiddenFaqs, hiddenNotes] = await Promise.all([
-    admin.from("events").select("id, venue_id"),
+    admin.from("events").select("id, venue_id, event_date"),
     admin.from("venues").select("id"),
     link.shows_all_events || legacy
       ? Promise.resolve({ data: [] as { event_id: string }[] })
@@ -123,6 +125,10 @@ export const getLinkScope = cache(async (link: InviteLink): Promise<LinkScope> =
   return {
     link,
     eventIds,
+    eventDates: allEvents
+      .filter((e) => eventIds.has(e.id as string))
+      .map((e) => e.event_date as string)
+      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime()),
     venueIds: venueIds as Set<string>,
     hiddenFaqIds: new Set((hiddenFaqs.data ?? []).map((r) => (r as { faq_id: string }).faq_id)),
     hiddenNoteIds: new Set((hiddenNotes.data ?? []).map((r) => (r as { note_id: string }).note_id)),
