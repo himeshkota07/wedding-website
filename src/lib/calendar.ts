@@ -3,6 +3,8 @@ export type CalendarEvent = {
   description?: string | null;
   location?: string | null;
   startIso: string;
+  /** When set, the event ends here; otherwise it lasts `durationHours` (2 by default). */
+  endIso?: string | null;
   durationHours?: number;
 };
 
@@ -20,7 +22,7 @@ function escapeIcsText(text: string) {
 
 function getRange(e: CalendarEvent) {
   const start = new Date(e.startIso);
-  const end = new Date(start.getTime() + (e.durationHours ?? 2) * 3_600_000);
+  const end = e.endIso ? new Date(e.endIso) : new Date(start.getTime() + (e.durationHours ?? 2) * 3_600_000);
   return { start, end };
 }
 

@@ -32,6 +32,10 @@ function formatEventDate(iso: string) {
   });
 }
 
+function formatEventEnd(iso: string) {
+  return new Date(iso).toLocaleString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
+}
+
 /**
  * Every fact the chatbot knows, built from current DB content. The chat
  * route calls this on each question and gives the model all of it: the whole
@@ -49,13 +53,14 @@ export async function buildKnowledgeBase(admin = createAdminSupabase(), scope?: 
     await Promise.all([
       admin
         .from("events")
-        .select("id, name, description, event_date, special_instructions, venue:venues(name, address)")
+        .select("id, name, description, event_date, event_end, special_instructions, venue:venues(name, address)")
         .returns<
           {
             id: string;
             name: string;
             description: string | null;
             event_date: string;
+            event_end: string | null;
             special_instructions: string | null;
             venue: { name: string; address: string } | { name: string; address: string }[] | null;
           }[]
@@ -94,7 +99,9 @@ export async function buildKnowledgeBase(admin = createAdminSupabase(), scope?: 
       content: [
         `Event: ${event.name}.`,
         event.description,
-        `Date & time: ${formatEventDate(event.event_date)} (India time).`,
+        event.event_end
+          ? `Date & time: ${formatEventDate(event.event_date)} to ${formatEventEnd(event.event_end)} (India time).`
+          : `Date & time: ${formatEventDate(event.event_date)} (India time).`,
         venue && `Venue: ${venue.name}, ${venue.address}.`,
         event.special_instructions && `Special instructions: ${event.special_instructions}`,
       ]

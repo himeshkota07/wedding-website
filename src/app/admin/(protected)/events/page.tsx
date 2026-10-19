@@ -1,7 +1,7 @@
 import Link from "next/link";
 import SubmitButton from "@/components/admin/SubmitButton";
 import { createAdminSupabase } from "@/lib/supabase-admin";
-import { toIstDatetimeLocal } from "@/lib/ist-datetime";
+import { toIstDatetimeLocal, toIstTime } from "@/lib/ist-datetime";
 import { createEvent, updateEvent, deleteEvent } from "./actions";
 
 export default async function AdminEventsPage() {
@@ -9,7 +9,7 @@ export default async function AdminEventsPage() {
   const [{ data: events }, { data: venues }] = await Promise.all([
     admin
       .from("events")
-      .select("id, name, description, event_date, venue_id, special_instructions, sort_order")
+      .select("id, name, description, event_date, event_end, venue_id, special_instructions, sort_order")
       .order("sort_order", { ascending: true }),
     admin.from("venues").select("id, name").order("name", { ascending: true }),
   ]);
@@ -41,7 +41,7 @@ export default async function AdminEventsPage() {
                 <input name="name" defaultValue={event.name} required className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
               </label>
               <label className="text-sm">
-                Date &amp; time (IST)
+                Date &amp; start time (IST)
                 <input
                   type="datetime-local"
                   name="event_date"
@@ -49,6 +49,16 @@ export default async function AdminEventsPage() {
                   required
                   className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
                 />
+              </label>
+              <label className="text-sm">
+                End time (IST, optional)
+                <input
+                  type="time"
+                  name="event_end"
+                  defaultValue={toIstTime(event.event_end)}
+                  className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
+                />
+                <span className="mt-1 block text-xs text-zinc-500">An end before the start means it runs past midnight.</span>
               </label>
               <label className="text-sm sm:col-span-2">
                 Description
@@ -88,8 +98,13 @@ export default async function AdminEventsPage() {
             <input name="name" required className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
           </label>
           <label className="text-sm">
-            Date &amp; time (IST)
+            Date &amp; start time (IST)
             <input type="datetime-local" name="event_date" required className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
+          </label>
+          <label className="text-sm">
+            End time (IST, optional)
+            <input type="time" name="event_end" className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
+            <span className="mt-1 block text-xs text-zinc-500">An end before the start means it runs past midnight.</span>
           </label>
           <label className="text-sm sm:col-span-2">
             Description
