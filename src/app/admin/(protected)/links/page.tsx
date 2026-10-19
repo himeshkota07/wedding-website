@@ -2,10 +2,9 @@ import Link from "next/link";
 import QRCode from "qrcode";
 import SubmitButton from "@/components/admin/SubmitButton";
 import { createAdminSupabase } from "@/lib/supabase-admin";
-import { getAllLinks, linkNameFromCode, linkUrl, type InviteLink } from "@/lib/invite-links";
+import { getAllLinks, linkUrl, type InviteLink } from "@/lib/invite-links";
 import CopyButton from "./CopyButton";
 import {
-  issueNewCode,
   renameLink,
   saveEventVisibility,
   saveFaqVisibility,
@@ -152,7 +151,7 @@ export default async function AdminLinksPage() {
                     Link name (guests see this in the address)
                     <input
                       name="name"
-                      defaultValue={linkNameFromCode(link.code)}
+                      defaultValue={link.code ?? ""}
                       placeholder="e.g. family or friends"
                       required
                       minLength={2}
@@ -160,24 +159,12 @@ export default async function AdminLinksPage() {
                       className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm"
                     />
                     <span className="mt-1 block text-xs text-amber-700">
-                      Saving makes a new link ending in a short code, like …/i/family-k7m2q. The current link stops
+                      The link becomes …/i/your-name. Changing the name changes the link, and the current one stops
                       working, so share the new one.
                     </span>
                   </label>
-                  <SubmitButton pendingLabel="Saving…" doneLabel="New link ready" className={saveButton}>
+                  <SubmitButton pendingLabel="Saving…" doneLabel="Link updated" className={saveButton}>
                     Save link name
-                  </SubmitButton>
-                </form>
-              )}
-              {!link.is_default && (
-                <form action={issueNewCode}>
-                  <input type="hidden" name="id" value={link.id} />
-                  <SubmitButton
-                    pendingLabel="Issuing…"
-                    doneLabel="New link issued"
-                    className="rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600"
-                  >
-                    Issue a new code (same name; the current link stops working)
                   </SubmitButton>
                 </form>
               )}

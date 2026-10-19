@@ -1,23 +1,12 @@
 "use server";
 
-import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
-import { linkNameFromCode } from "@/lib/invite-links";
 
 function revalidateLinks() {
   revalidatePath("/", "layout"); // every invitation link's page
   revalidatePath("/admin/links");
-}
-
-// Letters and digits that can't be mistaken for each other when an elder reads
-// a link aloud or types it from a card: no i, l, o, 0 or 1.
-const SUFFIX_ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789";
-
-/** 5 random characters: about 28 million possibilities, so a link can't be guessed from its name. */
-function randomSuffix() {
-  return Array.from(randomBytes(5), (b) => SUFFIX_ALPHABET[b % SUFFIX_ALPHABET.length]).join("");
 }
 
 /** "Family & Friends!" -> "family-friends": lowercase letters and digits joined by hyphens. */
@@ -31,27 +20,23 @@ function toLinkName(input: string) {
     .replace(/-+$/, "");
 }
 
-/** "family-k7m2q", or a plain random code when the link has no name yet. */
-function newCode(name: string) {
-  return name ? `${name}-${randomSuffix()}` : `${randomSuffix()}${randomSuffix()}`;
-}
-
-/** Sets a secret link's code, retrying with a fresh suffix in the unlikely event it's taken. */
-async function setCode(id: string, name: string) {
-  const admin = createAdminSupabase();
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const { error } = await admin.from("invite_links").update({ code: newCode(name) }).eq("id", id).eq("is_default", false);
-    if (!error) return;
-    if (error.code !== "23505") throw error; // anything but "already taken"
-  }
-}
-
-/** Gives a secret link a readable name: "/i/family-k7m2q". A new name means a new link; the old one stops working. */
+/**
+ * Names a link: "/i/family". A new name means a new address; the old one
+ * stops working. If another link already has the name, it becomes
+ * "family-2", "family-3", and so on.
+ */
 export async function setLinkName(formData: FormData) {
   await requireAdmin();
   const name = toLinkName(String(formData.get("name") ?? ""));
   if (name.length < 2) return;
-  await setCode(String(formData.get("id")), name);
+  const admin = createAdminSupabase();
+  const id = String(formData.get("id"));
+  for (let n = 1; n <= 9; n++) {
+    const code = n === 1 ? name : `${name}-${n}`;
+    const { error } = await admin.from("invite_links").update({ code }).eq("id", id).eq("is_default", false);
+    if (!error) break;
+    if (error.code !== "23505") throw error; // anything but "already taken"
+  }
   revalidateLinks();
 }
 
@@ -61,15 +46,6 @@ export async function renameLink(formData: FormData) {
   const label = String(formData.get("label") ?? "").trim().slice(0, 80);
   if (!label) return;
   await createAdminSupabase().from("invite_links").update({ label }).eq("id", id);
-  revalidateLinks();
-}
-
-/** A leaked link stops working at once; it keeps its name and only the code at the end changes. */
-export async function issueNewCode(formData: FormData) {
-  await requireAdmin();
-  const id = String(formData.get("id"));
-  const { data } = await createAdminSupabase().from("invite_links").select("code").eq("id", id).single();
-  await setCode(id, linkNameFromCode(data?.code ?? null));
   revalidateLinks();
 }
 
