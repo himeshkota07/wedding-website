@@ -31,9 +31,9 @@ export type LinkScope = {
 };
 
 const LINK_COLUMNS = "id, label, code, is_default, shows_all_events, sort_order";
-// "family-k7m2q" (a name chosen in /admin/links plus a random suffix), or an
-// older random code like "k7m2q9x4p1ab". Mirrors the check in migration 0009.
-const CODE_PATTERN = /^(?=.{3,40}$)[a-z0-9]+(?:-[a-z0-9]+)*$/;
+// "family" (the name chosen in /admin/links), or an older random code like
+// "k7m2q9x4p1ab". Mirrors the check in migration 0011.
+const CODE_PATTERN = /^(?=.{2,40}$)[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /** Before migration 0008 has run there are no links: behave as the site always did (everything visible). */
 const LEGACY_LINK: InviteLink = {
@@ -45,9 +45,12 @@ const LEGACY_LINK: InviteLink = {
   sort_order: 0,
 };
 
-/** The readable name part of a code: "family" for "family-k7m2q", "" for an older random code. */
-export function linkNameFromCode(code: string | null) {
-  return code?.match(/^(.+)-[a-z0-9]{5}$/)?.[1] ?? "";
+/**
+ * Links used to end in a random 5-character code ("family-k7m2q"); migration
+ * 0011 dropped it. The name an old address now goes by, or null.
+ */
+export function nameFromOldCode(code: string) {
+  return code.match(/^(.+)-[a-z0-9]{5}$/)?.[1] ?? null;
 }
 
 export function isPlausibleCode(code: string) {
