@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { Mic, Square, Volume2, Pause, Send } from "lucide-react";
 import { useVoiceRecorder } from "@/lib/use-voice-recorder";
 import { inviteCodeFromPath } from "@/lib/invite-path";
+import { signalChatAudio } from "@/lib/audio-events";
 
 type Message = { role: "user" | "model"; text: string };
 // Answer in the mode the question was asked in: typed in, text out; spoken in, spoken out.
@@ -48,6 +49,15 @@ export default function ChatWidget() {
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, pending]);
+
+  // The background music pauses while the chat is reading aloud or listening.
+  const usingSound = recording || speakingIndex !== null;
+  useEffect(() => {
+    signalChatAudio(usingSound);
+    return () => {
+      if (usingSound) signalChatAudio(false);
+    };
+  }, [usingSound]);
 
   // One reusable player. iOS Safari only lets audio play from a user gesture,
   // and a spoken answer arrives seconds after the tap (transcribe, then chat,
