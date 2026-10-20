@@ -11,7 +11,10 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Nav />
       <main className="flex-1">{children}</main>
       <Footer />
-      <BackgroundMusic masterSrc={music.master?.url ?? BUILT_IN_SONG} />
+      <BackgroundMusic
+        masterSrc={music.master?.url ?? BUILT_IN_SONG}
+        openingSrc={music.opening?.url ?? music.master?.url ?? BUILT_IN_SONG}
+      />
       <FloatingChat />
     </div>
   );

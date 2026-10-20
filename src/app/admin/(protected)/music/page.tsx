@@ -64,16 +64,24 @@ export default async function AdminMusicPage() {
     <div className="mx-auto max-w-3xl px-6 py-12">
       <h1 className="text-2xl font-semibold text-zinc-900">Music</h1>
       <p className="mt-1 text-zinc-600">
-        Guests turn the music on with the button in the corner. After that, the song changes as they scroll: the
-        background song plays throughout, the events song takes over in the Events section, and on phones each event
-        can have its own song while its card is on screen. Songs fade into each other. MP3 files up to 20 MB work best.
+        The music is on by default and changes as guests scroll. The opening song plays from the moment they open the
+        link, through the opening and down to the first event. On phones, each event&apos;s song then takes over on its
+        card, and the last event&apos;s song carries on to the end of the page. Songs fade into each other. To use one song
+        for two events, upload it to both. MP3 files up to 20 MB work best.
       </p>
 
       <div className="mt-6 space-y-4">
         <SongSlot
+          slot="opening"
+          title="Opening song"
+          hint="Starts as soon as the link opens, plays through the opening, and carries on until the first event."
+          song={music.opening}
+          fallback="The background song plays."
+        />
+        <SongSlot
           slot="master"
           title="Background song"
-          hint="Plays across the whole site, outside the Events section."
+          hint="Plays wherever no other song is set, and on the site's other pages."
           song={music.master}
           fallback="The site's built-in song plays."
         />
@@ -82,7 +90,7 @@ export default async function AdminMusicPage() {
           title="Events section song"
           hint="Plays while the Events section is on screen. On phones, an event's own song takes over on its card."
           song={music.events_section}
-          fallback="The background song keeps playing."
+          fallback="The opening song keeps playing."
         />
       </div>
 
@@ -97,7 +105,7 @@ export default async function AdminMusicPage() {
             key={event.id}
             slot={`event:${event.id}`}
             title={event.name}
-            hint="Plays on phones while this event's card is in the middle of the screen."
+            hint="Plays on phones while this event's card is in the middle of the screen. If it's the guest's last event, it carries on to the end of the page."
             song={music.events[event.id] ?? null}
             fallback="The Events section song plays."
           />

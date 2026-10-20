@@ -1,15 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { MUSIC_STATE_EVENT, musicState } from "@/lib/audio-events";
 
 // The seal fades in over the Haldi scene (0-0.5s) and rests there; then the
 // scene dissolves into the page while the seal flies to the nav
-// (2.4-3.2s), and the overlay hands over.
+// (2.4-3.2s), and the overlay hands over. When the browser won't play the
+// opening song without a tap, the seal waits for one ("Tap to open"), and the
+// flight starts from that tap instead.
 const FLY_AT_MS = 2400;
 const FLY_DURATION_S = 0.8;
-const AUTO_DISMISS_MS = 3300;
+const HAND_OVER_MS = 900;
+
+function subscribeMusic(onChange: () => void) {
+  window.addEventListener(MUSIC_STATE_EVENT, onChange);
+  return () => window.removeEventListener(MUSIC_STATE_EVENT, onChange);
+}
 
 /** Fired once the curtain has parted (or was skipped), so the chat can open without hiding behind it. */
 export const INTRO_DONE_EVENT = "intro-done";
@@ -48,12 +56,21 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
   // Rendered from the server too, so the page never flashes before the curtain.
   const [visible, setVisible] = useState(true);
   const [flight, setFlight] = useState<Flight | null>(null);
+  const [leaving, setLeaving] = useState(false);
+  const music = useSyncExternalStore(subscribeMusic, musicState, () => undefined);
+  const waitForTap = music === "blocked" && !leaving;
   const sealRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
   const dismiss = useCallback(() => {
     setVisible(false);
     signalIntroDone();
+  }, []);
+
+  /** The scene dissolves and the seal flies to the nav; the overlay hands over once it lands. */
+  const leave = useCallback(() => {
+    setLeaving(true);
+    if (sealRef.current) setFlight(flightToNavLogo(sealRef.current));
   }, []);
 
   // Guests who've asked for reduced motion skip it (CSS hides it before hydration, see motion-reduce below).
@@ -70,6 +87,7 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
       // Reset here, not when the intro ends: clearing it then would pull the
       // seal back to the centre while the overlay fades out.
       setFlight(null);
+      setLeaving(false);
       setVisible(true);
     }
     window.addEventListener("replay-intro", onReplay);
@@ -81,16 +99,23 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
     // The nav's own logo hides while the intro plays (see globals.css), so the
     // flying seal is the only one on screen until it lands.
     document.documentElement.dataset.introPlaying = "1";
-    const flyTimer = setTimeout(() => {
-      if (sealRef.current) setFlight(flightToNavLogo(sealRef.current));
-    }, FLY_AT_MS);
-    const dismissTimer = setTimeout(dismiss, AUTO_DISMISS_MS);
     return () => {
-      clearTimeout(flyTimer);
-      clearTimeout(dismissTimer);
       delete document.documentElement.dataset.introPlaying;
     };
-  }, [visible, dismiss]);
+  }, [visible]);
+
+  // Leave by itself, unless the seal is waiting for the tap that starts the music.
+  useEffect(() => {
+    if (!visible || leaving || waitForTap) return;
+    const flyTimer = setTimeout(leave, FLY_AT_MS);
+    return () => clearTimeout(flyTimer);
+  }, [visible, leaving, waitForTap, leave]);
+
+  useEffect(() => {
+    if (!leaving) return;
+    const handOver = setTimeout(dismiss, HAND_OVER_MS);
+    return () => clearTimeout(handOver);
+  }, [leaving, dismiss]);
 
   if (reduceMotion) return null;
 
@@ -99,7 +124,7 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
       {visible && (
         <motion.div
           className="fixed inset-0 z-[60] overflow-hidden motion-reduce:hidden"
-          onClick={dismiss}
+          onClick={leave}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
@@ -110,8 +135,8 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
             aria-hidden
             className="absolute inset-0 bg-[#f9f4e8] bg-[url(/theme/intro-haldi.jpg)] bg-cover bg-bottom bg-no-repeat landscape:bg-contain landscape:bg-center"
             initial={{ opacity: 1 }}
-            animate={{ opacity: 0 }}
-            transition={{ duration: FLY_DURATION_S, delay: FLY_AT_MS / 1000, ease: "easeInOut" }}
+            animate={{ opacity: leaving ? 0 : 1 }}
+            transition={{ duration: FLY_DURATION_S, ease: "easeInOut" }}
           />
 
           {/* Centred by the wrapper so the seal's own transform is free for the flight; the bottom padding
@@ -135,6 +160,23 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
               />
             </motion.div>
           </div>
+
+          <AnimatePresence>
+            {waitForTap && (
+              <motion.p
+                key="tap"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.65, 1, 0.65] }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="pointer-events-none absolute inset-x-0 bottom-[12svh] z-10 text-center"
+              >
+                <span className="rounded-full bg-paper/90 px-6 py-3 font-display text-2xl text-ink shadow-lg">
+                  Tap to open
+                </span>
+              </motion.p>
+            )}
+          </AnimatePresence>
 
           <button
             type="button"

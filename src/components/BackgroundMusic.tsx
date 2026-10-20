@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
-import { INTRO_DONE_EVENT, isIntroDone } from "@/components/IntroSequence";
-import { CHAT_AUDIO_EVENT } from "@/lib/audio-events";
+import { CHAT_AUDIO_EVENT, signalMusicState } from "@/lib/audio-events";
 
 const FADE_MS = 700;
 // How long the guest has to stay on a part of the page before its song
@@ -36,28 +35,27 @@ function rememberTurnedOff(off: boolean) {
 
 /**
  * The song the page calls for right now, judged at the middle of the screen.
- * A section marked data-music-section (the Events section) plays its
- * data-song while it crosses the middle; everywhere else it's the master song.
- * On phones, inside that section, the last event card to reach the middle
- * plays its data-event-song, and keeps playing until the next card gets
- * there. An event without a song (or the gap above the first card) plays the
- * section's song.
+ * Above the Events section (the one marked data-music-section) it's the
+ * opening song. Inside it, the section's data-song plays (the opening song if
+ * that isn't set); on phones the last event card to reach the middle plays its
+ * data-event-song instead, until the next card gets there. Below the section,
+ * the last event's song carries on to the end of the page. A page without
+ * events plays the master song.
  */
-function songAtMiddle(master: string) {
+function songAtMiddle(master: string, opening: string) {
+  const section = document.querySelector<HTMLElement>("[data-music-section]");
+  if (!section) return master;
   const middle = window.innerHeight / 2;
-  const phone = window.matchMedia(PHONE_QUERY).matches;
-  for (const section of document.querySelectorAll<HTMLElement>("[data-music-section]")) {
-    const box = section.getBoundingClientRect();
-    if (box.top > middle || box.bottom < middle) continue;
-    const sectionSong = section.dataset.song || master;
-    if (!phone) return sectionSong;
-    let song = sectionSong;
-    for (const card of section.querySelectorAll<HTMLElement>("[data-event-song]")) {
-      if (card.getBoundingClientRect().top <= middle) song = card.dataset.eventSong || sectionSong;
-    }
-    return song;
+  const box = section.getBoundingClientRect();
+  if (box.top > middle) return opening;
+  const sectionSong = section.dataset.song || opening;
+  const below = box.bottom < middle;
+  if (!below && !window.matchMedia(PHONE_QUERY).matches) return sectionSong;
+  let song = sectionSong;
+  for (const card of section.querySelectorAll<HTMLElement>("[data-event-song]")) {
+    if (card.getBoundingClientRect().top <= middle) song = card.dataset.eventSong || sectionSong;
   }
-  return master;
+  return song;
 }
 
 /**
@@ -67,11 +65,11 @@ function songAtMiddle(master: string) {
  * song picks up where it left off when the guest scrolls back to it. (iOS
  * ignores volume changes, so there the songs switch without fading.)
  */
-export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
+export default function BackgroundMusic({ masterSrc, openingSrc }: { masterSrc: string; openingSrc: string }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const playingRef = useRef(false);
-  const current = useRef(masterSrc);
+  const current = useRef(openingSrc);
   const positions = useRef(new Map<string, number>());
   const switchId = useRef(0);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -140,9 +138,9 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
     const check = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        const wanted = songAtMiddle(masterSrc);
+        const wanted = songAtMiddle(masterSrc, openingSrc);
         clearTimeout(timer);
-        if (wanted !== current.current) timer = setTimeout(() => switchTo(songAtMiddle(masterSrc)), SETTLE_MS);
+        if (wanted !== current.current) timer = setTimeout(() => switchTo(songAtMiddle(masterSrc, openingSrc)), SETTLE_MS);
       });
     };
     window.addEventListener("scroll", check, { passive: true });
@@ -154,13 +152,13 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
       cancelAnimationFrame(frame);
       clearTimeout(timer);
     };
-  }, [masterSrc, switchTo]);
+  }, [masterSrc, openingSrc, switchTo]);
 
   /** Plays the song for where the guest is. False when the browser won't allow sound yet. */
   const start = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio) return false;
-    const wanted = songAtMiddle(masterSrc);
+    const wanted = songAtMiddle(masterSrc, openingSrc);
     if (wanted !== current.current || !audio.getAttribute("src")) load(audio, wanted);
     switchId.current++; // stop any fade in progress
     audio.volume = VOLUME;
@@ -173,7 +171,7 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
     if (held.current) audio.pause();
     playingRef.current = true;
     return true;
-  }, [masterSrc, load]);
+  }, [masterSrc, openingSrc, load]);
 
   // Pause while the chat reads an answer aloud or records a question, and
   // carry on (with the song for wherever the guest now is) once it's done.
@@ -186,7 +184,7 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
       if (held.current) {
         audio.pause();
       } else {
-        const wanted = songAtMiddle(masterSrc);
+        const wanted = songAtMiddle(masterSrc, openingSrc);
         if (wanted !== current.current) load(audio, wanted);
         audio.volume = VOLUME;
         audio.play().catch(() => {});
@@ -194,49 +192,41 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
     }
     window.addEventListener(CHAT_AUDIO_EVENT, onChatAudio);
     return () => window.removeEventListener(CHAT_AUDIO_EVENT, onChatAudio);
-  }, [masterSrc, load]);
+  }, [masterSrc, openingSrc, load]);
 
-  // Music is on by default, from the moment the opening animation ends or is
-  // skipped. Browsers (iPhones above all) only allow sound once the guest has
-  // interacted with the page, so try then, and otherwise start on their first
-  // tap, click or key press anywhere. A guest who turns the music off is
+  // Music is on by default, from the moment the link opens: the opening song
+  // plays under the opening animation. Browsers (iPhones above all) only allow
+  // sound once the guest has interacted with the page, so when the first try
+  // is refused the opening waits for a tap (see IntroSequence), and any tap,
+  // click or key press anywhere starts it. A guest who turns the music off is
   // remembered and left in peace.
   useEffect(() => {
-    if (turnedOffBefore()) return;
+    if (turnedOffBefore()) {
+      signalMusicState("off");
+      return;
+    }
     let done = false;
     const triggers = ["pointerdown", "pointerup", "touchend", "keydown", "click"];
     const stopListening = () => triggers.forEach((t) => document.removeEventListener(t, onInteract, true));
+    function started() {
+      done = true;
+      setPlaying(true);
+      stopListening();
+      signalMusicState("playing");
+    }
     function onInteract(e: Event) {
       // The music button handles its own taps; and once the guest has used it, it's their choice.
       if (done || chosen.current || buttonRef.current?.contains(e.target as Node)) return;
-      start().then((ok) => {
-        if (ok) {
-          done = true;
-          setPlaying(true);
-          stopListening();
-        }
-      });
+      start().then((ok) => ok && !done && started());
     }
-    function begin() {
-      if (done || chosen.current) return;
-      start().then((ok) => {
-        if (ok) {
-          done = true;
-          setPlaying(true);
-        } else if (!done) triggers.forEach((t) => document.addEventListener(t, onInteract, true));
-      });
-    }
-    // Checked once every component has mounted: the opening (on invitation
-    // pages only) marks <html> while it plays.
-    const wait = setTimeout(() => {
-      const introPlaying = document.documentElement.dataset.introPlaying === "1" && !isIntroDone();
-      if (introPlaying) window.addEventListener(INTRO_DONE_EVENT, begin, { once: true });
-      else begin();
-    }, 0);
+    triggers.forEach((t) => document.addEventListener(t, onInteract, true));
+    start().then((ok) => {
+      if (done) return;
+      if (ok) started();
+      else signalMusicState("blocked");
+    });
     return () => {
       done = true;
-      clearTimeout(wait);
-      window.removeEventListener(INTRO_DONE_EVENT, begin);
       stopListening();
     };
   }, [start]);

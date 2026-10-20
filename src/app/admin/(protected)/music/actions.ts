@@ -6,7 +6,7 @@ import { createAdminSupabase } from "@/lib/supabase-admin";
 import { destroyCloudinaryAudio, isOwnCloudinaryUpload, MUSIC_FOLDER, signMusicUpload } from "@/lib/cloudinary";
 import { getMusic, type MusicSettings, type Song } from "@/lib/music";
 
-/** "master", "events_section", or "event:<event id>". */
+/** "master", "opening", "events_section", or "event:<event id>". */
 export type MusicSlot = string;
 
 export async function getMusicUploadSignature() {
@@ -16,12 +16,14 @@ export async function getMusicUploadSignature() {
 
 function readSlot(music: MusicSettings, slot: MusicSlot): Song | null {
   if (slot === "master") return music.master;
+  if (slot === "opening") return music.opening;
   if (slot === "events_section") return music.events_section;
   return music.events[slot.slice("event:".length)] ?? null;
 }
 
 function writeSlot(music: MusicSettings, slot: MusicSlot, song: Song | null): MusicSettings {
   if (slot === "master") return { ...music, master: song };
+  if (slot === "opening") return { ...music, opening: song };
   if (slot === "events_section") return { ...music, events_section: song };
   const events = { ...music.events };
   const id = slot.slice("event:".length);
@@ -31,7 +33,7 @@ function writeSlot(music: MusicSettings, slot: MusicSlot, song: Song | null): Mu
 }
 
 async function isValidSlot(slot: MusicSlot) {
-  if (slot === "master" || slot === "events_section") return true;
+  if (slot === "master" || slot === "opening" || slot === "events_section") return true;
   if (!slot.startsWith("event:")) return false;
   const { data } = await createAdminSupabase().from("events").select("id").eq("id", slot.slice(6)).maybeSingle();
   return Boolean(data);
