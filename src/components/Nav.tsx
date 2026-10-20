@@ -9,7 +9,7 @@ import { Menu, X } from "lucide-react";
 import { BeamTrim } from "@/components/ui/motifs";
 import { invitationHome } from "@/lib/invite-path";
 
-const links = [
+export const sectionLinks = [
   { href: "#top", label: "Home" },
   { href: "#our-story", label: "Our Story" },
   { href: "#events", label: "Events" },
@@ -53,7 +53,7 @@ export default function Nav() {
           </Link>
 
           <nav aria-label="Sections" className="hidden items-center gap-7 lg:flex">
-            {links.map((link) => (
+            {sectionLinks.map((link) => (
               <Link
                 key={link.href}
                 href={`${home}${link.href}`}
@@ -87,7 +87,7 @@ export default function Nav() {
               className="overflow-hidden lg:hidden"
             >
               <ul className="grid grid-cols-2 gap-x-4 border-t border-ink/15 px-5 pb-5 pt-14">
-                {links.map((link) => (
+                {sectionLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={`${home}${link.href}`}

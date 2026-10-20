@@ -9,6 +9,7 @@ import VenueSection from "@/components/sections/VenueSection";
 import GallerySection from "@/components/sections/GallerySection";
 import WishesSection from "@/components/sections/WishesSection";
 import ContactSection from "@/components/sections/ContactSection";
+import SectionMenu from "@/components/SectionMenu";
 
 /**
  * The whole invitation, as one guest list sees it. The plain address and
@@ -29,6 +30,7 @@ export default async function InvitationPage({ link }: { link: InviteLink }) {
       <VenueSection scope={scope} />
       <GallerySection />
       <ContactSection qrCode={<SiteQrCode url={linkUrl(link)} />} />
+      <SectionMenu />
     </>
   );
 }
