@@ -12,6 +12,8 @@
     "@google/genai": "^2.20.0",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "cloudinary": "^2.10.0",
     "lucide-react": "^1.48.0",
     "motion": "^13.4.4",

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
+import { track } from "@vercel/analytics";
 import { CHAT_AUDIO_EVENT, signalMusicState } from "@/lib/audio-events";
 
 const FADE_MS = 700;
@@ -235,6 +236,7 @@ export default function BackgroundMusic({ masterSrc, openingSrc }: { masterSrc: 
     const audio = audioRef.current;
     if (!audio) return;
     chosen.current = true;
+    track(playing ? "Music turned off" : "Music turned on");
     if (playing) {
       switchId.current++; // stop any fade in progress
       audio.pause();

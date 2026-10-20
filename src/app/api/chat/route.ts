@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import type { NextRequest } from "next/server";
 import { FAST_MODELS, generateWithFallback } from "@/lib/gemini";
 import { buildKnowledgeBase } from "@/lib/knowledge-base";
@@ -113,6 +113,17 @@ function buildContext(chunks: { source_type: string; content: string }[]) {
   return chunks.map((c) => `- [${c.source_type}] ${c.content}`).join("\n");
 }
 
+/** Saved once the reply has gone out, for Admin → Chat log. A failure here never reaches the guest. */
+function logQuestion(
+  admin: ReturnType<typeof createAdminSupabase>,
+  entry: { invite_label: string | null; question: string; reply: string; script: Script | null; failed: boolean },
+) {
+  after(async () => {
+    const { error } = await admin.from("chat_log").insert(entry);
+    if (error) console.error("[chat] log failed:", error.message);
+  });
+}
+
 async function getWhatsappLink(admin: ReturnType<typeof createAdminSupabase>) {
   const { data } = await admin
     .from("contacts")
@@ -149,6 +160,8 @@ export async function POST(request: NextRequest) {
     : [];
 
   const admin = createAdminSupabase();
+  let inviteLabel: string | null = null;
+  let script: Script | null = null;
 
   try {
     // The model reads the whole, current knowledge base rather than a
@@ -156,9 +169,11 @@ export async function POST(request: NextRequest) {
     // it admit when the answer isn't there.
     // Only what this guest's invitation link shows: events it can't see never reach the model.
     const link = await resolveLink(typeof body.invite === "string" ? body.invite : null);
+    inviteLabel = link.label;
     const context = buildContext(await buildKnowledgeBase(admin, await getLinkScope(link)));
     // Decided from the guest's own letters, not left to the model.
     const target = dominantScript(message);
+    script = target;
     const contents = [
       ...history.map((turn) => ({ role: turn.role, parts: [{ text: turn.text }] })),
       {
@@ -180,15 +195,15 @@ export async function POST(request: NextRequest) {
     const draft = dropBracketedEnglish(stripMarkdown(response.text?.trim() ?? ""));
     const reply =
       (draft && (await enforceScript(draft, target))) || "Sorry, I couldn't come up with an answer to that.";
+    logQuestion(admin, { invite_label: inviteLabel, question: message, reply, script, failed: !draft });
     return NextResponse.json({ reply, escalate: false });
   } catch (error) {
     console.error("[chat] failed:", error);
     const whatsappLink = await getWhatsappLink(admin).catch(() => undefined);
-    return NextResponse.json({
-      reply:
-        "Sorry, I'm having trouble answering right now. " +
-        (whatsappLink ? `Please try the coordinators on WhatsApp: ${whatsappLink}` : "Please try again shortly."),
-      escalate: true,
-    });
+    const reply =
+      "Sorry, I'm having trouble answering right now. " +
+      (whatsappLink ? `Please try the coordinators on WhatsApp: ${whatsappLink}` : "Please try again shortly.");
+    logQuestion(admin, { invite_label: inviteLabel, question: message, reply, script, failed: true });
+    return NextResponse.json({ reply, escalate: true });
   }
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { BookOpen, X } from "lucide-react";
+import { track } from "@vercel/analytics";
 import { sectionLinks } from "@/components/Nav";
 import { INTRO_DONE_EVENT, isIntroDone } from "@/components/IntroSequence";
 
@@ -64,6 +65,7 @@ export default function SectionMenu() {
 
   function jumpTo(id: string) {
     setOpen(false);
+    track("Section menu", { section: id });
     document.getElementById(id)?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
     history.replaceState(null, "", `#${id}`);
   }

@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ChevronLeft, ChevronRight, ImagePlus, Mic, Square, X } from "lucide-react";
 import { tieWish } from "@/app/(site)/wishes/actions";
+import { track } from "@vercel/analytics";
 import { Toran } from "@/components/ui/motifs";
 import { resizeImageToBlob } from "@/lib/image-resize";
 import { useVoiceRecorder } from "@/lib/use-voice-recorder";
@@ -198,6 +199,7 @@ export default function WishingToran({ initialWishes }: { initialWishes: Wish[] 
       }
       setWishes((prev) => (prev.some((w) => w.id === result.wish.id) ? prev : [result.wish, ...prev]));
       setNewestId(result.wish.id);
+      track("Wish posted", { photo: Boolean(result.wish.photo_url) });
       setOpenId(result.wish.id);
       setStatus({ ok: true, text: "Your wish is tied to their toran. Thank you!" });
       formRef.current?.reset();
