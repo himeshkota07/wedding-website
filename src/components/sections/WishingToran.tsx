@@ -323,11 +323,24 @@ export default function WishingToran({ initialWishes }: { initialWishes: Wish[] 
         )}
       </AnimatePresence>
 
+      {/* A framed window that scrolls on its own, so the page doesn't grow with every wish. */}
       {showAll && (
-        <div className="mt-8 columns-1 gap-6 md:columns-2">
-          {wishes.map((wish) => (
-            <WishSlip key={wish.id} wish={wish} className="mb-8 break-inside-avoid" />
-          ))}
+        <div className="relative mt-8">
+          <div
+            tabIndex={0}
+            role="region"
+            aria-label="All wishes"
+            className="max-h-[70svh] overflow-y-auto bg-paper-deep/60 p-4 ring-1 ring-brass/60 sm:max-h-[36rem] sm:p-6"
+          >
+            <div className="columns-1 gap-6 md:columns-2">
+              {wishes.map((wish) => (
+                <WishSlip key={wish.id} wish={wish} className="mb-8 break-inside-avoid" />
+              ))}
+            </div>
+          </div>
+          {wishes.length > 2 && (
+            <p className="mt-2 text-center text-base text-ink-soft">Scroll inside the box to read more</p>
+          )}
         </div>
       )}
 
