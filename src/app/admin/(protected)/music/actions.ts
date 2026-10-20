@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/admin-auth";
 import { createAdminSupabase } from "@/lib/supabase-admin";
 import { destroyCloudinaryAudio, isOwnCloudinaryUpload, MUSIC_FOLDER, signMusicUpload } from "@/lib/cloudinary";
-import { getMusic, type MusicSettings, type Song } from "@/lib/music";
+import { getMusic, type MusicMode, type MusicSettings, type Song } from "@/lib/music";
 
 /** "master", "opening", "events_section", or "event:<event id>". */
 export type MusicSlot = string;
@@ -70,4 +70,17 @@ export async function removeSong(formData: FormData) {
   const slot = String(formData.get("slot") ?? "");
   if (!(await isValidSlot(slot))) return;
   await setSong(slot, null);
+}
+
+/** One song for the whole site, or a song for each part. Songs for the other mode stay saved. */
+export async function setMusicMode(formData: FormData) {
+  await requireAdmin();
+  const mode: MusicMode = formData.get("mode") === "single" ? "single" : "sections";
+  const music = await getMusic();
+  const { error } = await createAdminSupabase()
+    .from("site_settings")
+    .upsert({ key: "music", value: { ...music, mode } });
+  if (error) throw error;
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/music");
 }

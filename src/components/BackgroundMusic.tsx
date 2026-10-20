@@ -41,9 +41,10 @@ function rememberTurnedOff(off: boolean) {
  * that isn't set); on phones the last event card to reach the middle plays its
  * data-event-song instead, until the next card gets there. Below the section,
  * the last event's song carries on to the end of the page. A page without
- * events plays the master song.
+ * events plays the master song, and so does every page in "single" mode.
  */
-function songAtMiddle(master: string, opening: string) {
+function songAtMiddle(master: string, opening: string, single: boolean) {
+  if (single) return master;
   const section = document.querySelector<HTMLElement>("[data-music-section]");
   if (!section) return master;
   const middle = window.innerHeight / 2;
@@ -66,11 +67,19 @@ function songAtMiddle(master: string, opening: string) {
  * song picks up where it left off when the guest scrolls back to it. (iOS
  * ignores volume changes, so there the songs switch without fading.)
  */
-export default function BackgroundMusic({ masterSrc, openingSrc }: { masterSrc: string; openingSrc: string }) {
+export default function BackgroundMusic({
+  masterSrc,
+  openingSrc,
+  single,
+}: {
+  masterSrc: string;
+  openingSrc: string;
+  single: boolean;
+}) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const playingRef = useRef(false);
-  const current = useRef(openingSrc);
+  const current = useRef(single ? masterSrc : openingSrc);
   const positions = useRef(new Map<string, number>());
   const switchId = useRef(0);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -139,9 +148,9 @@ export default function BackgroundMusic({ masterSrc, openingSrc }: { masterSrc: 
     const check = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        const wanted = songAtMiddle(masterSrc, openingSrc);
+        const wanted = songAtMiddle(masterSrc, openingSrc, single);
         clearTimeout(timer);
-        if (wanted !== current.current) timer = setTimeout(() => switchTo(songAtMiddle(masterSrc, openingSrc)), SETTLE_MS);
+        if (wanted !== current.current) timer = setTimeout(() => switchTo(songAtMiddle(masterSrc, openingSrc, single)), SETTLE_MS);
       });
     };
     window.addEventListener("scroll", check, { passive: true });
@@ -153,13 +162,13 @@ export default function BackgroundMusic({ masterSrc, openingSrc }: { masterSrc: 
       cancelAnimationFrame(frame);
       clearTimeout(timer);
     };
-  }, [masterSrc, openingSrc, switchTo]);
+  }, [masterSrc, openingSrc, single, switchTo]);
 
   /** Plays the song for where the guest is. False when the browser won't allow sound yet. */
   const start = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio) return false;
-    const wanted = songAtMiddle(masterSrc, openingSrc);
+    const wanted = songAtMiddle(masterSrc, openingSrc, single);
     if (wanted !== current.current || !audio.getAttribute("src")) load(audio, wanted);
     switchId.current++; // stop any fade in progress
     audio.volume = VOLUME;
@@ -172,7 +181,7 @@ export default function BackgroundMusic({ masterSrc, openingSrc }: { masterSrc: 
     if (held.current) audio.pause();
     playingRef.current = true;
     return true;
-  }, [masterSrc, openingSrc, load]);
+  }, [masterSrc, openingSrc, single, load]);
 
   // Pause while the chat reads an answer aloud or records a question, and
   // carry on (with the song for wherever the guest now is) once it's done.
@@ -185,7 +194,7 @@ export default function BackgroundMusic({ masterSrc, openingSrc }: { masterSrc: 
       if (held.current) {
         audio.pause();
       } else {
-        const wanted = songAtMiddle(masterSrc, openingSrc);
+        const wanted = songAtMiddle(masterSrc, openingSrc, single);
         if (wanted !== current.current) load(audio, wanted);
         audio.volume = VOLUME;
         audio.play().catch(() => {});
@@ -193,7 +202,7 @@ export default function BackgroundMusic({ masterSrc, openingSrc }: { masterSrc: 
     }
     window.addEventListener(CHAT_AUDIO_EVENT, onChatAudio);
     return () => window.removeEventListener(CHAT_AUDIO_EVENT, onChatAudio);
-  }, [masterSrc, openingSrc, load]);
+  }, [masterSrc, openingSrc, single, load]);
 
   // Music is on by default, from the moment the link opens: the opening song
   // plays under the opening animation. Browsers (iPhones above all) only allow

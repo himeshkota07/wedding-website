@@ -10,10 +10,16 @@ import { createAdminSupabase } from "@/lib/supabase-admin";
  * its card is in the middle of the screen. Past the last event, its song
  * carries on to the end of the page. Anything not set falls back to the
  * master song, and finally to the song that ships with the site.
+ *
+ * In "single" mode none of that happens: the master song plays across the
+ * whole site, and the other songs stay saved for switching back.
  */
 export type Song = { url: string; public_id: string; name: string };
 
+export type MusicMode = "sections" | "single";
+
 export type MusicSettings = {
+  mode: MusicMode;
   master: Song | null;
   opening: Song | null;
   events_section: Song | null;
@@ -23,7 +29,7 @@ export type MusicSettings = {
 
 export const BUILT_IN_SONG = "/audio/background-music.mp3";
 
-const EMPTY: MusicSettings = { master: null, opening: null, events_section: null, events: {} };
+const EMPTY: MusicSettings = { mode: "sections", master: null, opening: null, events_section: null, events: {} };
 
 export const getMusic = cache(async (): Promise<MusicSettings> => {
   const { data } = await createAdminSupabase().from("site_settings").select("value").eq("key", "music").maybeSingle();

@@ -14,6 +14,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <BackgroundMusic
         masterSrc={music.master?.url ?? BUILT_IN_SONG}
         openingSrc={music.opening?.url ?? music.master?.url ?? BUILT_IN_SONG}
+        single={music.mode === "single"}
       />
       <FloatingChat />
     </div>
