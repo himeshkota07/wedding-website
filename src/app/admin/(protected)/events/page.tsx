@@ -47,8 +47,8 @@ export default async function AdminEventsPage() {
               </label>
               <label className="text-sm sm:col-span-2">
                 Time, as guests see it (optional)
-                <input name="time_label" defaultValue={event.time_label ?? ""} placeholder="7:00 pm onwards, followed by dinner" className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
-                <span className="mt-1 block text-xs text-zinc-500">Leave blank to show just the start time.</span>
+                <textarea name="time_label" rows={2} defaultValue={event.time_label ?? ""} placeholder={"11:00 am\nFollowed by lunch"} className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
+                <span className="mt-1 block text-xs text-zinc-500">Press Enter for a new line. Leave blank to show just the start time.</span>
               </label>
               <label className="text-sm sm:col-span-2">
                 Description
@@ -94,8 +94,8 @@ export default async function AdminEventsPage() {
           </label>
           <label className="text-sm sm:col-span-2">
             Time, as guests see it (optional)
-            <input name="time_label" placeholder="7:00 pm onwards, followed by dinner" className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
-            <span className="mt-1 block text-xs text-zinc-500">Leave blank to show just the start time.</span>
+            <textarea name="time_label" rows={2} placeholder={"11:00 am\nFollowed by lunch"} className="mt-1 w-full rounded-md border border-black/20 px-2 py-1.5 text-sm" />
+            <span className="mt-1 block text-xs text-zinc-500">Press Enter for a new line. Leave blank to show just the start time.</span>
           </label>
           <label className="text-sm sm:col-span-2">
             Description

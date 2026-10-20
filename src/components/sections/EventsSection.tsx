@@ -105,7 +105,9 @@ function UmbrellaCard(p: CardProps) {
         {p.description && <p className="mt-3 text-ink-soft">{p.description}</p>}
 
         <dl className="mt-5 grid w-full gap-y-3">
-          <Field label="When">{p.when}</Field>
+          <Field label="When">
+            <span className="whitespace-pre-line">{p.when}</span>
+          </Field>
           <Field label="Where">{p.where}</Field>
           <Field label="Please note">{p.note}</Field>
         </dl>
