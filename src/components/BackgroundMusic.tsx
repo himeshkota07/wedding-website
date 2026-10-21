@@ -14,12 +14,13 @@ const VOLUME = 1;
 // so each card can have its own song there.
 const PHONE_QUERY = "(max-width: 639px)";
 
-// Remembered in this browser when the guest turns the music off.
+// Remembered for the rest of this visit (this tab) when the guest turns the
+// music off; a new visit starts with music again.
 const OFF_KEY = "wedding-music-off";
 
 function turnedOffBefore() {
   try {
-    return localStorage.getItem(OFF_KEY) === "1";
+    return sessionStorage.getItem(OFF_KEY) === "1";
   } catch {
     return false;
   }
@@ -27,8 +28,8 @@ function turnedOffBefore() {
 
 function rememberTurnedOff(off: boolean) {
   try {
-    if (off) localStorage.setItem(OFF_KEY, "1");
-    else localStorage.removeItem(OFF_KEY);
+    if (off) sessionStorage.setItem(OFF_KEY, "1");
+    else sessionStorage.removeItem(OFF_KEY);
   } catch {
     // Private browsing and the like: nothing to remember it in.
   }
@@ -207,9 +208,9 @@ export default function BackgroundMusic({
   // Music is on by default, from the moment the link opens: the opening song
   // plays under the opening animation. Browsers (iPhones above all) only allow
   // sound once the guest has interacted with the page, so when the first try
-  // is refused the opening waits for a tap (see IntroSequence), and any tap,
-  // click or key press anywhere starts it. A guest who turns the music off is
-  // remembered and left in peace.
+  // is refused, their first tap, click or key press anywhere starts it (a tap
+  // on the opening also skips it). A guest who turns the music off is left in
+  // peace for the rest of the visit.
   useEffect(() => {
     if (turnedOffBefore()) {
       signalMusicState("off");

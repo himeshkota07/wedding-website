@@ -1,23 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { MUSIC_STATE_EVENT, musicState } from "@/lib/audio-events";
 
 // The seal fades in over the Haldi scene (0-0.5s) and rests there; then the
 // scene dissolves into the page while the seal flies to the nav
-// (2.4-3.2s), and the overlay hands over. When the browser won't play the
-// opening song without a tap, the seal waits for one ("Tap to open"), and the
-// flight starts from that tap instead.
+// (2.4-3.2s), and the overlay hands over. It never waits: a tap on the
+// picture just starts the same exit early (and, being a tap, lets the opening
+// song start where the browser was holding it back; see BackgroundMusic).
 const FLY_AT_MS = 2400;
 const FLY_DURATION_S = 0.8;
 const HAND_OVER_MS = 900;
-
-function subscribeMusic(onChange: () => void) {
-  window.addEventListener(MUSIC_STATE_EVENT, onChange);
-  return () => window.removeEventListener(MUSIC_STATE_EVENT, onChange);
-}
 
 /** Fired once the curtain has parted (or was skipped), so the chat can open without hiding behind it. */
 export const INTRO_DONE_EVENT = "intro-done";
@@ -57,8 +51,6 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
   const [visible, setVisible] = useState(true);
   const [flight, setFlight] = useState<Flight | null>(null);
   const [leaving, setLeaving] = useState(false);
-  const music = useSyncExternalStore(subscribeMusic, musicState, () => undefined);
-  const waitForTap = music === "blocked" && !leaving;
   const sealRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
@@ -104,12 +96,12 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
     };
   }, [visible]);
 
-  // Leave by itself, unless the seal is waiting for the tap that starts the music.
+  // Leave by itself, whether or not the guest taps.
   useEffect(() => {
-    if (!visible || leaving || waitForTap) return;
+    if (!visible || leaving) return;
     const flyTimer = setTimeout(leave, FLY_AT_MS);
     return () => clearTimeout(flyTimer);
-  }, [visible, leaving, waitForTap, leave]);
+  }, [visible, leaving, leave]);
 
   useEffect(() => {
     if (!leaving) return;
@@ -161,22 +153,6 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
             </motion.div>
           </div>
 
-          <AnimatePresence>
-            {waitForTap && (
-              <motion.p
-                key="tap"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0.65, 1, 0.65] }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="pointer-events-none absolute inset-x-0 bottom-[12svh] z-10 text-center"
-              >
-                <span className="rounded-full bg-paper/90 px-6 py-3 font-display text-2xl text-ink shadow-lg">
-                  Tap to open
-                </span>
-              </motion.p>
-            )}
-          </AnimatePresence>
 
           <button
             type="button"
