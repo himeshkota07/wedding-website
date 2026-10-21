@@ -14,6 +14,17 @@ const AUTO_DISMISS_MS = 3300;
 /** Fired once the curtain has parted (or was skipped), so the chat can open without hiding behind it. */
 export const INTRO_DONE_EVENT = "intro-done";
 
+/**
+ * Fired, from inside the tap itself, when the guest taps the opening (which
+ * also skips it). Browsers only allow sound from inside a tap, so the music
+ * uses it to unlock the player before it starts.
+ */
+export const INTRO_TAP_EVENT = "intro-tap";
+
+function signalIntroTap() {
+  window.dispatchEvent(new Event(INTRO_TAP_EVENT));
+}
+
 // Also recorded on <html> for listeners that mount after the event has fired.
 export function isIntroDone() {
   return document.documentElement.dataset.introDone === "1";
@@ -55,6 +66,16 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
     setVisible(false);
     signalIntroDone();
   }, []);
+
+  /** A tap on the picture or on Skip: straight to the page, and the music starts with it. */
+  const skip = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      signalIntroTap();
+      dismiss();
+    },
+    [dismiss],
+  );
 
   // Guests who've asked for reduced motion skip it (CSS hides it before hydration, see motion-reduce below).
   useEffect(() => {
@@ -99,7 +120,7 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
       {visible && (
         <motion.div
           className="fixed inset-0 z-[60] overflow-hidden motion-reduce:hidden"
-          onClick={dismiss}
+          onClick={skip}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
@@ -138,7 +159,7 @@ export default function IntroSequence({ brideName, groomName }: { brideName: str
 
           <button
             type="button"
-            onClick={dismiss}
+            onClick={skip}
             className="absolute right-4 top-4 rounded-full bg-olive/85 px-4 py-2 text-sm font-medium text-paper transition-colors hover:bg-olive"
           >
             Skip

@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
-import { INTRO_DONE_EVENT, isIntroDone } from "@/components/IntroSequence";
+import { INTRO_DONE_EVENT, INTRO_TAP_EVENT, isIntroDone } from "@/components/IntroSequence";
 import { CHAT_AUDIO_EVENT } from "@/lib/audio-events";
 
 const FADE_MS = 700;
+// A zero-length WAV, played inside a tap purely to unlock the player (see prime).
+const SILENT_WAV = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 // How long the guest has to stay on a part of the page before its song
 // takes over, so flicking past an event doesn't start and stop its song.
 const SETTLE_MS = 400;
@@ -14,12 +16,13 @@ const VOLUME = 1;
 // so each card can have its own song there.
 const PHONE_QUERY = "(max-width: 639px)";
 
-// Remembered in this browser when the guest turns the music off.
+// Remembered for the rest of this visit (this tab) when the guest turns the
+// music off; a new visit starts with music again.
 const OFF_KEY = "wedding-music-off";
 
 function turnedOffBefore() {
   try {
-    return localStorage.getItem(OFF_KEY) === "1";
+    return sessionStorage.getItem(OFF_KEY) === "1";
   } catch {
     return false;
   }
@@ -27,8 +30,8 @@ function turnedOffBefore() {
 
 function rememberTurnedOff(off: boolean) {
   try {
-    if (off) localStorage.setItem(OFF_KEY, "1");
-    else localStorage.removeItem(OFF_KEY);
+    if (off) sessionStorage.setItem(OFF_KEY, "1");
+    else sessionStorage.removeItem(OFF_KEY);
   } catch {
     // Private browsing and the like: nothing to remember it in.
   }
@@ -98,7 +101,7 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
 
   /** Loads `src` into the player at its saved position. */
   const load = useCallback((audio: HTMLAudioElement, src: string) => {
-    if (audio.getAttribute("src")) positions.current.set(current.current, audio.currentTime);
+    if (audio.getAttribute("src") && !audio.src.startsWith("data:")) positions.current.set(current.current, audio.currentTime);
     current.current = src;
     audio.src = src;
     const resumeAt = positions.current.get(src);
@@ -161,7 +164,7 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
     const audio = audioRef.current;
     if (!audio) return false;
     const wanted = songAtMiddle(masterSrc);
-    if (wanted !== current.current || !audio.getAttribute("src")) load(audio, wanted);
+    if (wanted !== current.current || !audio.getAttribute("src") || audio.src.startsWith("data:")) load(audio, wanted);
     switchId.current++; // stop any fade in progress
     audio.volume = VOLUME;
     try {
@@ -196,11 +199,12 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
     return () => window.removeEventListener(CHAT_AUDIO_EVENT, onChatAudio);
   }, [masterSrc, load]);
 
-  // Music is on by default, from the moment the opening animation ends or is
-  // skipped. Browsers (iPhones above all) only allow sound once the guest has
-  // interacted with the page, so try then, and otherwise start on their first
-  // tap, click or key press anywhere. A guest who turns the music off is
-  // remembered and left in peace.
+  // Music is on by default, from the moment the opening ends (or is skipped).
+  // Browsers (iPhones above all) only allow sound from inside a tap, click or
+  // key press, never a scroll. A tap on the opening skips it, and the music
+  // starts inside that tap; if the opening simply ends, the music tries then,
+  // and a guest whose browser blocks it hears it from their first tap. A guest
+  // who turns the music off is left in peace for the rest of the visit.
   useEffect(() => {
     if (turnedOffBefore()) return;
     let done = false;
@@ -217,6 +221,13 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
         }
       });
     }
+    /** Inside the tap on the opening: unlock the player with a silent clip, just before the music starts. */
+    function prime() {
+      const audio = audioRef.current;
+      if (done || chosen.current || !audio || playingRef.current) return;
+      audio.src = SILENT_WAV;
+      audio.play().catch(() => {});
+    }
     function begin() {
       if (done || chosen.current) return;
       start().then((ok) => {
@@ -230,12 +241,15 @@ export default function BackgroundMusic({ masterSrc }: { masterSrc: string }) {
     // pages only) marks <html> while it plays.
     const wait = setTimeout(() => {
       const introPlaying = document.documentElement.dataset.introPlaying === "1" && !isIntroDone();
-      if (introPlaying) window.addEventListener(INTRO_DONE_EVENT, begin, { once: true });
-      else begin();
+      if (introPlaying) {
+        window.addEventListener(INTRO_TAP_EVENT, prime);
+        window.addEventListener(INTRO_DONE_EVENT, begin, { once: true });
+      } else begin();
     }, 0);
     return () => {
       done = true;
       clearTimeout(wait);
+      window.removeEventListener(INTRO_TAP_EVENT, prime);
       window.removeEventListener(INTRO_DONE_EVENT, begin);
       stopListening();
     };

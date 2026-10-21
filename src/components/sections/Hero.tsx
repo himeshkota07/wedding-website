@@ -55,21 +55,19 @@ export default function Hero({ hero, eventDates = [] }: { hero: HomeHero; eventD
                 <span className="text-brass">,</span>
                 {last.day}
               </span>
-              <span className="h-16 w-px bg-brass" aria-hidden />
+              <span className="h-12 w-px bg-brass sm:h-14" aria-hidden />
               <span className="font-display text-lg leading-snug text-ink-soft">
                 <span className="block">{span.weekday}</span>
                 {span.month && <span className="block">{span.month}</span>}
-                {when?.time && <span className="block">{when.time}</span>}
               </span>
             </div>
           ) : when ? (
             <div className="flex items-center gap-4 text-left">
               <span className="font-display text-6xl leading-none tabular-nums text-ink sm:text-7xl">{when.day}</span>
-              <span className="h-16 w-px bg-brass" aria-hidden />
+              <span className="h-12 w-px bg-brass sm:h-14" aria-hidden />
               <span className="font-display text-lg leading-snug text-ink-soft">
                 {when.weekday && <span className="block">{when.weekday}</span>}
                 {when.month && <span className="block">{when.month}</span>}
-                {when.time && <span className="block">{when.time}</span>}
               </span>
             </div>
           ) : (
