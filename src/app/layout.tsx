@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Crimson_Pro, Noto_Serif_Devanagari, Noto_Serif_Kannada, Noto_Serif_Telugu, Tangerine } from "next/font/google";
 import "./globals.css";
+import SiteAnalytics from "@/components/SiteAnalytics";
 
 // "Heritage letterpress", one job per face: carved Roman capitals for
 // headings and numerals, a book serif for reading, and calligraphy only for
@@ -65,7 +66,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${crimson.variable} ${cinzel.variable} ${tangerine.variable} ${notoSerifTelugu.variable} ${notoSerifKannada.variable} ${notoSerifDevanagari.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <SiteAnalytics />
+      </body>
     </html>
   );
 }

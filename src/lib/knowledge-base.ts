@@ -32,8 +32,14 @@ function formatEventDate(iso: string) {
   });
 }
 
-function formatEventEnd(iso: string) {
-  return new Date(iso).toLocaleString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
+function formatEventDay(iso: string) {
+  return new Date(iso).toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
+  });
 }
 
 /**
@@ -53,14 +59,14 @@ export async function buildKnowledgeBase(admin = createAdminSupabase(), scope?: 
     await Promise.all([
       admin
         .from("events")
-        .select("id, name, description, event_date, event_end, special_instructions, venue:venues(name, address)")
+        .select("id, name, description, event_date, time_label, special_instructions, venue:venues(name, address)")
         .returns<
           {
             id: string;
             name: string;
             description: string | null;
             event_date: string;
-            event_end: string | null;
+            time_label: string | null;
             special_instructions: string | null;
             venue: { name: string; address: string } | { name: string; address: string }[] | null;
           }[]
@@ -98,8 +104,8 @@ export async function buildKnowledgeBase(admin = createAdminSupabase(), scope?: 
       content: [
         `Event: ${event.name}.`,
         event.description,
-        event.event_end
-          ? `Date & time: ${formatEventDate(event.event_date)} to ${formatEventEnd(event.event_end)} (India time).`
+        event.time_label
+          ? `Date: ${formatEventDay(event.event_date)}. Time: ${event.time_label} (India time).`
           : `Date & time: ${formatEventDate(event.event_date)} (India time).`,
         venue && `Venue: ${venue.name}, ${venue.address}.`,
         event.special_instructions && `Special instructions: ${event.special_instructions}`,

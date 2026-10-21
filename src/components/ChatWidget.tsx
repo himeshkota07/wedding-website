@@ -5,6 +5,7 @@ import { Mic, Square, Volume2, Pause, Send } from "lucide-react";
 import { useVoiceRecorder } from "@/lib/use-voice-recorder";
 import { inviteCodeFromPath } from "@/lib/invite-path";
 import { signalChatAudio } from "@/lib/audio-events";
+import { track } from "@vercel/analytics";
 
 type Message = { role: "user" | "model"; text: string };
 // Answer in the mode the question was asked in: typed in, text out; spoken in, spoken out.
@@ -82,6 +83,7 @@ export default function ChatWidget() {
     setMessages(nextMessages);
     setInput("");
     setPending(true);
+    track("Chat question", { mode });
 
     try {
       const res = await fetch("/api/chat", {

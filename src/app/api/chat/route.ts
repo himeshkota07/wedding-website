@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import type { NextRequest } from "next/server";
 import { FAST_MODELS, generateWithFallback } from "@/lib/gemini";
 import { buildKnowledgeBase } from "@/lib/knowledge-base";
@@ -22,7 +22,10 @@ How to answer, in this order:
 1. The wedding's own knowledge base comes first. The "Context" below is everything the family has written about THIS wedding. If it answers the question, answer from it, and let it overrule anything you think you know.
 2. If the Context doesn't cover it, you may answer from your own general knowledge: what a ceremony like Haldi, Sangeet or Muhurtham usually involves, Telugu and Kannada wedding customs, getting around Bangalore, travel from the airport, typical weather, what to pack, etiquette, and similar. Make it clear this is general guidance, e.g. "Generally…" or "Usually…", not something the family has confirmed.
 3. The events in the Context are the only events this guest is invited to. If they ask about any other event or ceremony of this wedding, say you don't have details about that and suggest the Contact section; never guess whether it exists, when or where it is.
-4. Never invent facts about THIS wedding that aren't in the Context: its dates, times, venues, addresses, people, phone numbers, dress code, menu, gifts, accommodation or arrangements. If the guest asks about one of these and the Context doesn't have it, say you don't have that detail yet and suggest the WhatsApp link or the Contact section. You can still add useful general advice alongside.
+4. Never invent facts about THIS wedding that aren't in the Context: its dates, times, venues, addresses, people, phone numbers, dress code, menu, gifts, accommodation or arrangements. When the Context doesn't have the detail, how you say so depends on what kind of question it is:
+   - Fun or curious questions, where nothing goes wrong if the guest simply waits (the menu, gifts, surprises, performances, what the couple will wear, who's dancing at the Sangeet, the honeymoon, how the couple met if it isn't in the Context): don't say "I don't have that information" and don't send them to the Contact section. Answer with a short, warm, witty line in the spirit of a cheeky cousin at the wedding, that playfully keeps the mystery without stating anything as fact. For example, for the menu, something like "Some things are best discovered with a full plate. Come hungry!"; for gifts, something like "Your presence is the best gift. Your blessings are a close second." These only show the tone: write your own line for each question, fitted to what they asked, and never repeat the same joke twice in a conversation.
+   - Practical questions a guest needs answered to plan (an address, a time, where to stay, transport the family is arranging, an accessibility need, anything urgent): be plainly helpful. Say that detail isn't up yet and suggest the WhatsApp link or the Contact section, with any useful general advice alongside. A light touch is fine, but never let a joke stand in for the answer.
+   - Keep humour kind and family-friendly: never about anyone's looks, weight, age, religion, caste, money, or the couple's relationship, and never sarcastic towards the guest.
 5. If the Context seems to contradict itself (for example two different dates for the same thing), give what the Context says and suggest confirming with the family.
 - Reply in the same language the guest wrote in (English, Telugu, Kannada, or Hindi). Match their language even if the context is in English. Write Hindi in Devanagari; if a guest writes Hindi in English letters (e.g. "shaadi kab hai?"), reply the same way, in English letters.
 - Keep answers short and warm, like a helpful friend, not a formal document.
@@ -113,6 +116,17 @@ function buildContext(chunks: { source_type: string; content: string }[]) {
   return chunks.map((c) => `- [${c.source_type}] ${c.content}`).join("\n");
 }
 
+/** Saved once the reply has gone out, for Admin → Chat log. A failure here never reaches the guest. */
+function logQuestion(
+  admin: ReturnType<typeof createAdminSupabase>,
+  entry: { invite_label: string | null; question: string; reply: string; script: Script | null; failed: boolean },
+) {
+  after(async () => {
+    const { error } = await admin.from("chat_log").insert(entry);
+    if (error) console.error("[chat] log failed:", error.message);
+  });
+}
+
 async function getWhatsappLink(admin: ReturnType<typeof createAdminSupabase>) {
   const { data } = await admin
     .from("contacts")
@@ -149,6 +163,8 @@ export async function POST(request: NextRequest) {
     : [];
 
   const admin = createAdminSupabase();
+  let inviteLabel: string | null = null;
+  let script: Script | null = null;
 
   try {
     // The model reads the whole, current knowledge base rather than a
@@ -156,9 +172,11 @@ export async function POST(request: NextRequest) {
     // it admit when the answer isn't there.
     // Only what this guest's invitation link shows: events it can't see never reach the model.
     const link = await resolveLink(typeof body.invite === "string" ? body.invite : null);
+    inviteLabel = link.label;
     const context = buildContext(await buildKnowledgeBase(admin, await getLinkScope(link)));
     // Decided from the guest's own letters, not left to the model.
     const target = dominantScript(message);
+    script = target;
     const contents = [
       ...history.map((turn) => ({ role: turn.role, parts: [{ text: turn.text }] })),
       {
@@ -180,15 +198,15 @@ export async function POST(request: NextRequest) {
     const draft = dropBracketedEnglish(stripMarkdown(response.text?.trim() ?? ""));
     const reply =
       (draft && (await enforceScript(draft, target))) || "Sorry, I couldn't come up with an answer to that.";
+    logQuestion(admin, { invite_label: inviteLabel, question: message, reply, script, failed: !draft });
     return NextResponse.json({ reply, escalate: false });
   } catch (error) {
     console.error("[chat] failed:", error);
     const whatsappLink = await getWhatsappLink(admin).catch(() => undefined);
-    return NextResponse.json({
-      reply:
-        "Sorry, I'm having trouble answering right now. " +
-        (whatsappLink ? `Please try the coordinators on WhatsApp: ${whatsappLink}` : "Please try again shortly."),
-      escalate: true,
-    });
+    const reply =
+      "Sorry, I'm having trouble answering right now. " +
+      (whatsappLink ? `Please try the coordinators on WhatsApp: ${whatsappLink}` : "Please try again shortly.");
+    logQuestion(admin, { invite_label: inviteLabel, question: message, reply, script, failed: true });
+    return NextResponse.json({ reply, escalate: true });
   }
 }

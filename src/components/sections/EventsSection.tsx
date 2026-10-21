@@ -15,6 +15,7 @@ type EventRow = {
   description: string | null;
   event_date: string;
   event_end: string | null;
+  time_label: string | null;
   special_instructions: string | null;
   venue: Venue | Venue[] | null;
 };
@@ -104,7 +105,9 @@ function UmbrellaCard(p: CardProps) {
         {p.description && <p className="mt-3 text-ink-soft">{p.description}</p>}
 
         <dl className="mt-5 grid w-full gap-y-3">
-          <Field label="When">{p.when}</Field>
+          <Field label="When">
+            <span className="whitespace-pre-line">{p.when}</span>
+          </Field>
           <Field label="Where">{p.where}</Field>
           <Field label="Please note">{p.note}</Field>
         </dl>
@@ -124,7 +127,7 @@ export default async function EventsSection({ scope }: { scope: LinkScope }) {
   const [{ data: events }, music] = await Promise.all([
     createAdminSupabase()
       .from("events")
-      .select("id, name, description, event_date, event_end, special_instructions, venue:venues(name, address)")
+      .select("id, name, description, event_date, event_end, time_label, special_instructions, venue:venues(name, address)")
       .order("sort_order", { ascending: true })
       .returns<EventRow[]>(),
     getMusic(),
@@ -162,7 +165,6 @@ export default async function EventsSection({ scope }: { scope: LinkScope }) {
           )}
           {normalized.map((event, i) => {
             const when = partsFromIso(event.event_date);
-            const endTime = event.event_end ? partsFromIso(event.event_end)?.time : undefined;
             const v = event.venue;
             return (
               <UmbrellaCard
@@ -175,7 +177,7 @@ export default async function EventsSection({ scope }: { scope: LinkScope }) {
                 song={music.events[event.id]?.url ?? ""}
                 aside={<Countdown targetIso={event.event_date} compact />}
                 description={event.description}
-                when={when?.time ? (endTime ? `${when.time} – ${endTime}` : when.time) : TBA}
+                when={event.time_label || when?.time || TBA}
                 where={
                   v ? (
                     <>

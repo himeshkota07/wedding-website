@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ChevronLeft, ChevronRight, ImagePlus, Mic, Square, X } from "lucide-react";
 import { tieWish } from "@/app/(site)/wishes/actions";
+import { track } from "@vercel/analytics";
 import { Toran } from "@/components/ui/motifs";
 import { resizeImageToBlob } from "@/lib/image-resize";
 import { useVoiceRecorder } from "@/lib/use-voice-recorder";
@@ -198,6 +199,7 @@ export default function WishingToran({ initialWishes }: { initialWishes: Wish[] 
       }
       setWishes((prev) => (prev.some((w) => w.id === result.wish.id) ? prev : [result.wish, ...prev]));
       setNewestId(result.wish.id);
+      track("Wish posted", { photo: Boolean(result.wish.photo_url) });
       setOpenId(result.wish.id);
       setStatus({ ok: true, text: "Your wish is tied to their toran. Thank you!" });
       formRef.current?.reset();
@@ -321,11 +323,24 @@ export default function WishingToran({ initialWishes }: { initialWishes: Wish[] 
         )}
       </AnimatePresence>
 
+      {/* A framed window that scrolls on its own, so the page doesn't grow with every wish. */}
       {showAll && (
-        <div className="mt-8 columns-1 gap-6 md:columns-2">
-          {wishes.map((wish) => (
-            <WishSlip key={wish.id} wish={wish} className="mb-8 break-inside-avoid" />
-          ))}
+        <div className="relative mt-8">
+          <div
+            tabIndex={0}
+            role="region"
+            aria-label="All wishes"
+            className="max-h-[70svh] overflow-y-auto bg-paper-deep/60 p-4 ring-1 ring-brass/60 sm:max-h-[36rem] sm:p-6"
+          >
+            <div className="columns-1 gap-6 md:columns-2">
+              {wishes.map((wish) => (
+                <WishSlip key={wish.id} wish={wish} className="mb-8 break-inside-avoid" />
+              ))}
+            </div>
+          </div>
+          {wishes.length > 2 && (
+            <p className="mt-2 text-center text-base text-ink-soft">Scroll inside the box to read more</p>
+          )}
         </div>
       )}
 
